@@ -1,0 +1,56 @@
+locations:
+  the-room:
+    name: The Room
+    description: You are in a room with a bed.
+    encounters:
+    - id: sleep
+      name: Go to sleep
+      description: You are feeling very tired.
+      story: You can't keep your eyes open any longer.
+      conditions:
+      - stat_condition:
+          stat: fatigue
+          min: 1
+          hide: true
+      choices:
+      - id: faceless-man
+        name: Dream of the faceless man
+        story: What is he hiding?
+        effects:
+        - trials:
+          - automatic: {}
+          pass:
+          - stat_change:
+              stat: fatigue
+              change: -10
+              no_less_than: 0
+    - id: door
+      name: What is behind the door?
+      description: ""
+      story: ""
+      conditions:
+      - stat_condition:
+          stat: fatigue
+          max: 0
+          hide: true
+      choices:
+      - id: leave
+        name: Leave the room
+        effects:
+        - trials:
+          - automatic: {}
+          pass:
+          - redirect:
+              location: outside
+  outside:
+    name: Outside
+    description: You are free.
+
+player_seed:
+  stats:
+    fatigue: 10
+  location: the-room
+
+stats:
+  fatigue:
+    name: Fatigue
