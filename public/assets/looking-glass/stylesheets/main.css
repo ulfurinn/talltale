@@ -1,0 +1,29 @@
+.game {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.scene {
+    border: 1px solid silver;
+    padding: 30px;
+}
+
+.scene-setting {
+    padding: 30px;
+    background-color: #eeeef5;
+}
+
+.scene-name, .encounter-name {
+    font-size: 120%;
+    margin-bottom: 0.7em;
+}
+
+.scene-encounters {
+    padding: 30px;
+    background-color: #eee0e0;
+}
+
+.encounter {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}

@@ -1,0 +1,4 @@
+= content main
+  p..
+    TallTale game runner.
+  a href=/game Start.

@@ -1,3 +1,6 @@
+global:
+  title: Looking Glass
+
 locations:
   the-room:
     name: The Room
@@ -5,7 +8,7 @@ locations:
     encounters:
     - id: sleep
       name: Go to sleep
-      description: You are feeling very tired.
+      description: You are feeling very tired. Why are you so tired?
       story: You can't keep your eyes open any longer.
       conditions:
       - stat_condition:

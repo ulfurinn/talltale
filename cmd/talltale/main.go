@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
+	"bitbucket.org/ulfurinn/cli"
 	"github.com/ulfurinn/talltale"
 )
 
 func main() {
-	stored, err := talltale.LoadWorld("world.yml")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	app := cli.NewApp()
+	app.Main = cli.Command{
+		Options: []cli.Option{
+			cli.StringOption{
+				Name: "world",
+			},
+		},
+		Action: talltale.Main,
 	}
-	var game talltale.Game
-	game.World, game.Player = stored.Parse()
-	talltale.Run(&game)
+	app.RunMain()
 }

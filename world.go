@@ -1,6 +1,7 @@
 package talltale
 
 type Game struct {
+	ID     string
 	World  World
 	Player Player
 }
@@ -10,6 +11,7 @@ func (g Game) Location() Location {
 }
 
 type World struct {
+	Title     string
 	Locations map[string]Location
 }
 
@@ -113,7 +115,7 @@ type Effect struct {
 	Fail   PlayerChange
 }
 
-type Trial func(*Player) bool
+type Trial func(Player) bool
 
 type PlayerChange func(*Player)
 
@@ -121,7 +123,7 @@ type Story struct {
 	Text string
 }
 
-func (e Effect) Success(player *Player) bool {
+func (e Effect) Success(player Player) bool {
 	for _, trial := range e.Trials {
 		if !trial(player) {
 			return false

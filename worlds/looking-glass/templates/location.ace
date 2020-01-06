@@ -1,0 +1,11 @@
+= content main
+  .scene
+    .scene-setting
+      .scene-name {{ .Scene.Location.Name }}
+      .scene-description {{ .Scene.Location.Description }}
+    .scene-encounters
+      {{ range .Scene.Encounters }}
+        .encounter
+          .encounter-name {{ .Name }}
+          .encounter-description {{ .Description }}
+      {{ end }}

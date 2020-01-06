@@ -1,0 +1,10 @@
+= doctype html
+html
+  head
+    meta charset=utf-8
+    title {{ .World.Title }}
+    link rel=stylesheet type=text/css href=/assets/looking-glass/stylesheets/main.css
+  body
+    h1 TallTale: {{ .World.Title }}
+    section.game
+      = yield main

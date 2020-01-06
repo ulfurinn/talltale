@@ -18,6 +18,9 @@ func LoadWorld(f string) (s StoredWorld, err error) {
 }
 
 type StoredWorld struct {
+	Global struct {
+		Title string `yaml:"title"`
+	} `yaml:"global"`
 	Locations  map[string]StoredLocation `yaml:"locations"`
 	PlayerSeed struct {
 		Stats    map[string]int `yaml:"stats"`
@@ -88,6 +91,7 @@ type StoredRedirect struct {
 }
 
 func (s StoredWorld) Parse() (world World, player Player) {
+	world.Title = s.Global.Title
 	world.Locations = make(map[string]Location)
 	for id, l := range s.Locations {
 		location := l.Parse(id)
@@ -222,8 +226,8 @@ func (r StoredRedirect) Parse() PlayerChange {
 	}
 }
 
-var AutomaticPass Trial = func(*Player) bool { return true }
-var AutomaticFail Trial = func(*Player) bool { return false }
+var AutomaticPass Trial = func(Player) bool { return true }
+var AutomaticFail Trial = func(Player) bool { return false }
 
 func AggregatePlayerChange(funcs []PlayerChange) PlayerChange {
 	return func(p *Player) {
