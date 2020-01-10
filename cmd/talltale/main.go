@@ -12,6 +12,10 @@ func main() {
 			cli.StringOption{
 				Name: "world",
 			},
+			cli.IntOption{
+				Name:  "port",
+				Value: 8080,
+			},
 		},
 		Action: talltale.Main,
 	}

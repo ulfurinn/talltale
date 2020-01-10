@@ -10,6 +10,15 @@ func (g Game) Location() Location {
 	return g.World.Locations[g.Player.Location]
 }
 
+func (g Game) Encounter() Encounter {
+	for _, e := range g.Location().Encounters {
+		if e.ID == g.Player.Encounter {
+			return e
+		}
+	}
+	return Encounter{}
+}
+
 type World struct {
 	Title     string
 	Locations map[string]Location

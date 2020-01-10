@@ -13,7 +13,7 @@
     background-color: #eeeef5;
 }
 
-.scene-name, .encounter-name {
+.scene-name, .encounter-name, .choice-name {
     font-size: 120%;
     margin-bottom: 0.7em;
 }
@@ -23,7 +23,30 @@
     background-color: #eee0e0;
 }
 
-.encounter {
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ccc;
+.scene-choices {
+    padding: 30px;
+    background-color: #eed0d0;
+}
+
+.encounter, .choice {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+}
+
+.encounter-available, .choice-available {
+    cursor: pointer;
+}
+
+.encounter-unavailable, .choice-unavailable {
+    background-color: #999;
+}
+
+.inventory-item-name {
+    display: inline;
+    padding-right: 1em;
+}
+
+.inventory-item-value {
+    display: inline;
 }

@@ -1,0 +1,18 @@
+= content main
+  .scene
+    .scene-setting
+      .scene-name {{ .Scene.Encounter.Name }}
+      .scene-description {{ .Scene.Encounter.Description }}
+    .scene-choices
+      {{ range .Scene.Choices }}
+        {{ if .Available }}
+        .choice.choice-available onclick=choice('{{ .ID }}')
+          .choice-name {{ .Name }}
+          .choice-description {{ .Description }}
+        {{ else }}
+        .choice.choice-unavailable
+          .choice-name {{ .Name }}
+          .choice-description {{ .Description }}
+          .choice-note This is not available to you.
+        {{ end }}
+      {{ end }}

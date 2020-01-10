@@ -1,20 +1,37 @@
 global:
   title: Looking Glass
 
+templates:
+  encounters:
+    default:
+      conditions:
+        fatigue_not_deadly:
+          stat_condition:
+            stat: fatigue
+            max: 7
+            hide: true
+    override_max_fatigue:
+      conditions:
+        fatigue_not_deadly:
+          ignore: true
+
 locations:
   the-room:
     name: The Room
     description: You are in a room with a bed.
+    locations:
+    - id: balcony
     encounters:
     - id: sleep
       name: Go to sleep
       description: You are feeling very tired. Why are you so tired?
       story: You can't keep your eyes open any longer.
       conditions:
-      - stat_condition:
-          stat: fatigue
-          min: 1
-          hide: true
+        fatigue_check:
+          stat_condition:
+            stat: fatigue
+            min: 10
+            hide: true
       choices:
       - id: faceless-man
         name: Dream of the faceless man
@@ -32,10 +49,11 @@ locations:
       description: ""
       story: ""
       conditions:
-      - stat_condition:
-          stat: fatigue
-          max: 0
-          hide: true
+        fatigue_check:
+          stat_condition:
+            stat: fatigue
+            max: 9
+            hide: false
       choices:
       - id: leave
         name: Leave the room
@@ -45,6 +63,17 @@ locations:
           pass:
           - redirect:
               location: outside
+      - id: stay
+        name: Stay a bit longer
+        effects:
+        - trials:
+          - automatic: {}
+          pass:
+          - stat_change:
+              stat: fatigue
+              change: 3
+              no_more_than: 10
+  balcony: {}
   outside:
     name: Outside
     description: You are free.

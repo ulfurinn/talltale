@@ -21,6 +21,9 @@ func Main(ctx *cli.Context) (err error) {
 
 	game.World, game.Player = stored.Parse()
 
-	runner := HttpRunner{Game: game}
+	runner := HttpRunner{
+		Game: game,
+		Port: ctx.Int("port"),
+	}
 	return runner.Run()
 }

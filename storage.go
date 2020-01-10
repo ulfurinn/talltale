@@ -35,12 +35,12 @@ type StoredLocation struct {
 }
 
 type StoredEncounter struct {
-	ID          string            `yaml:"id"`
-	Name        string            `yaml:"name"`
-	Description string            `yaml:"description"`
-	Story       string            `yaml:"story"`
-	Conditions  []StoredCondition `yaml:"conditions"`
-	Choices     []StoredChoice    `yaml:"choices"`
+	ID          string                     `yaml:"id"`
+	Name        string                     `yaml:"name"`
+	Description string                     `yaml:"description"`
+	Story       string                     `yaml:"story"`
+	Conditions  map[string]StoredCondition `yaml:"conditions"`
+	Choices     []StoredChoice             `yaml:"choices"`
 }
 
 type StoredCondition struct {
@@ -55,12 +55,12 @@ type StoredStatCondition struct {
 }
 
 type StoredChoice struct {
-	ID          string            `yaml:"id"`
-	Name        string            `yaml:"name"`
-	Description string            `yaml:"description"`
-	Story       string            `yaml:"story"`
-	Conditions  []StoredCondition `yaml:"conditions"`
-	Effects     []StoredEffect    `yaml:"effects"`
+	ID          string                     `yaml:"id"`
+	Name        string                     `yaml:"name"`
+	Description string                     `yaml:"description"`
+	Story       string                     `yaml:"story"`
+	Conditions  map[string]StoredCondition `yaml:"conditions"`
+	Effects     []StoredEffect             `yaml:"effects"`
 }
 
 type StoredEffect struct {

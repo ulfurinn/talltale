@@ -4,6 +4,9 @@ html
     meta charset=utf-8
     title {{ .World.Title }}
     link rel=stylesheet type=text/css href=/assets/looking-glass/stylesheets/main.css
+    script type=text/javascript src=/assets/global/script/prototype.js
+    script type=text/javascript src=/assets/global/script/underscore-min.js
+    script type=text/javascript src=/assets/global/script/talltale.js
   body
     h1 TallTale: {{ .World.Title }}
     section.game
