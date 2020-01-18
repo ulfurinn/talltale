@@ -6,7 +6,7 @@ templates:
     default:
       conditions:
         fatigue_not_deadly:
-          stat_condition:
+          stat:
             stat: fatigue
             max: 7
             hide: true
@@ -28,10 +28,10 @@ locations:
       story: You can't keep your eyes open any longer.
       conditions:
         fatigue_check:
-          stat_condition:
-            stat: fatigue
-            min: 10
-            hide: true
+          stat:
+            fatigue:
+              min: 10
+              hide: true
       choices:
       - id: faceless-man
         name: Dream of the faceless man
@@ -50,10 +50,10 @@ locations:
       story: ""
       conditions:
         fatigue_check:
-          stat_condition:
-            stat: fatigue
-            max: 9
-            hide: false
+          stat:
+            fatigue:
+              max: 9
+              hide: false
       choices:
       - id: leave
         name: Leave the room

@@ -8,20 +8,13 @@ import (
 	"time"
 
 	"github.com/ulfurinn/talltale/internal/editor"
-)
-
-type runnerState int
-
-const (
-	RunnerStateLocation runnerState = iota
-	RunnerStateEncounter
+	"github.com/ulfurinn/talltale/internal/runner"
 )
 
 type HttpRunner struct {
-	Game        Game
+	Game        runner.Game
 	Port        int
 	AllowEditor bool
-	state       runnerState
 }
 
 func (r *HttpRunner) Run() (err error) {
@@ -81,10 +74,10 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 		return
 	}
 
-	switch r.state {
-	case RunnerStateLocation:
+	switch r.Game.State() {
+	case runner.StateLocation:
 		err = r.locationAction(req)
-	case RunnerStateEncounter:
+	case runner.StateEncounter:
 		err = r.encounterAction(req)
 	}
 
@@ -93,7 +86,6 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 
 func (r *HttpRunner) resetGame(rw http.ResponseWriter, rq *http.Request) {
 	r.Game.Reset()
-	r.state = RunnerStateLocation
 	rw.Header().Set("content-type", "application/json")
 	encoder := json.NewEncoder(rw)
 	encoder.Encode(r.buildScene())
@@ -112,7 +104,7 @@ func (r *HttpRunner) locationAction(req ActionRequest) (err error) {
 }
 
 func (r *HttpRunner) chooseEncounter(req ActionRequest) (err error) {
-	var encounter Encounter
+	var encounter runner.Encounter
 	var found bool
 	for _, encounter = range r.Game.Location().Encounters {
 		if encounter.ID == req.ChoiceID {
@@ -128,7 +120,6 @@ func (r *HttpRunner) chooseEncounter(req ActionRequest) (err error) {
 		err = errors.New("the selected action is not displayable")
 		return
 	}
-	r.state = RunnerStateEncounter
 	r.Game.Player.Encounter = encounter.ID
 	return
 }
@@ -138,7 +129,7 @@ func (r *HttpRunner) changeLocation(req ActionRequest) (err error) {
 }
 
 func (r *HttpRunner) encounterAction(req ActionRequest) (err error) {
-	var choice Choice
+	var choice runner.Choice
 	var found bool
 
 	for _, choice = range r.Game.Encounter().Choices {
@@ -166,12 +157,11 @@ func (r *HttpRunner) encounterAction(req ActionRequest) (err error) {
 		}
 	}
 	r.Game.Player.Encounter = ""
-	r.state = RunnerStateLocation
 
 	return
 }
 
-func (r *HttpRunner) displayableEncounters() (displayableEncounters []Encounter) {
+func (r *HttpRunner) displayableEncounters() (displayableEncounters []runner.Encounter) {
 	l := r.Game.Location()
 
 	for _, e := range l.Encounters {
@@ -182,7 +172,7 @@ func (r *HttpRunner) displayableEncounters() (displayableEncounters []Encounter)
 	return
 }
 
-func (r *HttpRunner) displayableChoices() (displayableChoices []Choice) {
+func (r *HttpRunner) displayableChoices() (displayableChoices []runner.Choice) {
 	for _, c := range r.Game.Encounter().Choices {
 		if c.Displayable(r.Game) {
 			displayableChoices = append(displayableChoices, c)
@@ -205,8 +195,8 @@ func (r *HttpRunner) buildScene() map[string]interface{} {
 		"encounter":  nil,
 	}
 
-	switch r.state {
-	case RunnerStateLocation:
+	switch r.Game.State() {
+	case runner.StateLocation:
 		scene["scene"] = map[string]interface{}{
 			"name":        l.Name,
 			"description": l.Description,
@@ -222,7 +212,7 @@ func (r *HttpRunner) buildScene() map[string]interface{} {
 		}
 		scene["encounters"] = sceneEncounters
 
-	case RunnerStateEncounter:
+	case runner.StateEncounter:
 		e := r.Game.Encounter()
 		scene["encounter"] = e.ID
 		scene["scene"] = map[string]interface{}{

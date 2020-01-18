@@ -4,6 +4,8 @@ import (
 	"errors"
 
 	"bitbucket.org/ulfurinn/cli"
+	"github.com/ulfurinn/talltale/internal/runner"
+	"github.com/ulfurinn/talltale/internal/storage"
 )
 
 func Main(ctx *cli.Context) (err error) {
@@ -11,9 +13,8 @@ func Main(ctx *cli.Context) (err error) {
 	if world == "" {
 		return errors.New("--world must be provided")
 	}
-	var game Game
-	game.ID = world
-	stored, err := LoadWorld("worlds/" + world + "/world.yml")
+	var game runner.Game
+	stored, err := storage.LoadFromYML("worlds/" + world + "/world.yml")
 
 	if err != nil {
 		return
