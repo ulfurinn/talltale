@@ -45,3 +45,23 @@ func (g *Game) Reset() {
 		g.Player.Inventory[k] = v
 	}
 }
+
+func (g *Game) DisplayableEncounters() (displayableEncounters []Encounter) {
+	l := g.Location()
+
+	for _, e := range l.Encounters {
+		if e.Displayable(g) {
+			displayableEncounters = append(displayableEncounters, e)
+		}
+	}
+	return
+}
+
+func (g *Game) DisplayableChoices() (displayableChoices []Choice) {
+	for _, c := range g.Encounter().Choices {
+		if c.Displayable(g) {
+			displayableChoices = append(displayableChoices, c)
+		}
+	}
+	return
+}

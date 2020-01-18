@@ -12,7 +12,7 @@ import (
 )
 
 type HttpRunner struct {
-	Game        runner.Game
+	Game        *runner.Game
 	Port        int
 	AllowEditor bool
 }
@@ -161,26 +161,6 @@ func (r *HttpRunner) encounterAction(req ActionRequest) (err error) {
 	return
 }
 
-func (r *HttpRunner) displayableEncounters() (displayableEncounters []runner.Encounter) {
-	l := r.Game.Location()
-
-	for _, e := range l.Encounters {
-		if e.Displayable(r.Game) {
-			displayableEncounters = append(displayableEncounters, e)
-		}
-	}
-	return
-}
-
-func (r *HttpRunner) displayableChoices() (displayableChoices []runner.Choice) {
-	for _, c := range r.Game.Encounter().Choices {
-		if c.Displayable(r.Game) {
-			displayableChoices = append(displayableChoices, c)
-		}
-	}
-	return
-}
-
 func (r *HttpRunner) buildScene() map[string]interface{} {
 	l := r.Game.Location()
 	scene := map[string]interface{}{
@@ -202,7 +182,7 @@ func (r *HttpRunner) buildScene() map[string]interface{} {
 			"description": l.Description,
 		}
 		sceneEncounters := []map[string]interface{}{}
-		for _, e := range r.displayableEncounters() {
+		for _, e := range r.Game.DisplayableEncounters() {
 			sceneEncounters = append(sceneEncounters, map[string]interface{}{
 				"id":          e.ID,
 				"name":        e.Name,
@@ -223,7 +203,7 @@ func (r *HttpRunner) buildScene() map[string]interface{} {
 		}
 
 		sceneChoices := []map[string]interface{}{}
-		for _, c := range r.displayableChoices() {
+		for _, c := range r.Game.DisplayableChoices() {
 			sceneChoices = append(sceneChoices, map[string]interface{}{
 				"id":          c.ID,
 				"name":        c.Name,

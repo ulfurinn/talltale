@@ -13,13 +13,13 @@ func Main(ctx *cli.Context) (err error) {
 	if world == "" {
 		return errors.New("--world must be provided")
 	}
-	var game runner.Game
 	stored, err := storage.LoadFromYML("worlds/" + world + "/world.yml")
 
 	if err != nil {
 		return
 	}
 
+	game := &runner.Game{}
 	game.World = stored.Parse()
 	game.Reset()
 

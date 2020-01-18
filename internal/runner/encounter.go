@@ -9,7 +9,7 @@ type Encounter struct {
 	Choices     []Choice
 }
 
-func (e Encounter) Displayable(g Game) bool {
+func (e Encounter) Displayable(g *Game) bool {
 	if len(e.Conditions) == 0 {
 		return true
 	}
@@ -21,7 +21,7 @@ func (e Encounter) Displayable(g Game) bool {
 	return false
 }
 
-func (e Encounter) Available(g Game) bool {
+func (e Encounter) Available(g *Game) bool {
 	if len(e.Conditions) == 0 {
 		return true
 	}

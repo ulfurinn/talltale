@@ -9,7 +9,7 @@ type Choice struct {
 	Effects     []Effect
 }
 
-func (c Choice) Displayable(g Game) bool {
+func (c Choice) Displayable(g *Game) bool {
 	if len(c.Conditions) == 0 {
 		return true
 	}
@@ -21,7 +21,7 @@ func (c Choice) Displayable(g Game) bool {
 	return false
 }
 
-func (c Choice) Available(g Game) bool {
+func (c Choice) Available(g *Game) bool {
 	if len(c.Conditions) == 0 {
 		return true
 	}
