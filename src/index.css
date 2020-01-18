@@ -1,14 +1,27 @@
 .game {
-    width: 70%;
+}
+
+.world {
     margin: 0 auto;
+    width: 50%;
+    padding: 2em 0 3em 0;
+}
+
+.world-title {
+    width: 100%;
+    text-align: center;
+    font-size: 200%;
 }
 
 .scene {
+    width: 70%;
+    margin: 0 auto;
     border: 1px solid silver;
     padding: 30px;
 }
 
 .scene-setting {
+    border: 3px solid black;
     padding: 30px;
     background-color: #eeeef5;
 }
@@ -20,26 +33,41 @@
 
 .scene-encounters {
     padding: 30px;
-    background-color: #eee0e0;
+    border: solid black;
+    border-width: 0 3px 3px 3px;
+    background-color: #f5f5ee;
 }
 
 .scene-choices {
     padding: 30px;
-    background-color: #eed0d0;
+    border: solid black;
+    border-width: 0 3px 3px 3px;
+    background-color: #f5eeee;
 }
 
 .encounter, .choice {
-    padding: 10px;
+    padding: 20px;
     border: 1px solid #ccc;
     margin-bottom: 5px;
 }
 
 .encounter-available, .choice-available {
     cursor: pointer;
+    transition-property: background-color;
+    transition-duration: 0.2s;
+}
+
+.encounter-available:hover {
+    background-color: #ffffee;
+}
+
+.choice-available:hover {
+    background-color: #ffeeee;
 }
 
 .encounter-unavailable, .choice-unavailable {
     background-color: #999;
+    color: #444;
 }
 
 .inventory-item-name {
