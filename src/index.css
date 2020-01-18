@@ -78,3 +78,12 @@
 .inventory-item-value {
     display: inline;
 }
+
+.game-reset {
+    width: 30%;
+    text-align: center;
+    padding: 1em;
+    margin: 1em auto 0 auto;
+    background-color: #ffeeee;
+    color: #eebbbb;
+}

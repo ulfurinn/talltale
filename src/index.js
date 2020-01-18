@@ -34,6 +34,22 @@ function action(arg, fn) {
         );
 }
 
+function resetGame(fn) {
+    fetch("/resetGame", { method: 'POST', body: JSON.stringify({}), headers: {
+      'Content-Type': 'application/json'}, credentials: "same-origin", cache: "no-cache" })
+        .then(response => {
+            return response.json();
+        })
+        .then(
+            json => {
+                fn(json);
+            },
+            error => {
+                console.log(error);
+            }
+        );
+}
+
 class Choice extends React.Component {
     render() {
         const classes = ["choice", (this.props.available ? "choice-available": "choice-unavailable")]
@@ -123,6 +139,7 @@ class Game extends React.Component {
         this.chooseEncounter = this.chooseEncounter.bind(this);
         this.chooseLocation = this.chooseLocation.bind(this);
         this.chooseAction = this.chooseAction.bind(this);
+        this.resetGame = this.resetGame.bind(this);
     }
     componentDidMount() {
         getScene(game => {
@@ -155,6 +172,14 @@ class Game extends React.Component {
         })
     }
 
+    resetGame() {
+        console.log("resetting")
+        resetGame(game => {
+            console.log("starting from scratch", game)
+            this.setState(game);
+        })
+    }
+
     render() {
         console.log("rendering state", this.state)
         return (
@@ -162,15 +187,21 @@ class Game extends React.Component {
                 <div className="world">
                     <div className="world-title">{this.state.world.title}</div>
                 </div>
-                { this.state._loaded ? <Scene
-                    scene={this.state.scene}
-                    locations={this.state.locations}
-                    encounters={this.state.encounters}
-                    choices={this.state.choices}
-                    onChooseEncounter={this.chooseEncounter}
-                    onChooseLocation={this.chooseLocation}
-                    onChooseAction={this.chooseAction}
-                /> : null }
+                { this.state._loaded ? [
+                    <Scene
+                        key="root-scene"
+                        scene={this.state.scene}
+                        locations={this.state.locations}
+                        encounters={this.state.encounters}
+                        choices={this.state.choices}
+                        onChooseEncounter={this.chooseEncounter}
+                        onChooseLocation={this.chooseLocation}
+                        onChooseAction={this.chooseAction}
+                    />,
+                    <div key="root-reset" className="game-reset" onClick={this.resetGame}>
+                        Start from the beginning
+                    </div>
+                ] : [] }
             </div>
         );
     }

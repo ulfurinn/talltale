@@ -19,7 +19,8 @@ func Main(ctx *cli.Context) (err error) {
 		return
 	}
 
-	game.World, game.Player = stored.Parse()
+	game.World = stored.Parse()
+	game.Reset()
 
 	runner := HttpRunner{
 		Game: game,

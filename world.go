@@ -19,9 +19,22 @@ func (g Game) Encounter() Encounter {
 	return Encounter{}
 }
 
+func (g *Game) Reset() {
+	g.Player.Location = g.World.TabulaRasa.Location
+	g.Player.Encounter = ""
+	g.Player.Inventory = map[string]int{}
+	for k, v := range g.World.TabulaRasa.Inventory {
+		g.Player.Inventory[k] = v
+	}
+}
+
 type World struct {
-	Title     string
-	Locations map[string]Location
+	Title      string
+	Locations  map[string]Location
+	TabulaRasa struct {
+		Location  string
+		Inventory map[string]int
+	}
 }
 
 type Location struct {

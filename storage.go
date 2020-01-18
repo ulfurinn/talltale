@@ -90,7 +90,7 @@ type StoredRedirect struct {
 	Location string `yaml:"location"`
 }
 
-func (s StoredWorld) Parse() (world World, player Player) {
+func (s StoredWorld) Parse() (world World) {
 	world.Title = s.Global.Title
 	world.Locations = make(map[string]Location)
 	for id, l := range s.Locations {
@@ -98,11 +98,9 @@ func (s StoredWorld) Parse() (world World, player Player) {
 		world.Locations[location.ID] = location
 	}
 
-	player.Location = s.PlayerSeed.Location
-	player.Inventory = make(map[string]int)
-	for stat, value := range s.PlayerSeed.Stats {
-		player.Inventory[stat] = value
-	}
+	world.TabulaRasa.Location = s.PlayerSeed.Location
+	world.TabulaRasa.Inventory = s.PlayerSeed.Stats
+
 	return
 }
 

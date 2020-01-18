@@ -28,6 +28,7 @@ func (r *HttpRunner) Run() (err error) {
 	mux.Handle("/", http.FileServer(http.Dir("./build")))
 	mux.HandleFunc("/scene", r.serveScene)
 	mux.HandleFunc("/action", r.processAction)
+	mux.HandleFunc("/resetGame", r.resetGame)
 
 	s := http.Server{
 		Addr:           fmt.Sprintf(":%d", r.Port),
@@ -81,6 +82,14 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 	}
 
 	return
+}
+
+func (r *HttpRunner) resetGame(rw http.ResponseWriter, rq *http.Request) {
+	r.Game.Reset()
+	r.state = RunnerStateLocation
+	rw.Header().Set("content-type", "application/json")
+	encoder := json.NewEncoder(rw)
+	encoder.Encode(r.buildScene())
 }
 
 func (r *HttpRunner) locationAction(req ActionRequest) (err error) {
