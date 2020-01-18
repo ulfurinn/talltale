@@ -16,6 +16,9 @@ func main() {
 				Name:  "port",
 				Value: 8080,
 			},
+			cli.BoolOption{
+				Name: "allow-editor",
+			},
 		},
 		Action: talltale.Main,
 	}

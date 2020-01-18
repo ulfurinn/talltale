@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/ulfurinn/talltale/internal/editor"
 )
 
 type runnerState int
@@ -16,9 +18,10 @@ const (
 )
 
 type HttpRunner struct {
-	Game  Game
-	Port  int
-	state runnerState
+	Game        Game
+	Port        int
+	AllowEditor bool
+	state       runnerState
 }
 
 func (r *HttpRunner) Run() (err error) {
@@ -29,6 +32,10 @@ func (r *HttpRunner) Run() (err error) {
 	mux.HandleFunc("/scene", r.serveScene)
 	mux.HandleFunc("/action", r.processAction)
 	mux.HandleFunc("/resetGame", r.resetGame)
+
+	if r.AllowEditor {
+		mux.Handle("/editor/", http.StripPrefix("/editor", editor.Mux()))
+	}
 
 	s := http.Server{
 		Addr:           fmt.Sprintf(":%d", r.Port),

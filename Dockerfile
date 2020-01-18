@@ -18,4 +18,4 @@ COPY --from=react /build/build ./build
 COPY worlds ./worlds
 RUN ls -l
 EXPOSE 8080
-CMD ["./talltale", "--world", "looking-glass"]
+CMD ["./talltale", "--world", "looking-glass", "--allow-editor"]

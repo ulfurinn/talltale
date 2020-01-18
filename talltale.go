@@ -23,8 +23,9 @@ func Main(ctx *cli.Context) (err error) {
 	game.Reset()
 
 	runner := HttpRunner{
-		Game: game,
-		Port: ctx.Int("port"),
+		Game:        game,
+		Port:        ctx.Int("port"),
+		AllowEditor: ctx.Bool("allow-editor"),
 	}
 	return runner.Run()
 }
