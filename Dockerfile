@@ -2,11 +2,14 @@ FROM golang:1.13-alpine AS server
 WORKDIR /build
 COPY go.mod go.sum *.go /build/
 COPY cmd /build/cmd
+COPY internal /build/internal
 RUN go build -ldflags="-w -s" github.com/ulfurinn/talltale/cmd/talltale
 
 FROM node:alpine AS react
 WORKDIR /build
+COPY config /build/config
 COPY public /build/public
+COPY scripts /build/scripts
 COPY src /build/src
 COPY package* /build/
 RUN npm install && npm run build
