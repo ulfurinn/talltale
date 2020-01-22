@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/ulfurinn/talltale/internal/editor"
 	"github.com/ulfurinn/talltale/internal/runner"
 )
@@ -20,19 +22,26 @@ type HttpRunner struct {
 func (r *HttpRunner) Run() (err error) {
 	fmt.Printf("talltale HTTP server: http://localhost:%d\n", r.Port)
 
-	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.Dir("./build")))
-	mux.HandleFunc("/scene", r.serveScene)
-	mux.HandleFunc("/action", r.processAction)
-	mux.HandleFunc("/resetGame", r.resetGame)
+	router := chi.NewRouter()
+	router.Use(
+		middleware.RequestID,
+		middleware.Logger,
+		middleware.DefaultCompress,
+		middleware.Recoverer,
+		middleware.Timeout(30*time.Second),
+	)
+	router.Get("/", http.FileServer(http.Dir("./build")).ServeHTTP)
+	router.Get("/scene", r.serveScene)
+	router.Post("/action", r.processAction)
+	router.Post("/resetGame", r.resetGame)
 
 	if r.AllowEditor {
-		mux.Handle("/editor/", http.StripPrefix("/editor", editor.Mux()))
+		router.Mount("/editor", editor.Mux())
 	}
 
 	s := http.Server{
 		Addr:           fmt.Sprintf(":%d", r.Port),
-		Handler:        mux,
+		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
