@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"github.com/ulfurinn/talltale/internal/storage"
 )
@@ -15,14 +14,14 @@ type editor struct {
 
 func Mux() http.Handler {
 	router := chi.NewRouter()
-	router.Use(
-		middleware.Logger,
-		middleware.DefaultCompress,
-		middleware.RedirectSlashes,
-		middleware.Recoverer,
-	)
 
-	router.Get("/worlds", handle(getWorlds))
+	router.Route("/worlds", func(r chi.Router) {
+		r.Get("/", handle(getWorlds))
+		r.Route("/{worldID}", func(r chi.Router) {
+			r.Get("/", handle(getWorld))
+		})
+	})
+
 	return router
 }
 
@@ -48,5 +47,14 @@ func handle(f wrappedHandler) http.HandlerFunc {
 }
 
 func getWorlds(req *http.Request, headers http.Header) (interface{}, error) {
-	return storage.Worlds()
+	worlds, err := storage.Worlds()
+	for i := range worlds {
+		worlds[i].StripChildren()
+	}
+	return worlds, err
+}
+
+func getWorld(req *http.Request, headers http.Header) (interface{}, error) {
+	world, err := storage.LoadWorld(chi.URLParam(req, "worldID"))
+	return world, err
 }

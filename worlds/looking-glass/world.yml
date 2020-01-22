@@ -73,7 +73,8 @@ locations:
               stat: fatigue
               change: 3
               no_more_than: 10
-  balcony: {}
+  balcony:
+    name: The Balcony
   outside:
     name: Outside
     description: You are free.
