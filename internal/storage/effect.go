@@ -3,9 +3,9 @@ package storage
 import "github.com/ulfurinn/talltale/internal/runner"
 
 type Effect struct {
-	Trials []Trial         `yaml:"trials"`
-	Pass   PlayerChangeSet `yaml:"pass"`
-	Fail   PlayerChangeSet `yaml:"fail"`
+	Trials []Trial         `yaml:"trials" json:"trials"`
+	Pass   PlayerChangeSet `yaml:"pass" json:"pass"`
+	Fail   PlayerChangeSet `yaml:"fail" json:"fail"`
 }
 
 func (e Effect) Parse() (effect runner.Effect) {

@@ -3,12 +3,12 @@ package storage
 import "github.com/ulfurinn/talltale/internal/runner"
 
 type Trial struct {
-	Automatic interface{} `yaml:"automatic"`
+	Automatic bool `yaml:"automatic" json:"automatic"`
 }
 
 func (t Trial) Parse() (trial runner.Trial) {
 	switch {
-	case t.Automatic != nil:
+	case t.Automatic:
 		return runner.AutomaticPass
 
 	default:

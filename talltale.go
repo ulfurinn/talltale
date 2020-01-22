@@ -13,7 +13,7 @@ func Main(ctx *cli.Context) (err error) {
 	if world == "" {
 		return errors.New("--world must be provided")
 	}
-	stored, err := storage.LoadFromYML("worlds/" + world + "/world.yml")
+	stored, err := storage.LoadWorld(world)
 
 	if err != nil {
 		return

@@ -3,12 +3,12 @@ package storage
 import "github.com/ulfurinn/talltale/internal/runner"
 
 type Encounter struct {
-	ID          string               `yaml:"id"`
-	Name        string               `yaml:"name"`
-	Description string               `yaml:"description"`
-	Story       string               `yaml:"story"`
-	Conditions  map[string]Condition `yaml:"conditions"`
-	Choices     []Choice             `yaml:"choices"`
+	ID          string               `yaml:"id" json:"id"`
+	Name        string               `yaml:"name" json:"name"`
+	Description string               `yaml:"description" json:"description"`
+	Story       string               `yaml:"story" json:"story"`
+	Conditions  map[string]Condition `yaml:"conditions" json:"conditions"`
+	Choices     []Choice             `yaml:"choices" json:"choices"`
 }
 
 func (e Encounter) Parse() (encounter runner.Encounter) {

@@ -3,16 +3,16 @@ package storage
 import "github.com/ulfurinn/talltale/internal/runner"
 
 type Condition struct {
-	StatCondition *StatConditionSet `yaml:"stat"`
+	StatCondition *StatConditionSet `yaml:"stat" json:"stat"`
 }
 
 type StatConditionSet map[string]StatCondition
 
 type StatCondition struct {
-	Stat string `yaml:"-"`
-	Min  *int   `yaml:"min"`
-	Max  *int   `yaml:"max"`
-	Hide bool   `yaml:"hide"`
+	Stat string `yaml:"-" json:"-"`
+	Min  *int   `yaml:"min" json:"min"`
+	Max  *int   `yaml:"max" json:"max"`
+	Hide bool   `yaml:"hide" json:"hide"`
 }
 
 func (cond Condition) Parse() (condition runner.Condition) {

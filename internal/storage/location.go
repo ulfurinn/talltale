@@ -3,9 +3,9 @@ package storage
 import "github.com/ulfurinn/talltale/internal/runner"
 
 type Location struct {
-	Name        string      `yaml:"name"`
-	Description string      `yaml:"description"`
-	Encounters  []Encounter `yaml:"encounters"`
+	Name        string      `yaml:"name" json:"name"`
+	Description string      `yaml:"description" json:"description"`
+	Encounters  []Encounter `yaml:"encounters" json:"encounters"`
 }
 
 func (l Location) Parse(id string) (location runner.Location) {

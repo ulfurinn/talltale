@@ -38,7 +38,7 @@ locations:
         story: What is he hiding?
         effects:
         - trials:
-          - automatic: {}
+          - automatic: true
           pass:
           - stat_change:
               stat: fatigue
@@ -59,7 +59,7 @@ locations:
         name: Leave the room
         effects:
         - trials:
-          - automatic: {}
+          - automatic: true
           pass:
           - redirect:
               location: outside
@@ -67,7 +67,7 @@ locations:
         name: Stay a bit longer
         effects:
         - trials:
-          - automatic: {}
+          - automatic: true
           pass:
           - stat_change:
               stat: fatigue
