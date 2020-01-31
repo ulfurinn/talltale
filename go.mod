@@ -6,5 +6,6 @@ require (
 	bitbucket.org/ulfurinn/cli v0.0.0-20161215202808-5dc24a1a4780
 	github.com/go-chi/chi v4.0.3+incompatible
 	github.com/go-chi/render v1.0.1
+	github.com/google/uuid v1.1.1
 	gopkg.in/yaml.v2 v2.2.7
 )

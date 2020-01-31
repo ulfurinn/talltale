@@ -1,15 +1,24 @@
 package storage
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
+	"sync"
 
-	"github.com/ulfurinn/talltale/internal/runner"
 	"gopkg.in/yaml.v2"
 )
 
-func Worlds() (worlds []World, err error) {
-	worlds = []World{}
+var (
+	worlds   map[string]World
+	worldsMx sync.Mutex
+)
+
+func Load() (err error) {
+	worldsMx.Lock()
+	defer worldsMx.Unlock()
+
+	worlds = map[string]World{}
 
 	var f *os.File
 	if f, err = os.Open("worlds"); err != nil {
@@ -23,8 +32,9 @@ func Worlds() (worlds []World, err error) {
 	}
 	for _, dir := range dirs {
 		if _, err := os.Stat("worlds/" + dir + "/world.yml"); err == nil {
-			if world, err := LoadWorld(dir); err == nil {
-				worlds = append(worlds, world)
+			if world, err := loadWorld(dir); err == nil {
+				fmt.Fprintln(os.Stdout, "loaded", world.ID, world.Global.Title)
+				worlds[world.ID] = world
 			}
 
 		}
@@ -33,13 +43,26 @@ func Worlds() (worlds []World, err error) {
 	return
 }
 
-func LoadWorld(name string) (w World, err error) {
-	w, err = LoadFromYML("worlds/" + name + "/world.yml")
+func Worlds() map[string]World {
+	return worlds
+}
+
+func GetWorld(id string) (world World, err error) {
+	var ok bool
+	if world, ok = worlds[id]; !ok {
+		err = fmt.Errorf("world %s does not exist", id)
+	}
+	return
+}
+
+func loadWorld(name string) (w World, err error) {
+	w, err = loadFromYML("worlds/" + name + "/world.yml")
 	w.ID = name
 	return
 }
 
-func LoadFromYML(f string) (w World, err error) {
+func loadFromYML(f string) (w World, err error) {
+	fmt.Fprintln(os.Stdout, "loading", f)
 	var yml []byte
 	if yml, err = ioutil.ReadFile(f); err != nil {
 		return
@@ -47,18 +70,5 @@ func LoadFromYML(f string) (w World, err error) {
 	if err = yaml.Unmarshal(yml, &w); err != nil {
 		return
 	}
-	return
-}
-
-func (w World) Parse() (world runner.World) {
-	world.Title = w.Global.Title
-	world.Locations = make(map[string]runner.Location)
-	for id, l := range w.Locations {
-		world.Locations[id] = l.Parse(id)
-	}
-
-	world.TabulaRasa.Location = w.PlayerSeed.Location
-	world.TabulaRasa.Inventory = w.PlayerSeed.Stats
-
 	return
 }

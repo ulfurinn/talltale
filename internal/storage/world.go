@@ -1,5 +1,7 @@
 package storage
 
+import "github.com/ulfurinn/talltale/internal/runner"
+
 type World struct {
 	ID     string `json:"id"`
 	Global struct {
@@ -14,4 +16,17 @@ type World struct {
 
 func (w *World) StripChildren() {
 	w.Locations = nil
+}
+
+func (w World) Parse() (world runner.World) {
+	world.Title = w.Global.Title
+	world.Locations = make(map[string]runner.Location)
+	for id, l := range w.Locations {
+		world.Locations[id] = l.Parse(id)
+	}
+
+	world.TabulaRasa.Location = w.PlayerSeed.Location
+	world.TabulaRasa.Inventory = w.PlayerSeed.Stats
+
+	return
 }

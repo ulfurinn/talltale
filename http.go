@@ -5,18 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/google/uuid"
 	"github.com/ulfurinn/talltale/internal/editor"
 	"github.com/ulfurinn/talltale/internal/runner"
+	"github.com/ulfurinn/talltale/internal/storage"
 )
 
 type HttpRunner struct {
-	Game        *runner.Game
 	Port        int
 	AllowEditor bool
+	sessions    map[string]runner.Game
+	sessionsMx  sync.RWMutex
 }
 
 func (r *HttpRunner) Run() (err error) {
@@ -31,13 +35,15 @@ func (r *HttpRunner) Run() (err error) {
 		middleware.Timeout(30*time.Second),
 	)
 	router.Get("/", http.FileServer(http.Dir("./build")).ServeHTTP)
-	router.Get("/scene", r.serveScene)
+	router.Get("/scene", r.scene)
 	router.Post("/action", r.processAction)
-	router.Post("/resetGame", r.resetGame)
+	router.Post("/reset", r.reset)
 
 	if r.AllowEditor {
 		router.Mount("/editor", editor.Mux())
 	}
+
+	r.sessions = map[string]runner.Game{}
 
 	s := http.Server{
 		Addr:           fmt.Sprintf(":%d", r.Port),
@@ -49,30 +55,75 @@ func (r *HttpRunner) Run() (err error) {
 	return s.ListenAndServe()
 }
 
-func (r *HttpRunner) serveScene(rw http.ResponseWriter, rq *http.Request) {
-	rw.Header().Set("content-type", "application/json")
-	encoder := json.NewEncoder(rw)
-	encoder.Encode(r.buildScene())
-}
-
-type ActionRequest struct {
-	ChoiceType string `json:"choiceType"`
-	ChoiceID   string `json:"choiceID"`
-}
-
-func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
-	var req ActionRequest
+func (r *HttpRunner) scene(rw http.ResponseWriter, rq *http.Request) {
 	var resp map[string]interface{}
 	var err error
 	defer func() {
 		rw.Header().Set("content-type", "application/json")
-		resp = r.buildScene()
 		if err != nil {
-			resp["error"] = err.Error()
+			resp = map[string]interface{}{"error": err.Error()}
 		}
 		encoder := json.NewEncoder(rw)
 		encoder.Encode(resp)
 	}()
+
+	var game runner.Game
+
+	var cookie *http.Cookie
+	if cookie, err = rq.Cookie(sessionCookie); err == nil {
+		game, _ = r.getGame(cookie.Value)
+	} else if err == http.ErrNoCookie {
+		// just quietly accept
+		err = nil
+	}
+	resp = r.buildScene(game)
+}
+
+const sessionCookie = "talltalesessid"
+
+func (r *HttpRunner) getGame(sessid string) (game runner.Game, err error) {
+	var ok bool
+
+	r.sessionsMx.RLock()
+	game, ok = r.sessions[sessid]
+	r.sessionsMx.RUnlock()
+	if !ok {
+		err = errors.New("no running game")
+	}
+	return
+}
+
+func (r *HttpRunner) setGame(game runner.Game, sessid string) {
+	r.sessionsMx.Lock()
+	r.sessions[sessid] = game
+	r.sessionsMx.Unlock()
+}
+
+func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
+	var req runner.ActionRequest
+	var resp map[string]interface{}
+	var err error
+	defer func() {
+		rw.Header().Set("content-type", "application/json")
+
+		if err != nil {
+			resp = map[string]interface{}{"error": err.Error()}
+		}
+		encoder := json.NewEncoder(rw)
+		encoder.Encode(resp)
+	}()
+
+	var cookie *http.Cookie
+	if cookie, err = rq.Cookie(sessionCookie); err == http.ErrNoCookie {
+		err = errors.New("no running game")
+		return
+	}
+
+	var game runner.Game
+	if game, err = r.getGame(cookie.Value); err != nil {
+		return
+	}
+
 	decoder := json.NewDecoder(rq.Body)
 	if err = decoder.Decode(&req); err != nil {
 		return
@@ -83,126 +134,116 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 		return
 	}
 
-	switch r.Game.State() {
+	switch game.State() {
+	case runner.StateEmpty:
+		err = errors.New("no game in progress")
 	case runner.StateLocation:
-		err = r.locationAction(req)
+		err = game.LocationAction(req)
 	case runner.StateEncounter:
-		err = r.encounterAction(req)
+		err = game.EncounterAction(req)
 	}
+
+	r.setGame(game, cookie.Value)
+	resp = r.buildScene(game)
 
 	return
 }
 
-func (r *HttpRunner) resetGame(rw http.ResponseWriter, rq *http.Request) {
-	r.Game.Reset()
-	rw.Header().Set("content-type", "application/json")
-	encoder := json.NewEncoder(rw)
-	encoder.Encode(r.buildScene())
-}
-
-func (r *HttpRunner) locationAction(req ActionRequest) (err error) {
-	switch req.ChoiceType {
-	case "encounter":
-		err = r.chooseEncounter(req)
-	case "location":
-		err = r.changeLocation(req)
-	default:
-		err = errors.New("either an encounter or a location must be provided")
+func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
+	var req struct {
+		World string `json:"looking-glass`
 	}
-	return
-}
-
-func (r *HttpRunner) chooseEncounter(req ActionRequest) (err error) {
-	var encounter runner.Encounter
-	var found bool
-	for _, encounter = range r.Game.Location().Encounters {
-		if encounter.ID == req.ChoiceID {
-			found = true
-			break
+	var resp map[string]interface{}
+	var err error
+	defer func() {
+		rw.Header().Set("content-type", "application/json")
+		if err != nil {
+			resp = map[string]interface{}{"error": err.Error()}
 		}
-	}
-	if !found {
-		err = errors.New("no such encounter in this location")
-		return
-	}
-	if !encounter.Displayable(r.Game) {
-		err = errors.New("the selected action is not displayable")
-		return
-	}
-	r.Game.Player.Encounter = encounter.ID
-	return
-}
+		encoder := json.NewEncoder(rw)
+		encoder.Encode(resp)
+	}()
 
-func (r *HttpRunner) changeLocation(req ActionRequest) (err error) {
-	return
-}
-
-func (r *HttpRunner) encounterAction(req ActionRequest) (err error) {
-	var choice runner.Choice
-	var found bool
-
-	for _, choice = range r.Game.Encounter().Choices {
-		if choice.ID == req.ChoiceID {
-			found = true
-			break
-		}
-	}
-	if !found {
-		err = errors.New("no such choice in this encounter")
+	decoder := json.NewDecoder(rq.Body)
+	if err = decoder.Decode(&req); err != nil {
 		return
 	}
 
-	for _, e := range choice.Effects {
-		if e.Success(r.Game.Player) {
-			fmt.Println("You are successful.")
-			if e.Pass != nil {
-				e.Pass(&r.Game.Player)
-			}
-		} else {
-			fmt.Println("You failed.")
-			if e.Fail != nil {
-				e.Fail(&r.Game.Player)
-			}
-		}
-	}
-	r.Game.Player.Encounter = ""
+	var game runner.Game
+	var cookie *http.Cookie
+	var sessid string
 
-	return
+	if cookie, err = rq.Cookie(sessionCookie); err == nil {
+		sessid = cookie.Value
+		game, _ = r.getGame(sessid)
+	} else if err == http.ErrNoCookie {
+		sessid = uuid.New().String()
+		cookie = &http.Cookie{
+			Name:     sessionCookie,
+			Value:    sessid,
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+		}
+		http.SetCookie(rw, cookie)
+	}
+
+	var storedWorld storage.World
+	if storedWorld, err = storage.GetWorld(req.World); err != nil {
+		return
+	}
+	world := storedWorld.Parse()
+
+	game.Reset(world)
+
+	r.setGame(game, cookie.Value)
+
+	resp = r.buildScene(game)
 }
 
-func (r *HttpRunner) buildScene() map[string]interface{} {
-	l := r.Game.Location()
-	scene := map[string]interface{}{
-		"world": map[string]interface{}{
-			"title": r.Game.World.Title,
-		},
-		"encounters": []interface{}{},
-		"locations":  []interface{}{},
-		"choices":    []interface{}{},
-		"scene":      nil,
-		"location":   l.ID,
-		"encounter":  nil,
+func (r *HttpRunner) buildScene(game runner.Game) (scene map[string]interface{}) {
+	scene = map[string]interface{}{}
+	worlds := []storage.World{}
+	for _, w := range storage.Worlds() {
+		w.StripChildren()
+		worlds = append(worlds, w)
+	}
+	scene["worlds"] = worlds
+
+	if game.State() == runner.StateEmpty {
+		return
 	}
 
-	switch r.Game.State() {
+	l := game.Location()
+
+	scene["world"] = map[string]interface{}{
+		"title": game.World.Title,
+	}
+	scene["encounters"] = []interface{}{}
+	scene["locations"] = []interface{}{}
+	scene["choices"] = []interface{}{}
+	scene["scene"] = nil
+	scene["location"] = l.ID
+	scene["encounter"] = nil
+
+	switch game.State() {
 	case runner.StateLocation:
 		scene["scene"] = map[string]interface{}{
 			"name":        l.Name,
 			"description": l.Description,
 		}
 		sceneEncounters := []map[string]interface{}{}
-		for _, e := range r.Game.DisplayableEncounters() {
+		for _, e := range game.DisplayableEncounters() {
 			sceneEncounters = append(sceneEncounters, map[string]interface{}{
 				"id":          e.ID,
 				"name":        e.Name,
 				"description": e.Description,
-				"available":   e.Available(r.Game),
+				"available":   e.Available(&game),
 			})
 		}
 		scene["encounters"] = sceneEncounters
 
 	case runner.StateEncounter:
-		e := r.Game.Encounter()
+		e := game.Encounter()
 		scene["encounter"] = e.ID
 		scene["scene"] = map[string]interface{}{
 			"id":          e.ID,
@@ -212,12 +253,12 @@ func (r *HttpRunner) buildScene() map[string]interface{} {
 		}
 
 		sceneChoices := []map[string]interface{}{}
-		for _, c := range r.Game.DisplayableChoices() {
+		for _, c := range game.DisplayableChoices() {
 			sceneChoices = append(sceneChoices, map[string]interface{}{
 				"id":          c.ID,
 				"name":        c.Name,
 				"description": c.Description,
-				"available":   c.Available(r.Game),
+				"available":   c.Available(&game),
 			})
 		}
 		scene["choices"] = sceneChoices

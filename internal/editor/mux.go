@@ -47,14 +47,14 @@ func handle(f wrappedHandler) http.HandlerFunc {
 }
 
 func getWorlds(req *http.Request, headers http.Header) (interface{}, error) {
-	worlds, err := storage.Worlds()
-	for i := range worlds {
-		worlds[i].StripChildren()
+	worlds := []storage.World{}
+	for _, world := range storage.Worlds() {
+		world.StripChildren()
+		worlds = append(worlds, world)
 	}
-	return worlds, err
+	return worlds, nil
 }
 
 func getWorld(req *http.Request, headers http.Header) (interface{}, error) {
-	world, err := storage.LoadWorld(chi.URLParam(req, "worldID"))
-	return world, err
+	return storage.GetWorld(chi.URLParam(req, "worldID"))
 }

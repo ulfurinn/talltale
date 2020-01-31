@@ -9,9 +9,6 @@ func main() {
 	app := cli.NewApp()
 	app.Main = cli.Command{
 		Options: []cli.Option{
-			cli.StringOption{
-				Name: "world",
-			},
 			cli.IntOption{
 				Name:  "port",
 				Value: 8080,
