@@ -224,6 +224,7 @@ func (r *HttpRunner) buildScene(game runner.Game) (scene map[string]interface{})
 	scene["scene"] = nil
 	scene["location"] = l.ID
 	scene["encounter"] = nil
+	scene["inventory"] = game.Player.Inventory
 
 	switch game.State() {
 	case runner.StateLocation:

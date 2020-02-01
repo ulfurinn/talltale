@@ -70,13 +70,27 @@
     color: #444;
 }
 
-.inventory-item-name {
-    display: inline;
-    padding-right: 1em;
-}
-
-.inventory-item-value {
-    display: inline;
+.inventory {
+    margin-top: 1em;
+    padding: 1em;
+    border: 1px dotted black;
+    .item {
+        display: inline-block;
+        border-bottom: 1px dotted #555;
+        .name {
+            font-weight: bold;
+            display: inline;
+            &::after {
+                content: ": ";
+            };
+        }
+        .value {
+            display: inline;
+        }
+    }
+    .item-fatigue {
+        color: #930;
+    }
 }
 
 .game-reset {

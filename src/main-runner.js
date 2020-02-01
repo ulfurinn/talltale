@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import itemSelector from "./shared";
-import "./index.css";
+import "./runner.scss";
 
 function getScene(fn) {
     fetch("/scene", { credentials: "same-origin", cache: "no-cache" })
@@ -135,6 +135,7 @@ class Scene extends React.Component {
     }
 
     render() {
+        console.log(this.props.inventory);
         const choices = this.props.choices.map(action => (
             <Choice
                 key={action.id}
@@ -166,6 +167,16 @@ class Scene extends React.Component {
                 {encounters.length > 0 ? (
                     <div className="scene-encounters">{encounters}</div>
                 ) : null}
+                <div className="inventory">
+                {Object.entries(this.props.inventory)
+                    .filter(([stat, value]) => value > 0)
+                    .map(([stat, value]) => (
+                        <div key={stat} className={`item item-${stat}`}>
+                            <div className="name">{stat}</div>
+                            <div className="value">{value}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -249,6 +260,7 @@ class Game extends React.Component {
                         locations={this.state.locations}
                         encounters={this.state.encounters}
                         choices={this.state.choices}
+                        inventory={this.state.inventory}
                         onChooseEncounter={this.chooseEncounter}
                         onChooseLocation={this.chooseLocation}
                         onChooseAction={this.chooseAction}
