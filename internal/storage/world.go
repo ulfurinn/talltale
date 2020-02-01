@@ -18,6 +18,19 @@ func (w *World) StripChildren() {
 	w.Locations = nil
 }
 
+func (w *World) normalise() {
+	if w.PlayerSeed.Stats == nil {
+		w.PlayerSeed.Stats = map[string]int{}
+	}
+	if w.Locations == nil {
+		w.Locations = map[string]Location{}
+	}
+	for id, loc := range w.Locations {
+		loc.normalise()
+		w.Locations[id] = loc
+	}
+}
+
 func (w World) Parse() (world runner.World) {
 	world.Title = w.Global.Title
 	world.Locations = make(map[string]runner.Location)

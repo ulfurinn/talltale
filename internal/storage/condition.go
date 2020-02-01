@@ -25,6 +25,8 @@ func (cond Condition) Parse() (condition runner.Condition) {
 	}
 }
 
+func (cond *Condition) normalise() {}
+
 func (scs StatConditionSet) Parse() runner.Condition {
 	sub := make([]runner.Condition, 0, len(scs))
 	for stat, c := range scs {

@@ -12,8 +12,18 @@ func (l Location) Parse(id string) (location runner.Location) {
 	location.ID = id
 	location.Name = l.Name
 	location.Description = l.Description
+	location.Encounters = make([]runner.Encounter, 0, len(l.Encounters))
 	for _, e := range l.Encounters {
 		location.Encounters = append(location.Encounters, e.Parse())
 	}
 	return
+}
+
+func (l *Location) normalise() {
+	if l.Encounters == nil {
+		l.Encounters = []Encounter{}
+	}
+	for i := range l.Encounters {
+		l.Encounters[i].normalise()
+	}
 }

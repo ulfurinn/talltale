@@ -70,5 +70,6 @@ func loadFromYML(f string) (w World, err error) {
 	if err = yaml.Unmarshal(yml, &w); err != nil {
 		return
 	}
+	w.normalise()
 	return
 }

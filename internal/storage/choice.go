@@ -24,3 +24,12 @@ func (c Choice) Parse() (choice runner.Choice) {
 	}
 	return
 }
+
+func (c *Choice) normalise() {
+	if c.Conditions == nil {
+		c.Conditions = map[string]Condition{}
+	}
+	if c.Effects == nil {
+		c.Effects = []Effect{}
+	}
+}

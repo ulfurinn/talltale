@@ -1,0 +1,140 @@
+$location-background-color: #f4f4ff;
+$encounter-background-color: #fff4ff;
+$choice-background-color: #fffff4;
+
+body {
+    margin: 0;
+    padding: 0;
+}
+.editor {
+    width: 100%;
+
+    .split {
+        position: relative;
+
+        .child-list {
+            position: absolute;
+            top: 0;
+            left: 0;
+            .element {
+                cursor: pointer;
+                &:hover {
+                    color: #778;
+                }
+            }
+        }
+        .child-editor {
+            position: absolute;
+            top: 0;
+        }
+    }
+
+    header.editor-header {
+        padding: 1em;
+        background-color: black;
+        color: silver;
+    }
+
+    .world-picker {
+        display: inline-block;
+    }
+
+    .world {
+        background-color: #dddde8;
+
+        header.title {
+            padding: 1em;
+            font-size: 120%;
+        }
+        > .split {
+            .child-list {
+                width: 20%;
+            }
+            .child-editor {
+                left: 20%;
+                width: 80%;
+            }
+        }
+    }
+
+    .location-picker {
+        padding: 1em;
+        background-color: $location-background-color;
+        border-right: 1px solid #555;
+        border-bottom: 1px solid #555;
+    }
+
+    .location {
+
+        > .properties {
+            padding: 1em;
+            background-color: $location-background-color;
+        }
+
+        .encounter-picker {
+            padding: 1em;
+            background-color: $encounter-background-color;
+            border-right: 1px solid #555;
+            border-bottom: 1px solid #555;
+        }
+
+        > .split {
+            .child-list {
+                width: 30%;
+            }
+            .child-editor {
+                left: 30%;
+                width: 70%;
+            }
+        }
+
+        .encounter {
+            > .properties {
+                padding: 1em;
+                background-color: $encounter-background-color;
+                border-bottom: 1px solid #aaa;
+                > .property {
+                    padding: 0.3em;
+                }
+            }
+            > .access-conditions {
+                padding: 1em;
+                background-color: $encounter-background-color;
+                border-bottom: 1px solid #aaa;
+                > header {
+                    font-weight: bold;
+                }
+                > .condition {
+                    margin-top: 1em;
+                    > .subcondition {
+                        margin-top: 0.5em;
+                        margin-left: 1em;
+                    }
+                }
+            }
+
+            .choices {
+                padding: 1em;
+                background-color: $choice-background-color;
+                border-bottom: 1px solid #aaa;
+                > header {
+                    font-weight: bold;
+                }
+                > .choice {
+                    margin-top: 1em;
+                    border: 1px dotted #bbb;
+                    padding: 0.3em;
+                }
+            }
+        }
+    }
+
+
+
+    .selected {
+        text-decoration: underline;
+    }
+
+}
+
+
