@@ -60,7 +60,18 @@ function EncounterListElement(props) {
             ].join(" ")}
             onClick={props.onselect}
         >
-            {props.encounter.name}
+            <header>{props.encounter.name}</header>
+            <section className="access-conditions">
+                {Object.entries(props.encounter.conditions).map(
+                    ([id, condition]) => (
+                        <AccessCondition
+                            key={id}
+                            id={id}
+                            condition={condition}
+                        />
+                    )
+                )}
+            </section>
         </div>
     );
 }
@@ -72,31 +83,17 @@ function AccessConditionStat(props) {
             {props.rule.min !== null ? `at least ${props.rule.min}` : null}{" "}
             {props.rule.max !== null ? `no more than ${props.rule.max}` : null}
             <br />
-            Hide locked: {props.rule.hide ? "yes" : "no"}
+            {props.rule.hide ? "Hide when locked" : "Display when locked"}
         </div>
     );
 }
 
 function AccessCondition(props) {
-    return (
-        <div className="condition">
-            <header>id:{props.id}</header>
-            {props.condition.stat ? (
-                <div className="subcondition">
-                    Stat check
-                    {Object.entries(props.condition.stat).map(
-                        ([stat, rule]) => (
-                            <AccessConditionStat
-                                key={stat}
-                                stat={stat}
-                                rule={rule}
-                            />
-                        )
-                    )}
-                </div>
-            ) : null}
-        </div>
-    );
+    return props.condition.stat
+        ? Object.entries(props.condition.stat).map(([stat, rule]) => (
+              <AccessConditionStat key={stat} stat={stat} rule={rule} />
+          ))
+        : null;
 }
 
 function Trial(props) {
@@ -237,18 +234,6 @@ function EncounterEditor(props) {
                 <section className="property">
                     Story: {props.encounter.story}
                 </section>
-            </section>
-            <section className="access-conditions">
-                <header>Access conditions</header>
-                {Object.entries(props.encounter.conditions).map(
-                    ([id, condition]) => (
-                        <AccessCondition
-                            key={id}
-                            id={id}
-                            condition={condition}
-                        />
-                    )
-                )}
             </section>
             <section className="choices">
                 <header>Choices</header>

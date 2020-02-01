@@ -81,6 +81,23 @@ body {
         > .split {
             .child-list {
                 width: 30%;
+                .element {
+                    margin-top: 1em;
+                    > header { font-weight: bold; }
+                }
+                .access-conditions {
+                    padding-left: 0.5em;
+                    > header {
+                        font-weight: bold;
+                    }
+                    > .condition {
+                        margin-top: 0.7em;
+                        > .subcondition {
+                            margin-top: 0.5em;
+                            margin-left: 1em;
+                        }
+                    }
+                }
             }
             .child-editor {
                 left: 30%;
@@ -95,21 +112,6 @@ body {
                 border-bottom: 1px solid #aaa;
                 > .property {
                     padding: 0.3em;
-                }
-            }
-            > .access-conditions {
-                padding: 1em;
-                background-color: $encounter-background-color;
-                border-bottom: 1px solid #aaa;
-                > header {
-                    font-weight: bold;
-                }
-                > .condition {
-                    margin-top: 1em;
-                    > .subcondition {
-                        margin-top: 0.5em;
-                        margin-left: 1em;
-                    }
                 }
             }
 
@@ -131,7 +133,7 @@ body {
 
 
 
-    .selected {
+    .selected > header {
         text-decoration: underline;
     }
 
