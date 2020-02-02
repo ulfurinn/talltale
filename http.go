@@ -34,7 +34,7 @@ func (r *HttpRunner) Run() (err error) {
 		middleware.Recoverer,
 		middleware.Timeout(30*time.Second),
 	)
-	router.Get("/", http.FileServer(http.Dir("./build")).ServeHTTP)
+	router.Get("/*", http.FileServer(http.Dir("./build")).ServeHTTP)
 	router.Get("/scene", r.scene)
 	router.Post("/action", r.processAction)
 	router.Post("/reset", r.reset)
