@@ -11,7 +11,7 @@ import (
 
 var (
 	worlds   map[string]World
-	worldsMx sync.Mutex
+	worldsMx sync.RWMutex
 )
 
 func Load() (err error) {
@@ -48,6 +48,8 @@ func Worlds() map[string]World {
 }
 
 func GetWorld(id string) (world World, err error) {
+	worldsMx.RLock()
+	defer worldsMx.RUnlock()
 	var ok bool
 	if world, ok = worlds[id]; !ok {
 		err = fmt.Errorf("world %s does not exist", id)
@@ -55,9 +57,31 @@ func GetWorld(id string) (world World, err error) {
 	return
 }
 
-func loadWorld(name string) (w World, err error) {
-	w, err = loadFromYML("worlds/" + name + "/world.yml")
-	w.ID = name
+func UpdateWorld(id string, f func(w *World)) (err error) {
+	worldsMx.Lock()
+	defer worldsMx.Unlock()
+	w := worlds[id]
+	f(&w)
+	if err = Commit(id, w); err == nil {
+		worlds[id] = w
+	}
+	return
+}
+
+func Commit(id string, w World) (err error) {
+	var f *os.File
+	if f, err = os.Create("worlds/" + id + "/world.yml"); err != nil {
+		return
+	}
+	defer f.Close()
+	encoder := yaml.NewEncoder(f)
+	err = encoder.Encode(w)
+	return
+}
+
+func loadWorld(id string) (w World, err error) {
+	w, err = loadFromYML("worlds/" + id + "/world.yml")
+	w.ID = id
 	return
 }
 

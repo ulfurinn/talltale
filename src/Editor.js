@@ -281,12 +281,62 @@ function Location(props) {
     );
 }
 
+class LocationCreator extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            editing: false,
+            location: {
+                id: "",
+                name: ""
+            },
+            create: props.oncreate
+        };
+
+        this.startEditing = this.startEditing.bind(this);
+        this.create = this.create.bind(this);
+        this.cancel = this.cancel.bind(this);
+        this.setID = this.setID.bind(this);
+        this.setName = this.setName.bind(this);
+    }
+    startEditing() {
+        this.setState({editing: true, location: {id: "", name: ""}})
+    }
+    create() {
+        let fn = this.state.create;
+        fn(this.state.location);
+        this.setState(state => Object.assign({}, this.state, {editing: false, location: {id: "", name: ""}}));
+    }
+    cancel() {
+        this.setState({editing: false})
+    }
+    setID(e) {
+        let value = e.target.value;
+        this.setState(state => Object.assign({}, this.state, {location: Object.assign({}, this.state.location, {id: value})}));
+    }
+    setName(e) {
+        let value = e.target.value;
+        this.setState(state => Object.assign({}, this.state, {location: Object.assign({}, this.state.location, {name: value})}));
+    }
+    render() {
+        return (<div className="location-creator">
+            {this.state.editing ? <div>
+                ID: <input defaultValue={this.state.location.id} onChange={this.setID} /><br/>
+                Name: <input defaultValue={this.state.location.name} onChange={this.setName} /><br/>
+                <input type="button" value="create" onClick={this.create} />
+                <input type="button" value="cancel" onClick={this.cancel} />
+            </div> : <div onClick={this.startEditing}>Add location</div>}
+        </div>);
+    }
+}
+
 function World(props) {
     return (
         <div className="world">
             <header className="title">{props.world.global.title}</header>
             <section className="split">
                 <section className="child-list">
+                    <LocationCreator oncreate={props.oncreatelocation} />
                     <LocationPicker
                         locations={props.world.locations}
                         location={props.location}
@@ -321,6 +371,7 @@ class Editor extends Component {
         this.setWorld = this.setWorld.bind(this);
         this.setLocation = this.setLocation.bind(this);
         this.setEncounter = this.setEncounter.bind(this);
+        this.createLocation = this.createLocation.bind(this);
     }
     async componentDidMount() {
         let worlds = await api.worlds.get();
@@ -365,6 +416,11 @@ class Editor extends Component {
             this.setState({ location: null, encounter: null });
         }
     }
+    async createLocation(location) {
+        console.log(this, location);
+        let result = await api.worlds(this.state.world.id).locations.post(location);
+        console.log(result);
+    }
     render() {
         return (
             <div className="editor">
@@ -382,6 +438,7 @@ class Editor extends Component {
                         world={this.state.world}
                         location={this.state.location}
                         encounter={this.state.encounter}
+                        oncreatelocation={this.createLocation}
                         onselectlocation={this.setLocation}
                         onselectencounter={this.setEncounter}
                     />

@@ -1,7 +1,10 @@
 package editor
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -19,6 +22,7 @@ func Mux() http.Handler {
 		r.Get("/", handle(getWorlds))
 		r.Route("/{worldID}", func(r chi.Router) {
 			r.Get("/", handle(getWorld))
+			r.Post("/locations", handle(createLocation))
 		})
 	})
 
@@ -57,4 +61,33 @@ func getWorlds(req *http.Request, headers http.Header) (interface{}, error) {
 
 func getWorld(req *http.Request, headers http.Header) (interface{}, error) {
 	return storage.GetWorld(chi.URLParam(req, "worldID"))
+}
+
+type createLocationRequest struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+func createLocation(req *http.Request, headers http.Header) (response interface{}, err error) {
+	if req.Body == nil {
+		err = errors.New("missing request body")
+		return
+	}
+	defer req.Body.Close()
+
+	dec := json.NewDecoder(req.Body)
+	var r createLocationRequest
+	if err = dec.Decode(&r); err != nil {
+		return
+	}
+	log.Printf("creating location %v", r)
+
+	storage.UpdateWorld(chi.URLParam(req, "worldID"), func(w *storage.World) {
+		w.AddLocation(r.ID, storage.Location{
+			Name: r.Name,
+		})
+	})
+
+	response = true
+	return
 }

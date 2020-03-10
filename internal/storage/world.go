@@ -3,7 +3,7 @@ package storage
 import "github.com/ulfurinn/talltale/internal/runner"
 
 type World struct {
-	ID     string `json:"id"`
+	ID     string `yaml:"-" json:"id"`
 	Global struct {
 		Title string `yaml:"title" json:"title"`
 	} `yaml:"global" json:"global"`
@@ -12,6 +12,11 @@ type World struct {
 		Stats    map[string]int `yaml:"stats" json:"stats"`
 		Location string         `yaml:"location" json:"location"`
 	} `yaml:"player_seed" json:"player_seed"`
+	Stats map[string]Stat `yaml:"stats"`
+}
+
+type Stat struct {
+	Name string `yaml:"name"`
 }
 
 func (w *World) StripChildren() {
@@ -42,4 +47,8 @@ func (w World) Parse() (world runner.World) {
 	world.TabulaRasa.Inventory = w.PlayerSeed.Stats
 
 	return
+}
+
+func (w *World) AddLocation(id string, l Location) {
+	w.Locations[id] = l
 }
