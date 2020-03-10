@@ -6,6 +6,8 @@ Tall Tale is largely inspired by the storylet mechanism as seen in Failbetter Ga
 
 It comes with a small game world used to test and demo the engine features. It might or might not grow into a viable game on its own.
 
+The project is its very early stages and not fit for any public use yet, as evidenced by the features list being very empty.
+
 ## Running the published version
 
 ```
@@ -17,8 +19,6 @@ Go to `http://localhost:8080` for the game runner and `http://localhost:8080/edi
 
 ## Features
 
-The project is its early stages and not fit for any serious authoring yet.
-
 ### Game runner
 
 - [ ] persistent player sessions
@@ -28,10 +28,14 @@ The project is its early stages and not fit for any serious authoring yet.
 - [ ] location styles
 - [ ] encounter images
 - [ ] stat images
-- [ ] progression points (?)
+- [ ] progress points (?)
+- [ ] progress curves (?)
+- [ ] multiple worlds per player session (?)
 
 ### Game designer
 
+- [ ] modifying the content
+- [ ] persisting the changes
 - [ ] world-custom styles
 - [ ] sub-stories
 
