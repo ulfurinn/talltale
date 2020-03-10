@@ -1,26 +1,17 @@
 global:
   title: Looking Glass
-
-templates:
-  encounters:
-    default:
-      conditions:
-        fatigue_not_deadly:
-          stat:
-            stat: fatigue
-            max: 7
-            hide: true
-    override_max_fatigue:
-      conditions:
-        fatigue_not_deadly:
-          ignore: true
-
 locations:
+  balcony:
+    name: The Balcony
+    description: ""
+    encounters: []
+  outside:
+    name: Outside
+    description: You are free.
+    encounters: []
   the-room:
     name: The Room
     description: You are in a room with a bed.
-    locations:
-    - id: balcony
     encounters:
     - id: sleep
       name: Go to sleep
@@ -31,11 +22,14 @@ locations:
           stat:
             fatigue:
               min: 10
+              max: null
               hide: true
       choices:
       - id: faceless-man
         name: Dream of the faceless man
+        description: ""
         story: What is he hiding?
+        conditions: {}
         effects:
         - trials:
           - automatic: true
@@ -44,6 +38,9 @@ locations:
               stat: fatigue
               change: -10
               no_less_than: 0
+              no_more_than: null
+              absolute: false
+          fail: []
     - id: door
       name: What is behind the door?
       description: ""
@@ -52,19 +49,27 @@ locations:
         fatigue_check:
           stat:
             fatigue:
+              min: null
               max: 9
               hide: false
       choices:
       - id: leave
         name: Leave the room
+        description: ""
+        story: ""
+        conditions: {}
         effects:
         - trials:
           - automatic: true
           pass:
           - redirect:
               location: outside
+          fail: []
       - id: stay
         name: Stay a bit longer
+        description: ""
+        story: ""
+        conditions: {}
         effects:
         - trials:
           - automatic: true
@@ -72,18 +77,14 @@ locations:
           - stat_change:
               stat: fatigue
               change: 3
+              no_less_than: null
               no_more_than: 10
-  balcony:
-    name: The Balcony
-  outside:
-    name: Outside
-    description: You are free.
-
+              absolute: false
+          fail: []
 player_seed:
   stats:
     fatigue: 10
   location: the-room
-
 stats:
   fatigue:
     name: Fatigue
