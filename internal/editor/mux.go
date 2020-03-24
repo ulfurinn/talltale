@@ -2,7 +2,6 @@ package editor
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,7 +21,10 @@ func Mux() http.Handler {
 		r.Get("/", handle(getWorlds))
 		r.Route("/{worldID}", func(r chi.Router) {
 			r.Get("/", handle(getWorld))
-			r.Post("/locations", handle(createLocation))
+			r.Route("/locations", func(r chi.Router) {
+				r.Get("/", handle(createLocation))
+				r.Patch("/{locationID}", handle(patchLocation))
+			})
 		})
 	})
 
@@ -46,6 +48,13 @@ func handle(f wrappedHandler) http.HandlerFunc {
 				render.JSON(rw, req, map[string]interface{}{"error": err.Error()})
 			}
 		}()
+		if req.Method != "GET" {
+			if req.Body == nil {
+				err = fmt.Errorf("%s requests require a body", req.Method)
+				return
+			}
+			defer req.Body.Close()
+		}
 		resp, err = f(req, rw.Header())
 	})
 }
@@ -64,17 +73,17 @@ func getWorld(req *http.Request, headers http.Header) (interface{}, error) {
 }
 
 type createLocationRequest struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type patchLocationRequest struct {
+	Name        *string `json:"name"`
+	Description *string `json:"description"`
 }
 
 func createLocation(req *http.Request, headers http.Header) (response interface{}, err error) {
-	if req.Body == nil {
-		err = errors.New("missing request body")
-		return
-	}
-	defer req.Body.Close()
-
 	dec := json.NewDecoder(req.Body)
 	var r createLocationRequest
 	if err = dec.Decode(&r); err != nil {
@@ -86,6 +95,31 @@ func createLocation(req *http.Request, headers http.Header) (response interface{
 		w.AddLocation(r.ID, storage.Location{
 			Name: r.Name,
 		})
+	})
+
+	response = true
+	return
+}
+
+func patchLocation(req *http.Request, header http.Header) (response interface{}, err error) {
+	dec := json.NewDecoder(req.Body)
+	var r patchLocationRequest
+	if err = dec.Decode(&r); err != nil {
+		return
+	}
+	log.Printf("patching location")
+
+	storage.UpdateWorld(chi.URLParam(req, "worldID"), func(w *storage.World) {
+		id := chi.URLParam(req, "locationID")
+		if l, ok := w.Locations[id]; ok {
+			if r.Name != nil {
+				l.Name = *r.Name
+			}
+			if r.Description != nil {
+				l.Description = *r.Description
+			}
+			w.Locations[id] = l
+		}
 	})
 
 	response = true

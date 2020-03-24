@@ -6,6 +6,10 @@ const api = new RestClient("/editor");
 
 api.res("worlds").res("locations");
 
+const KEY_ENTER = 13;
+const KEY_ESC = 27;
+
+
 function WorldPicker(props) {
     return (
         <div className="world-picker">
@@ -251,7 +255,7 @@ function Location(props) {
         <div className="location">
             <section className="properties">
                 <header className="title">
-                    {props.location.name} (id:{props.location.id})
+                    <Editable value={props.location.name} onchange={props.onchangename} /> (id:{props.location.id})
                 </header>
             </section>
             <section className="split">
@@ -279,6 +283,66 @@ function Location(props) {
             </section>
         </div>
     );
+}
+
+class Editable extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            editing: false,
+            originalValue: props.value,
+            value: props.value,
+            className: props.className,
+            editingClassName: props.editingClassName,
+            onchange: props.onchange
+        };
+
+        this.startEditing = this.startEditing.bind(this);
+        this.update = this.update.bind(this);
+        this.commit = this.commit.bind(this);
+        this.cancel = this.cancel.bind(this);
+        this.key = this.key.bind(this);
+    }
+
+    startEditing() {
+        this.setState({editing: true});
+    }
+
+    commit() {
+        let value = this.state.value;
+        this.setState(state => Object.assign({}, state, {editing: false, value: state.value, originalValue: state.value}));
+        let fn = this.state.onchange;
+        fn(value);
+    }
+
+    cancel() {
+        this.setState(state => Object.assign({}, state, {editing: false, value: state.originalValue}));
+    }
+
+    update(e) {
+        this.setState({value: e.target.value});
+    }
+
+    key(e) {
+        console.log(e.keyCode);
+        switch(e.keyCode) {
+            case KEY_ENTER:
+                e.preventDefault();
+                this.commit();
+                return;
+            case KEY_ESC:
+                e.preventDefault();
+                this.cancel();
+                return;
+            default:
+                e.preventDefault();
+                return;
+        }
+    }
+
+    render() {
+        return this.state.editing ? (<input defaultValue={this.state.value} onChange={this.update} onKeyUp={this.key} />) : (<span><span role="img" aria-label="editable element" onClick={this.startEditing}>✏️</span> {this.state.value}</span>) ;
+    }
 }
 
 class LocationCreator extends Component {
@@ -349,6 +413,7 @@ function World(props) {
                             location={props.location}
                             encounter={props.encounter}
                             onselectencounter={props.onselectencounter}
+                            onchangename={props.onchangelocationname}
                         />
                     ) : null}
                 </section>
@@ -372,6 +437,7 @@ class Editor extends Component {
         this.setLocation = this.setLocation.bind(this);
         this.setEncounter = this.setEncounter.bind(this);
         this.createLocation = this.createLocation.bind(this);
+        this.changeLocationName = this.changeLocationName.bind(this);
     }
     async componentDidMount() {
         let worlds = await api.worlds.get();
@@ -417,10 +483,13 @@ class Editor extends Component {
         }
     }
     async createLocation(location) {
-        console.log(this, location);
-        let result = await api.worlds(this.state.world.id).locations.post(location);
-        console.log(result);
+        console.log(await api.worlds(this.state.world.id).locations.post(location));
     }
+
+    async changeLocationName(name) {
+        console.log(await api.worlds(this.state.world.id).locations(this.state.location.id).patch({name: name}));
+    }
+
     render() {
         return (
             <div className="editor">
@@ -439,6 +508,7 @@ class Editor extends Component {
                         location={this.state.location}
                         encounter={this.state.encounter}
                         oncreatelocation={this.createLocation}
+                        onchangelocationname={this.changeLocationName}
                         onselectlocation={this.setLocation}
                         onselectencounter={this.setEncounter}
                     />
