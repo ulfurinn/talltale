@@ -32,6 +32,7 @@ func (w *World) normalise() {
 	}
 	for id, loc := range w.Locations {
 		loc.normalise()
+		loc.ID = id
 		w.Locations[id] = loc
 	}
 }

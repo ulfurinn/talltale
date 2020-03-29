@@ -33,6 +33,19 @@ func Mux() http.Handler {
 
 type wrappedHandler func(*http.Request, http.Header) (resp interface{}, err error)
 
+type renderable interface {
+	render(http.ResponseWriter, *http.Request)
+}
+
+type notFoundError struct {
+}
+
+func (notFoundError) Error() string { return "entity not found" }
+func (e notFoundError) render(rw http.ResponseWriter, req *http.Request) {
+	render.Status(req, 404)
+	render.JSON(rw, req, map[string]interface{}{"error": e.Error()})
+}
+
 func handle(f wrappedHandler) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		var resp interface{}
@@ -43,6 +56,8 @@ func handle(f wrappedHandler) http.HandlerFunc {
 			}
 			if err == nil {
 				render.JSON(rw, req, resp)
+			} else if r, ok := err.(renderable); ok {
+				r.render(rw, req)
 			} else {
 				render.Status(req, 500)
 				render.JSON(rw, req, map[string]interface{}{"error": err.Error()})
@@ -109,9 +124,12 @@ func patchLocation(req *http.Request, header http.Header) (response interface{},
 	}
 	log.Printf("patching location")
 
+	var l storage.Location
+	var ok bool
+
 	storage.UpdateWorld(chi.URLParam(req, "worldID"), func(w *storage.World) {
 		id := chi.URLParam(req, "locationID")
-		if l, ok := w.Locations[id]; ok {
+		if l, ok = w.Locations[id]; ok {
 			if r.Name != nil {
 				l.Name = *r.Name
 			}
@@ -122,6 +140,10 @@ func patchLocation(req *http.Request, header http.Header) (response interface{},
 		}
 	})
 
-	response = true
+	if ok {
+		response = l
+	} else {
+		err = notFoundError{}
+	}
 	return
 }
