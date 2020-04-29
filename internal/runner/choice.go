@@ -9,24 +9,24 @@ type Choice struct {
 	Effects     []Effect
 }
 
-func (c Choice) Displayable(g *Game) bool {
+func (c Choice) Displayable(p Player) bool {
 	if len(c.Conditions) == 0 {
 		return true
 	}
 	for _, cond := range c.Conditions {
-		if cond.Displayable(g.Player) {
+		if cond.Displayable(p) {
 			return true
 		}
 	}
 	return false
 }
 
-func (c Choice) Available(g *Game) bool {
+func (c Choice) Available(p Player) bool {
 	if len(c.Conditions) == 0 {
 		return true
 	}
 	for _, cond := range c.Conditions {
-		if cond.Available(g.Player) {
+		if cond.Available(p) {
 			return true
 		}
 	}

@@ -11,13 +11,17 @@ type Choice struct {
 	Effects     []Effect             `yaml:"effects" json:"effects"`
 }
 
-func (c Choice) Parse() (choice runner.Choice) {
+func (c *Choice) Parse() (choice runner.Choice, err error) {
 	choice.ID = c.ID
 	choice.Name = c.Name
 	choice.Description = c.Description
 	choice.Story = c.Story
 	for _, cond := range c.Conditions {
-		choice.Conditions = append(choice.Conditions, cond.Parse())
+		if parsed, err := cond.Parse(); err == nil {
+			choice.Conditions = append(choice.Conditions, parsed)
+		} else {
+			return runner.Choice{}, err
+		}
 	}
 	for _, effect := range c.Effects {
 		choice.Effects = append(choice.Effects, effect.Parse())

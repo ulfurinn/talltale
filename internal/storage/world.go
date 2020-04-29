@@ -19,8 +19,10 @@ type Stat struct {
 	Name string `yaml:"name"`
 }
 
-func (w *World) StripChildren() {
-	w.Locations = nil
+func (w *World) WithoutChildren() World {
+	world := *w
+	world.Locations = nil
+	return world
 }
 
 func (w *World) normalise() {
@@ -37,11 +39,15 @@ func (w *World) normalise() {
 	}
 }
 
-func (w World) Parse() (world runner.World) {
+func (w *World) Parse() (world runner.World, err error) {
 	world.Title = w.Global.Title
 	world.Locations = make(map[string]runner.Location)
 	for id, l := range w.Locations {
-		world.Locations[id] = l.Parse(id)
+		if parsed, err := l.Parse(id); err == nil {
+			world.Locations[id] = parsed
+		} else {
+			return runner.World{}, err
+		}
 	}
 
 	world.TabulaRasa.Location = w.PlayerSeed.Location

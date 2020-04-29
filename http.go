@@ -19,7 +19,7 @@ import (
 type HttpRunner struct {
 	Port        int
 	AllowEditor bool
-	sessions    map[string]runner.Game
+	sessions    map[string]*runner.Game
 	sessionsMx  sync.RWMutex
 }
 
@@ -43,7 +43,7 @@ func (r *HttpRunner) Run() (err error) {
 		router.Mount("/editor", editor.Mux())
 	}
 
-	r.sessions = map[string]runner.Game{}
+	r.sessions = map[string]*runner.Game{}
 
 	s := http.Server{
 		Addr:           fmt.Sprintf(":%d", r.Port),
@@ -67,7 +67,7 @@ func (r *HttpRunner) scene(rw http.ResponseWriter, rq *http.Request) {
 		encoder.Encode(resp)
 	}()
 
-	var game runner.Game
+	var game *runner.Game
 
 	var cookie *http.Cookie
 	if cookie, err = rq.Cookie(sessionCookie); err == nil {
@@ -81,7 +81,7 @@ func (r *HttpRunner) scene(rw http.ResponseWriter, rq *http.Request) {
 
 const sessionCookie = "talltalesessid"
 
-func (r *HttpRunner) getGame(sessid string) (game runner.Game, err error) {
+func (r *HttpRunner) getGame(sessid string) (game *runner.Game, err error) {
 	var ok bool
 
 	r.sessionsMx.RLock()
@@ -93,7 +93,7 @@ func (r *HttpRunner) getGame(sessid string) (game runner.Game, err error) {
 	return
 }
 
-func (r *HttpRunner) setGame(game runner.Game, sessid string) {
+func (r *HttpRunner) setGame(game *runner.Game, sessid string) {
 	r.sessionsMx.Lock()
 	r.sessions[sessid] = game
 	r.sessionsMx.Unlock()
@@ -119,7 +119,7 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 		return
 	}
 
-	var game runner.Game
+	var game *runner.Game
 	if game, err = r.getGame(cookie.Value); err != nil {
 		return
 	}
@@ -151,7 +151,7 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 
 func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
 	var req struct {
-		World string `json:"looking-glass`
+		World string `json:"world"`
 	}
 	var resp map[string]interface{}
 	var err error
@@ -169,7 +169,7 @@ func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
 		return
 	}
 
-	var game runner.Game
+	var game *runner.Game
 	var cookie *http.Cookie
 	var sessid string
 
@@ -191,7 +191,7 @@ func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
 	if storedWorld, err = storage.GetWorld(req.World); err != nil {
 		return
 	}
-	world := storedWorld.Parse()
+	world, _ := storedWorld.Parse()
 
 	game.Reset(world)
 
@@ -200,12 +200,11 @@ func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
 	resp = r.buildScene(game)
 }
 
-func (r *HttpRunner) buildScene(game runner.Game) (scene map[string]interface{}) {
+func (r *HttpRunner) buildScene(game *runner.Game) (scene map[string]interface{}) {
 	scene = map[string]interface{}{}
 	worlds := []storage.World{}
 	for _, w := range storage.Worlds() {
-		w.StripChildren()
-		worlds = append(worlds, w)
+		worlds = append(worlds, w.WithoutChildren())
 	}
 	scene["worlds"] = worlds
 
@@ -238,7 +237,7 @@ func (r *HttpRunner) buildScene(game runner.Game) (scene map[string]interface{})
 				"id":          e.ID,
 				"name":        e.Name,
 				"description": e.Description,
-				"available":   e.Available(&game),
+				"available":   e.Available(game.Player),
 			})
 		}
 		scene["encounters"] = sceneEncounters
@@ -259,7 +258,7 @@ func (r *HttpRunner) buildScene(game runner.Game) (scene map[string]interface{})
 				"id":          c.ID,
 				"name":        c.Name,
 				"description": c.Description,
-				"available":   c.Available(&game),
+				"available":   c.Available(game.Player),
 			})
 		}
 		scene["choices"] = sceneChoices

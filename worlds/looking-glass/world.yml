@@ -3,7 +3,7 @@ global:
 locations:
   balcony:
     name: The Balcony
-    description: ""
+    description: There's an unusual smell to the air.
     encounters: []
   outside:
     name: Outside

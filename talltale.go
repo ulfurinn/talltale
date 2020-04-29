@@ -6,6 +6,11 @@ import (
 )
 
 func Main(ctx *cli.Context) (err error) {
+
+	storage.Storage = storage.YAML{
+		Root: "worlds",
+	}
+
 	if err = storage.Load(); err != nil {
 		return
 	}

@@ -9,13 +9,17 @@ type Location struct {
 	Encounters  []Encounter `yaml:"encounters" json:"encounters"`
 }
 
-func (l Location) Parse(id string) (location runner.Location) {
+func (l *Location) Parse(id string) (location runner.Location, err error) {
 	location.ID = id
 	location.Name = l.Name
 	location.Description = l.Description
 	location.Encounters = make([]runner.Encounter, 0, len(l.Encounters))
 	for _, e := range l.Encounters {
-		location.Encounters = append(location.Encounters, e.Parse())
+		if parsed, err := e.Parse(); err == nil {
+			location.Encounters = append(location.Encounters, parsed)
+		} else {
+			return runner.Location{}, err
+		}
 	}
 	return
 }

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import {
     // RIEToggle,
-    RIEInput
-    // RIETextArea,
+    RIEInput,
+    RIETextArea
     // RIENumber,
     // RIETags,
     // RIESelect
@@ -256,14 +256,24 @@ function Location(props) {
     return (
         <div className="location">
             <section className="properties">
-                <header className="title">
+                (id:{props.location.id})
+                <div className="name">
                     <RIEInput
                         value={props.location.name}
-                        change={props.onchangename}
+                        change={props.onpropertychange}
                         propName="name"
-                    />{" "}
-                    (id:{props.location.id})
-                </header>
+                        className="editable"
+                    />
+                </div>
+                <div className="description">
+                    <RIETextArea
+                        value={props.location.description}
+                        change={props.onpropertychange}
+                        propName="description"
+                        className="editable"
+                        defaultProps={{placeholder: 'description'}}
+                    />
+                </div>
             </section>
             <section className="split">
                 <div className="child-list">
@@ -399,7 +409,7 @@ function World(props) {
                             location={props.location}
                             encounter={props.encounter}
                             onselectencounter={props.onselectencounter}
-                            onchangename={props.onchangelocation}
+                            onpropertychange={props.onchangelocation}
                         />
                     ) : null}
                 </section>

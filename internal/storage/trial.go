@@ -6,7 +6,7 @@ type Trial struct {
 	Automatic bool `yaml:"automatic" json:"automatic"`
 }
 
-func (t Trial) Parse() (trial runner.Trial) {
+func (t *Trial) Parse() (trial runner.Trial) {
 	switch {
 	case t.Automatic:
 		return runner.AutomaticPass

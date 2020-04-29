@@ -31,7 +31,7 @@ func (pcs PlayerChangeSet) Parse() (playerChange runner.PlayerChange) {
 	return runner.AggregatePlayerChange(funcs)
 }
 
-func (pc PlayerChange) Parse() (playerChange runner.PlayerChange) {
+func (pc *PlayerChange) Parse() (playerChange runner.PlayerChange) {
 	switch {
 	case pc.StatChange != nil:
 		return pc.StatChange.Parse()
@@ -42,7 +42,7 @@ func (pc PlayerChange) Parse() (playerChange runner.PlayerChange) {
 	}
 }
 
-func (sc StatChange) Parse() runner.PlayerChange {
+func (sc *StatChange) Parse() runner.PlayerChange {
 	return func(player *runner.Player) {
 		currentValue := player.Inventory[sc.Stat]
 		var newValue int
@@ -61,7 +61,7 @@ func (sc StatChange) Parse() runner.PlayerChange {
 	}
 }
 
-func (r Redirect) Parse() runner.PlayerChange {
+func (r *Redirect) Parse() runner.PlayerChange {
 	return func(player *runner.Player) {
 		player.Location = r.Location
 	}

@@ -9,24 +9,24 @@ type Encounter struct {
 	Choices     []Choice
 }
 
-func (e Encounter) Displayable(g *Game) bool {
+func (e Encounter) Displayable(p Player) bool {
 	if len(e.Conditions) == 0 {
 		return true
 	}
 	for _, cond := range e.Conditions {
-		if cond.Displayable(g.Player) {
+		if cond.Displayable(p) {
 			return true
 		}
 	}
 	return false
 }
 
-func (e Encounter) Available(g *Game) bool {
+func (e Encounter) Available(p Player) bool {
 	if len(e.Conditions) == 0 {
 		return true
 	}
 	for _, cond := range e.Conditions {
-		if cond.Available(g.Player) {
+		if cond.Available(p) {
 			return true
 		}
 	}

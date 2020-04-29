@@ -15,7 +15,7 @@ type StatCondition struct {
 	Hide bool   `yaml:"hide" json:"hide"`
 }
 
-func (cond Condition) Parse() (condition runner.Condition) {
+func (cond *Condition) Parse() (runner.Condition, error) {
 	switch {
 	case cond.StatCondition != nil:
 		return cond.StatCondition.Parse()
@@ -27,21 +27,26 @@ func (cond Condition) Parse() (condition runner.Condition) {
 
 func (cond *Condition) normalise() {}
 
-func (scs StatConditionSet) Parse() runner.Condition {
+func (scs StatConditionSet) Parse() (runner.AggregateCondition, error) {
 	sub := make([]runner.Condition, 0, len(scs))
 	for stat, c := range scs {
 		c.Stat = stat
-		sub = append(sub, c.Parse())
+		if c, err := c.Parse(); err == nil {
+			sub = append(sub, c)
+		} else {
+			return runner.AggregateCondition{}, err
+		}
 	}
 	return runner.AggregateCondition{
 		Conditions: sub,
-	}
+	}, nil
 }
 
-func (sc StatCondition) Parse() (condition runner.StatCondition) {
-	condition.Stat = sc.Stat
-	condition.Min = sc.Min
-	condition.Max = sc.Max
-	condition.HideUnavailable = sc.Hide
-	return
+func (sc *StatCondition) Parse() (runner.StatCondition, error) {
+	return runner.StatCondition{
+		Stat:            sc.Stat,
+		Min:             sc.Min,
+		Max:             sc.Max,
+		HideUnavailable: sc.Hide,
+	}, nil
 }

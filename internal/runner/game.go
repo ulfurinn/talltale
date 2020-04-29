@@ -24,11 +24,11 @@ type ActionRequest struct {
 	ChoiceID   string `json:"choiceID"`
 }
 
-func (g Game) Location() Location {
+func (g *Game) Location() Location {
 	return g.World.Locations[g.Player.Location]
 }
 
-func (g Game) Encounter() Encounter {
+func (g *Game) Encounter() Encounter {
 	if g.Player.Encounter == "" {
 		return Encounter{}
 	}
@@ -40,7 +40,7 @@ func (g Game) Encounter() Encounter {
 	return Encounter{}
 }
 
-func (g Game) State() State {
+func (g *Game) State() State {
 	return g.state
 }
 
@@ -59,7 +59,7 @@ func (g *Game) DisplayableEncounters() (displayableEncounters []Encounter) {
 	l := g.Location()
 
 	for _, e := range l.Encounters {
-		if e.Displayable(g) {
+		if e.Displayable(g.Player) {
 			displayableEncounters = append(displayableEncounters, e)
 		}
 	}
@@ -68,7 +68,7 @@ func (g *Game) DisplayableEncounters() (displayableEncounters []Encounter) {
 
 func (g *Game) DisplayableChoices() (displayableChoices []Choice) {
 	for _, c := range g.Encounter().Choices {
-		if c.Displayable(g) {
+		if c.Displayable(g.Player) {
 			displayableChoices = append(displayableChoices, c)
 		}
 	}
@@ -100,7 +100,7 @@ func (g *Game) chooseEncounter(req ActionRequest) (err error) {
 		err = errors.New("no such encounter in this location")
 		return
 	}
-	if !encounter.Displayable(g) {
+	if !encounter.Displayable(g.Player) {
 		err = errors.New("the selected action is not displayable")
 		return
 	}

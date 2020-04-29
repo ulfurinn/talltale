@@ -69,6 +69,11 @@ body {
         > .properties {
             padding: 1em;
             background-color: $location-background-color;
+            .editable {
+                border: 1px silver dotted;
+                padding: 0.3em;
+                display: inline-block;
+            }
         }
 
         .encounter-picker {

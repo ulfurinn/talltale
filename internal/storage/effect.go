@@ -8,7 +8,7 @@ type Effect struct {
 	Fail   PlayerChangeSet `yaml:"fail" json:"fail"`
 }
 
-func (e Effect) Parse() (effect runner.Effect) {
+func (e *Effect) Parse() (effect runner.Effect) {
 	for _, t := range e.Trials {
 		effect.Trials = append(effect.Trials, t.Parse())
 	}

@@ -31,7 +31,7 @@ func Mux() http.Handler {
 	return router
 }
 
-type wrappedHandler func(*http.Request, http.Header) (resp interface{}, err error)
+type wrappedHandler func(*http.Request) (resp interface{}, err error)
 
 type renderable interface {
 	render(http.ResponseWriter, *http.Request)
@@ -70,20 +70,19 @@ func handle(f wrappedHandler) http.HandlerFunc {
 			}
 			defer req.Body.Close()
 		}
-		resp, err = f(req, rw.Header())
+		resp, err = f(req)
 	})
 }
 
-func getWorlds(req *http.Request, headers http.Header) (interface{}, error) {
+func getWorlds(req *http.Request) (interface{}, error) {
 	worlds := []storage.World{}
 	for _, world := range storage.Worlds() {
-		world.StripChildren()
-		worlds = append(worlds, world)
+		worlds = append(worlds, world.WithoutChildren())
 	}
 	return worlds, nil
 }
 
-func getWorld(req *http.Request, headers http.Header) (interface{}, error) {
+func getWorld(req *http.Request) (interface{}, error) {
 	return storage.GetWorld(chi.URLParam(req, "worldID"))
 }
 
@@ -98,7 +97,7 @@ type patchLocationRequest struct {
 	Description *string `json:"description"`
 }
 
-func createLocation(req *http.Request, headers http.Header) (response interface{}, err error) {
+func createLocation(req *http.Request) (response interface{}, err error) {
 	dec := json.NewDecoder(req.Body)
 	var r createLocationRequest
 	if err = dec.Decode(&r); err != nil {
@@ -116,7 +115,7 @@ func createLocation(req *http.Request, headers http.Header) (response interface{
 	return
 }
 
-func patchLocation(req *http.Request, header http.Header) (response interface{}, err error) {
+func patchLocation(req *http.Request) (response interface{}, err error) {
 	dec := json.NewDecoder(req.Body)
 	var r patchLocationRequest
 	if err = dec.Decode(&r); err != nil {
