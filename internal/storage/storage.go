@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"os"
 	"sync"
 )
 
@@ -27,7 +26,7 @@ func Load() (err error) {
 	if err == nil {
 		for _, id := range ids {
 			if world, err := Storage.Load(id); err == nil {
-				fmt.Fprintln(os.Stdout, "loaded", world.ID, world.Global.Title)
+				world.normalise()
 				worlds[world.ID] = world
 			}
 		}

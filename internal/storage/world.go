@@ -1,6 +1,8 @@
 package storage
 
-import "github.com/ulfurinn/talltale/internal/runner"
+import (
+	"github.com/ulfurinn/talltale/internal/runner"
+)
 
 type World struct {
 	ID     string `yaml:"-" json:"id"`
@@ -12,11 +14,12 @@ type World struct {
 		Stats    map[string]int `yaml:"stats" json:"stats"`
 		Location string         `yaml:"location" json:"location"`
 	} `yaml:"player_seed" json:"player_seed"`
-	Stats map[string]Stat `yaml:"stats"`
+	Stats map[string]Stat `yaml:"stats" json:"stats"`
 }
 
 type Stat struct {
-	Name string `yaml:"name"`
+	Name        string `yaml:"name" json:"name"`
+	Description string `yaml:"description" json:"description"`
 }
 
 func (w *World) WithoutChildren() World {

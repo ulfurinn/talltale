@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -45,7 +44,6 @@ func (y YAML) Save(w World) (err error) {
 
 func (y YAML) Load(id string) (w World, err error) {
 	file := y.filepath(id)
-	fmt.Fprintln(os.Stdout, "loading", file)
 	var yml []byte
 	if yml, err = ioutil.ReadFile(file); err != nil {
 		return
@@ -53,7 +51,6 @@ func (y YAML) Load(id string) (w World, err error) {
 	if err = yaml.Unmarshal(yml, &w); err != nil {
 		return
 	}
-	w.normalise()
 	w.ID = id
 	return
 }
