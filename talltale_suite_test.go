@@ -42,7 +42,7 @@ func testWorld() (w storage.World) {
 	w.ID = "test"
 	w.Global.Title = "Test World"
 	w.Locations = map[string]storage.Location{
-		"start": storage.Location{
+		"start": {
 			Name:        "Start",
 			Description: "It all began here.",
 		},

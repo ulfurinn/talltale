@@ -31,6 +31,10 @@ func Mux() http.Handler {
 	return router
 }
 
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
 type wrappedHandler func(*http.Request) (resp interface{}, err error)
 
 type renderable interface {
@@ -42,8 +46,41 @@ type notFoundError struct {
 
 func (notFoundError) Error() string { return "entity not found" }
 func (e notFoundError) render(rw http.ResponseWriter, req *http.Request) {
-	render.Status(req, 404)
-	render.JSON(rw, req, map[string]interface{}{"error": e.Error()})
+	render.Status(req, http.StatusNotFound)
+	render.JSON(rw, req, ErrorResponse{Error: e.Error()})
+}
+
+type alreadyExists struct{}
+
+func (alreadyExists) Error() string { return "entity already exists" }
+func (e alreadyExists) render(rw http.ResponseWriter, req *http.Request) {
+	render.Status(req, http.StatusConflict)
+	render.JSON(rw, req, ErrorResponse{Error: e.Error()})
+}
+
+func renderBody(resp interface{}, err error, rw http.ResponseWriter, req *http.Request) {
+	if err == nil {
+		switch req.Method {
+		case http.MethodGet:
+			render.Status(req, http.StatusOK)
+		case http.MethodPost:
+			render.Status(req, http.StatusCreated)
+		default:
+			render.Status(req, http.StatusOK)
+		}
+		render.JSON(rw, req, resp)
+	} else {
+		renderError(err, rw, req)
+	}
+}
+
+func renderError(err error, rw http.ResponseWriter, req *http.Request) {
+	if r, ok := err.(renderable); ok {
+		r.render(rw, req)
+	} else {
+		render.Status(req, http.StatusInternalServerError)
+		render.JSON(rw, req, ErrorResponse{Error: err.Error()})
+	}
 }
 
 func handle(f wrappedHandler) http.HandlerFunc {
@@ -54,14 +91,7 @@ func handle(f wrappedHandler) http.HandlerFunc {
 			if rescued := recover(); rescued != nil {
 				err = fmt.Errorf("fatal: %v", rescued)
 			}
-			if err == nil {
-				render.JSON(rw, req, resp)
-			} else if r, ok := err.(renderable); ok {
-				r.render(rw, req)
-			} else {
-				render.Status(req, 500)
-				render.JSON(rw, req, map[string]interface{}{"error": err.Error()})
-			}
+			renderBody(resp, err, rw, req)
 		}()
 		if req.Method != "GET" {
 			if req.Body == nil {
@@ -105,13 +135,17 @@ func createLocation(req *http.Request) (response interface{}, err error) {
 	}
 
 	storage.UpdateWorld(chi.URLParam(req, "worldID"), func(w *storage.World) {
-		w.AddLocation(r.ID, storage.Location{
-			Name:        r.Name,
-			Description: r.Description,
-		})
+		if _, exists := w.Locations[r.ID]; !exists {
+			w.AddLocation(r.ID, storage.Location{
+				Name:        r.Name,
+				Description: r.Description,
+			})
+			response = true
+		} else {
+			err = alreadyExists{}
+		}
 	})
 
-	response = true
 	return
 }
 

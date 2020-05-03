@@ -3,6 +3,7 @@ package talltale_test
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 
@@ -16,6 +17,11 @@ var _ = Describe("Editor", func() {
 
 	var storer testStorer
 	var server *httptest.Server
+
+	makeReader := func(data interface{}) *bytes.Reader {
+		j, _ := json.Marshal(data)
+		return bytes.NewReader(j)
+	}
 
 	BeforeSuite(func() {
 		storer = testStorer{worlds: make(map[string]storage.World)}
@@ -90,41 +96,58 @@ var _ = Describe("Editor", func() {
 	})
 
 	Describe("POST /worlds/{WORLD}/locations", func() {
-		var locRequest editor.CreateLocationRequest
-		var req bytes.Buffer
-		BeforeEach(func() {
-			locRequest = editor.CreateLocationRequest{
+		request := func() editor.CreateLocationRequest {
+			return editor.CreateLocationRequest{
 				ID:          "new-location",
 				Name:        "New Location",
 				Description: "This is something you have never seen before.",
 			}
-			req = bytes.Buffer{}
-			json.NewEncoder(&req).Encode(locRequest)
-		})
+		}
+
 		It("should create a location", func() {
-			resp, err := http.Post(server.URL+"/worlds/test/locations", "application/json", &req)
+			resp, err := http.Post(server.URL+"/worlds/test/locations", "application/json", makeReader(request()))
+
 			Expect(err).To(BeNil())
-			defer resp.Body.Close()
+			Expect(resp.StatusCode).To(Equal(http.StatusCreated))
+
 			var respContent bool
 			Expect(json.NewDecoder(resp.Body).Decode(&respContent)).To(BeNil())
+			resp.Body.Close()
+
 			Expect(respContent).To(BeTrue())
 		})
 		It("makes the location visible in the world", func() {
-			resp, err := http.Post(server.URL+"/worlds/test/locations", "application/json", &req)
+			req := request()
+			resp, err := http.Post(server.URL+"/worlds/test/locations", "application/json", makeReader(req))
 			Expect(err).To(BeNil())
-			defer resp.Body.Close()
+			resp.Body.Close()
 
 			resp, err = http.Get(server.URL + "/worlds/test")
+
 			var w storage.World
 			Expect(err).To(BeNil())
-			defer resp.Body.Close()
 			Expect(json.NewDecoder(resp.Body).Decode(&w)).To(BeNil())
+			resp.Body.Close()
 
 			Expect(w.Locations).To(HaveLen(2))
-			loc := w.Locations[locRequest.ID]
-			Expect(loc.ID).To(Equal(locRequest.ID))
-			Expect(loc.Name).To(Equal(locRequest.Name))
-			Expect(loc.Description).To(Equal(locRequest.Description))
+			loc := w.Locations[req.ID]
+			Expect(loc.ID).To(Equal(req.ID))
+			Expect(loc.Name).To(Equal(req.Name))
+			Expect(loc.Description).To(Equal(req.Description))
+		})
+		It("rejects attempts to create the same location twice", func() {
+			reader := makeReader(request())
+			resp, err := http.Post(server.URL+"/worlds/test/locations", "application/json", reader)
+			Expect(err).To(BeNil())
+			Expect(resp.StatusCode).To(Equal(http.StatusCreated))
+			resp.Body.Close()
+
+			reader.Seek(0, io.SeekStart)
+
+			resp, err = http.Post(server.URL+"/worlds/test/locations", "application/json", reader)
+			Expect(err).To(BeNil())
+			Expect(resp.StatusCode).To(Equal(http.StatusConflict))
+			resp.Body.Close()
 		})
 	})
 
