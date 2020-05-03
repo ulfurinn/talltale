@@ -22,7 +22,7 @@ func Mux() http.Handler {
 		r.Route("/{worldID}", func(r chi.Router) {
 			r.Get("/", handle(getWorld))
 			r.Route("/locations", func(r chi.Router) {
-				r.Get("/", handle(createLocation))
+				r.Post("/", handle(createLocation))
 				r.Patch("/{locationID}", handle(patchLocation))
 			})
 		})
@@ -86,7 +86,7 @@ func getWorld(req *http.Request) (interface{}, error) {
 	return storage.GetWorld(chi.URLParam(req, "worldID"))
 }
 
-type createLocationRequest struct {
+type CreateLocationRequest struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -99,15 +99,15 @@ type patchLocationRequest struct {
 
 func createLocation(req *http.Request) (response interface{}, err error) {
 	dec := json.NewDecoder(req.Body)
-	var r createLocationRequest
+	var r CreateLocationRequest
 	if err = dec.Decode(&r); err != nil {
 		return
 	}
-	log.Printf("creating location %v", r)
 
 	storage.UpdateWorld(chi.URLParam(req, "worldID"), func(w *storage.World) {
 		w.AddLocation(r.ID, storage.Location{
-			Name: r.Name,
+			Name:        r.Name,
+			Description: r.Description,
 		})
 	})
 

@@ -60,5 +60,6 @@ func (w *World) Parse() (world runner.World, err error) {
 }
 
 func (w *World) AddLocation(id string, l Location) {
+	l.ID = id
 	w.Locations[id] = l
 }
