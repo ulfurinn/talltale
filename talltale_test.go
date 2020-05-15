@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 
@@ -17,6 +18,14 @@ var _ = Describe("Editor", func() {
 
 	var storer testStorer
 	var server *httptest.Server
+
+	getWorld := func(id string) (w storage.World) {
+		resp, err := http.Get(server.URL + "/worlds/" + id)
+		Expect(err).To(BeNil())
+		Expect(json.NewDecoder(resp.Body).Decode(&w)).To(BeNil())
+		resp.Body.Close()
+		return
+	}
 
 	makeReader := func(data interface{}) *bytes.Reader {
 		j, _ := json.Marshal(data)
@@ -91,6 +100,23 @@ var _ = Describe("Editor", func() {
 			loc := w.Locations["start"]
 			Expect(loc.ID).To(Equal("start"))
 			Expect(loc.Name).To(Equal("Start"))
+
+			Expect(loc.Encounters).To(HaveLen(1))
+			enc := loc.Encounters[0]
+			Expect(enc.ID).To(Equal("encounter-1"))
+			Expect(enc.Name).To(Equal("Encounter 1"))
+			Expect(enc.Description).To(Equal("This is an encounter"))
+			Expect(enc.Story).To(Equal("This is what happened when you opened the door."))
+
+			Expect(enc.Conditions).To(HaveLen(1))
+			Expect(enc.Conditions).To(HaveKey("strong"))
+			cond := enc.Conditions["strong"]
+			Expect(cond.StatCondition).To(HaveLen(1))
+			Expect(cond.StatCondition).To(HaveKey("strength"))
+			strength := cond.StatCondition["strength"]
+			Expect(strength.Min).To(PointTo(5))
+			Expect(strength.Max).To(BeNil())
+			Expect(strength.Hide).To(BeFalse())
 		})
 
 	})
@@ -122,12 +148,7 @@ var _ = Describe("Editor", func() {
 			Expect(err).To(BeNil())
 			resp.Body.Close()
 
-			resp, err = http.Get(server.URL + "/worlds/test")
-
-			var w storage.World
-			Expect(err).To(BeNil())
-			Expect(json.NewDecoder(resp.Body).Decode(&w)).To(BeNil())
-			resp.Body.Close()
+			w := getWorld("test")
 
 			Expect(w.Locations).To(HaveLen(2))
 			loc := w.Locations[req.ID]
@@ -148,6 +169,89 @@ var _ = Describe("Editor", func() {
 			Expect(err).To(BeNil())
 			Expect(resp.StatusCode).To(Equal(http.StatusConflict))
 			resp.Body.Close()
+		})
+	})
+
+	Describe("PATCH /worlds/{WORLD}/locations/{LOCATION}", func() {
+		It("should update the name", func() {
+			req := editor.PatchLocationRequest{
+				Name: pstring("Beginning"),
+			}
+			httpreq, _ := http.NewRequest("PATCH", server.URL+"/worlds/test/locations/start", makeReader(req))
+			httpreq.Header.Set("Content-Type", "application/json")
+			resp, err := http.DefaultClient.Do(httpreq)
+			Expect(err).To(BeNil())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			resp.Body.Close()
+
+			w := getWorld("test")
+			loc := w.Locations["start"]
+			Expect(loc.Name).To(Equal("Beginning"))
+			Expect(loc.Description).To(Equal("It all began here."))
+		})
+		It("should update the description", func() {
+			req := editor.PatchLocationRequest{
+				Description: pstring("It all started here."),
+			}
+			httpreq, _ := http.NewRequest("PATCH", server.URL+"/worlds/test/locations/start", makeReader(req))
+			httpreq.Header.Set("Content-Type", "application/json")
+			resp, err := http.DefaultClient.Do(httpreq)
+			Expect(err).To(BeNil())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			resp.Body.Close()
+
+			w := getWorld("test")
+			loc := w.Locations["start"]
+			Expect(loc.Name).To(Equal("Start"))
+			Expect(loc.Description).To(Equal("It all started here."))
+		})
+		It("should update all fields together", func() {
+			req := editor.PatchLocationRequest{
+				Name:        pstring("Beginning"),
+				Description: pstring("It all started here."),
+			}
+			httpreq, _ := http.NewRequest("PATCH", server.URL+"/worlds/test/locations/start", makeReader(req))
+			httpreq.Header.Set("Content-Type", "application/json")
+			resp, err := http.DefaultClient.Do(httpreq)
+			Expect(err).To(BeNil())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			resp.Body.Close()
+
+			w := getWorld("test")
+			loc := w.Locations["start"]
+			Expect(loc.Name).To(Equal("Beginning"))
+			Expect(loc.Description).To(Equal("It all started here."))
+		})
+	})
+
+	Describe("POST /worlds/{WORLD}/locations/{LOCATION}/encounters", func() {
+		It("should create an encounter", func() {
+			req := editor.CreateEncounterRequest{
+				ID:          "encounter-2",
+				Name:        "Encounter 2",
+				Description: "This is another encounter",
+				Story:       "Isn't this door much better?",
+			}
+			resp, err := http.Post(server.URL+"/worlds/test/locations/start/encounters", "application/json", makeReader(req))
+			Expect(err).To(BeNil())
+			Expect(resp.StatusCode).To(Equal(http.StatusCreated))
+			io.Copy(ioutil.Discard, resp.Body)
+			resp.Body.Close()
+
+			w := getWorld("test")
+			loc := w.Locations["start"]
+			var found bool
+			for _, e := range loc.Encounters {
+				if e.ID == "encounter-2" {
+					found = true
+					Expect(e.Name).To(Equal("Encounter 2"))
+					Expect(e.Description).To(Equal("This is another encounter"))
+					Expect(e.Story).To(Equal("Isn't this door much better?"))
+					Expect(e.Conditions).To(BeEmpty())
+					Expect(e.Choices).To(BeEmpty())
+				}
+			}
+			Expect(found).To(BeTrue())
 		})
 	})
 

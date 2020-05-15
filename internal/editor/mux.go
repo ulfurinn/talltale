@@ -3,7 +3,6 @@ package editor
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -23,7 +22,12 @@ func Mux() http.Handler {
 			r.Get("/", handle(getWorld))
 			r.Route("/locations", func(r chi.Router) {
 				r.Post("/", handle(createLocation))
-				r.Patch("/{locationID}", handle(patchLocation))
+				r.Route("/{locationID}", func(r chi.Router) {
+					r.Patch("/", handle(patchLocation))
+					r.Route("/encounters", func(r chi.Router) {
+						r.Post("/", handle(createEncounter))
+					})
+				})
 			})
 		})
 	})
@@ -122,9 +126,16 @@ type CreateLocationRequest struct {
 	Description string `json:"description"`
 }
 
-type patchLocationRequest struct {
+type PatchLocationRequest struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
+}
+
+type CreateEncounterRequest struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Story       string `json:"story"`
 }
 
 func createLocation(req *http.Request) (response interface{}, err error) {
@@ -151,11 +162,10 @@ func createLocation(req *http.Request) (response interface{}, err error) {
 
 func patchLocation(req *http.Request) (response interface{}, err error) {
 	dec := json.NewDecoder(req.Body)
-	var r patchLocationRequest
+	var r PatchLocationRequest
 	if err = dec.Decode(&r); err != nil {
 		return
 	}
-	log.Printf("patching location")
 
 	var l storage.Location
 	var ok bool
@@ -178,5 +188,47 @@ func patchLocation(req *http.Request) (response interface{}, err error) {
 	} else {
 		err = notFoundError{}
 	}
+	return
+}
+
+func createEncounter(req *http.Request) (response interface{}, err error) {
+	dec := json.NewDecoder(req.Body)
+	var r CreateEncounterRequest
+	if err = dec.Decode(&r); err != nil {
+		return
+	}
+
+	storage.UpdateWorld(chi.URLParam(req, "worldID"), func(w *storage.World) {
+		id := chi.URLParam(req, "locationID")
+		loc, found := w.Locations[id]
+		if !found {
+			err = notFoundError{}
+			return
+		}
+
+		found = false
+		for _, e := range loc.Encounters {
+			if e.ID == r.ID {
+				found = true
+				break
+			}
+		}
+		if found {
+			err = alreadyExists{}
+			return
+		}
+		encounter := storage.Encounter{
+			ID:          r.ID,
+			Name:        r.Name,
+			Description: r.Description,
+			Story:       r.Story,
+			Conditions:  map[string]storage.Condition{},
+			Choices:     []storage.Choice{},
+		}
+		loc.Encounters = append(loc.Encounters, encounter)
+		w.Locations[id] = loc
+		response = true
+	})
+
 	return
 }

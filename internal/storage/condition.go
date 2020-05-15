@@ -3,7 +3,7 @@ package storage
 import "github.com/ulfurinn/talltale/internal/runner"
 
 type Condition struct {
-	StatCondition *StatConditionSet `yaml:"stat" json:"stat"`
+	StatCondition StatConditionSet `yaml:"stat" json:"stat"`
 }
 
 type StatConditionSet map[string]StatCondition
