@@ -76,6 +76,9 @@ func (r *HttpRunner) scene(rw http.ResponseWriter, rq *http.Request) {
 		// just quietly accept
 		err = nil
 	}
+	if game == nil {
+		game = &runner.Game{}
+	}
 	resp = r.buildScene(game)
 }
 
@@ -176,6 +179,9 @@ func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
 	if cookie, err = rq.Cookie(sessionCookie); err == nil {
 		sessid = cookie.Value
 		game, _ = r.getGame(sessid)
+		if game == nil {
+			game = &runner.Game{}
+		}
 	} else if err == http.ErrNoCookie {
 		sessid = uuid.New().String()
 		cookie = &http.Cookie{
