@@ -1,9 +1,5 @@
 package storage
 
-import (
-	"github.com/ulfurinn/talltale/internal/runner"
-)
-
 type World struct {
 	ID     string `yaml:"-" json:"id"`
 	Global struct {
@@ -40,23 +36,6 @@ func (w *World) normalise() {
 		loc.ID = id
 		w.Locations[id] = loc
 	}
-}
-
-func (w *World) Parse() (world runner.World, err error) {
-	world.Title = w.Global.Title
-	world.Locations = make(map[string]runner.Location)
-	for id, l := range w.Locations {
-		if parsed, err := l.Parse(id); err == nil {
-			world.Locations[id] = parsed
-		} else {
-			return runner.World{}, err
-		}
-	}
-
-	world.TabulaRasa.Location = w.PlayerSeed.Location
-	world.TabulaRasa.Inventory = w.PlayerSeed.Stats
-
-	return
 }
 
 func (w *World) AddLocation(id string, l Location) {

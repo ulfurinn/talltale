@@ -1,27 +1,10 @@
 package storage
 
-import "github.com/ulfurinn/talltale/internal/runner"
-
 type Location struct {
 	ID          string      `yaml:"-" json:"id"`
 	Name        string      `yaml:"name" json:"name"`
 	Description string      `yaml:"description" json:"description"`
 	Encounters  []Encounter `yaml:"encounters" json:"encounters"`
-}
-
-func (l *Location) Parse(id string) (location runner.Location, err error) {
-	location.ID = id
-	location.Name = l.Name
-	location.Description = l.Description
-	location.Encounters = make([]runner.Encounter, 0, len(l.Encounters))
-	for _, e := range l.Encounters {
-		if parsed, err := e.Parse(); err == nil {
-			location.Encounters = append(location.Encounters, parsed)
-		} else {
-			return runner.Location{}, err
-		}
-	}
-	return
 }
 
 func (l *Location) normalise() {

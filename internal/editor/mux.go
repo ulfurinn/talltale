@@ -26,6 +26,11 @@ func Mux() http.Handler {
 					r.Patch("/", handle(patchLocation))
 					r.Route("/encounters", func(r chi.Router) {
 						r.Post("/", handle(createEncounter))
+						r.Route("/{encounterID}", func(r chi.Router) {
+							r.Route("/conditions", func(r chi.Router) {
+								r.Post("/", handle(createCondition))
+							})
+						})
 					})
 				})
 			})

@@ -172,38 +172,40 @@ func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
 		return
 	}
 
-	var game *runner.Game
-	var cookie *http.Cookie
-	var sessid string
-
-	if cookie, err = rq.Cookie(sessionCookie); err == nil {
-		sessid = cookie.Value
-		game, _ = r.getGame(sessid)
-		if game == nil {
-			game = &runner.Game{}
-		}
-	} else if err == http.ErrNoCookie {
-		sessid = uuid.New().String()
-		cookie = &http.Cookie{
-			Name:     sessionCookie,
-			Value:    sessid,
-			HttpOnly: true,
-			SameSite: http.SameSiteStrictMode,
-		}
-		http.SetCookie(rw, cookie)
-	}
+	game := r.initGame(rw, rq)
 
 	var storedWorld storage.World
 	if storedWorld, err = storage.GetWorld(req.World); err != nil {
 		return
 	}
-	world, _ := storedWorld.Parse()
+	world, _ := runner.LoadWorld(storedWorld)
 
 	game.Reset(world)
 
-	r.setGame(game, cookie.Value)
-
 	resp = r.buildScene(game)
+}
+
+func (r *HttpRunner) initGame(rw http.ResponseWriter, req *http.Request) (game *runner.Game) {
+	if cookie, err := req.Cookie(sessionCookie); err == nil {
+		game, _ = r.getGame(cookie.Value)
+		if game == nil {
+			game = &runner.Game{}
+			r.setGame(game, cookie.Value)
+		}
+		return
+	}
+
+	session := uuid.New().String()
+	cookie := &http.Cookie{
+		Name:     sessionCookie,
+		Value:    session,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(rw, cookie)
+	game = &runner.Game{}
+	r.setGame(game, session)
+	return
 }
 
 func (r *HttpRunner) buildScene(game *runner.Game) (scene map[string]interface{}) {
