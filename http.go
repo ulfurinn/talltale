@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"sync"
 	"time"
 
@@ -35,9 +36,9 @@ func (r *HttpRunner) Run() (err error) {
 		middleware.Timeout(30*time.Second),
 	)
 	router.Get("/*", http.FileServer(http.Dir("./build")).ServeHTTP)
-	router.Get("/scene", r.scene)
-	router.Post("/action", r.processAction)
-	router.Post("/reset", r.reset)
+	router.Get("/scene", handler(r.scene))
+	router.Post("/action", handler(r.processAction))
+	router.Post("/reset", handler(r.reset))
 
 	if r.AllowEditor {
 		router.Mount("/editor", editor.Mux())
@@ -55,18 +56,88 @@ func (r *HttpRunner) Run() (err error) {
 	return s.ListenAndServe()
 }
 
-func (r *HttpRunner) scene(rw http.ResponseWriter, rq *http.Request) {
-	var resp map[string]interface{}
-	var err error
-	defer func() {
-		rw.Header().Set("content-type", "application/json")
-		if err != nil {
-			resp = map[string]interface{}{"error": err.Error()}
-		}
-		encoder := json.NewEncoder(rw)
-		encoder.Encode(resp)
-	}()
+func validateHandler(t reflect.Type) {
+	if t.Kind() != reflect.Func {
+		panic(fmt.Errorf("handler: expected a function, got %v", t))
+	}
 
+	var resp *http.ResponseWriter
+	var req *http.Request
+	var err *error
+
+	if t.NumIn() == 2 {
+		if !t.In(0).Implements(reflect.TypeOf(resp).Elem()) {
+			panic(fmt.Errorf("expected the second argument to be http.ResponseWriter, got %v", t))
+		}
+
+		if t.In(1) != reflect.TypeOf(req) {
+			panic(fmt.Errorf("expected the third argument to be *http.Request, got %v", t))
+		}
+
+	} else if t.NumIn() == 3 {
+		if !t.In(1).Implements(reflect.TypeOf(resp).Elem()) {
+			panic(fmt.Errorf("expected the second argument to be http.ResponseWriter, got %v", t))
+		}
+
+		if t.In(2) != reflect.TypeOf(req) {
+			panic(fmt.Errorf("expected the third argument to be *http.Request, got %v", t))
+		}
+
+	} else {
+		panic(fmt.Errorf("expected the handler function to accept 2 or 3 arguments, got %v", t))
+	}
+
+	if t.NumOut() != 2 {
+		panic(fmt.Errorf("expected the handler function to return 2 arguments, got %v", t))
+	}
+
+	if !t.Out(1).Implements(reflect.TypeOf(err).Elem()) {
+		panic(fmt.Errorf("expected the second return argument to be error, got %v", t))
+	}
+}
+
+func invokeHandler(ft reflect.Type, fv reflect.Value, rw http.ResponseWriter, req *http.Request) []reflect.Value {
+	if ft.NumIn() == 3 {
+		reqT := ft.In(0)
+		value := reflect.New(reqT)
+		if err := json.NewDecoder(req.Body).Decode(value.Interface()); err != nil {
+			return []reflect.Value{reflect.ValueOf(nil), reflect.ValueOf(requestError{error: err})}
+		}
+		return fv.Call([]reflect.Value{value.Elem(), reflect.ValueOf(rw), reflect.ValueOf(req)})
+	}
+	return fv.Call([]reflect.Value{reflect.ValueOf(rw), reflect.ValueOf(req)})
+}
+
+func handler(f interface{}) http.HandlerFunc {
+	t := reflect.TypeOf(f)
+	fv := reflect.ValueOf(f)
+
+	validateHandler(t)
+
+	return func(rw http.ResponseWriter, req *http.Request) {
+		respValues := invokeHandler(t, fv, rw, req)
+
+		if err := respValues[1].Interface(); err != nil {
+			if err, ok := err.(renderer); ok {
+				err.render(rw)
+				return
+			}
+			if err, ok := err.(error); ok {
+				serverError{error: err}.render(rw)
+				return
+			}
+			rw.WriteHeader(500)
+			json.NewEncoder(rw).Encode(map[string]interface{}{"error": fmt.Sprintf("%v", err)})
+			return
+		}
+
+		resp := respValues[0].Interface()
+		rw.WriteHeader(200)
+		json.NewEncoder(rw).Encode(resp)
+	}
+}
+
+func (r *HttpRunner) scene(rw http.ResponseWriter, rq *http.Request) (resp map[string]interface{}, err error) {
 	var game *runner.Game
 
 	var cookie *http.Cookie
@@ -80,6 +151,7 @@ func (r *HttpRunner) scene(rw http.ResponseWriter, rq *http.Request) {
 		game = &runner.Game{}
 	}
 	resp = r.buildScene(game)
+	return
 }
 
 const sessionCookie = "talltalesessid"
@@ -102,19 +174,7 @@ func (r *HttpRunner) setGame(game *runner.Game, sessid string) {
 	r.sessionsMx.Unlock()
 }
 
-func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
-	var req runner.ActionRequest
-	var resp map[string]interface{}
-	var err error
-	defer func() {
-		rw.Header().Set("content-type", "application/json")
-
-		if err != nil {
-			resp = map[string]interface{}{"error": err.Error()}
-		}
-		encoder := json.NewEncoder(rw)
-		encoder.Encode(resp)
-	}()
+func (r *HttpRunner) processAction(req runner.ActionRequest, rw http.ResponseWriter, rq *http.Request) (resp map[string]interface{}, err error) {
 
 	var cookie *http.Cookie
 	if cookie, err = rq.Cookie(sessionCookie); err == http.ErrNoCookie {
@@ -124,11 +184,6 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 
 	var game *runner.Game
 	if game, err = r.getGame(cookie.Value); err != nil {
-		return
-	}
-
-	decoder := json.NewDecoder(rq.Body)
-	if err = decoder.Decode(&req); err != nil {
 		return
 	}
 
@@ -152,25 +207,9 @@ func (r *HttpRunner) processAction(rw http.ResponseWriter, rq *http.Request) {
 	return
 }
 
-func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
-	var req struct {
-		World string `json:"world"`
-	}
-	var resp map[string]interface{}
-	var err error
-	defer func() {
-		rw.Header().Set("content-type", "application/json")
-		if err != nil {
-			resp = map[string]interface{}{"error": err.Error()}
-		}
-		encoder := json.NewEncoder(rw)
-		encoder.Encode(resp)
-	}()
-
-	decoder := json.NewDecoder(rq.Body)
-	if err = decoder.Decode(&req); err != nil {
-		return
-	}
+func (r *HttpRunner) reset(req struct {
+	World string `json:"world"`
+}, rw http.ResponseWriter, rq *http.Request) (resp map[string]interface{}, err error) {
 
 	game := r.initGame(rw, rq)
 
@@ -183,6 +222,7 @@ func (r *HttpRunner) reset(rw http.ResponseWriter, rq *http.Request) {
 	game.Reset(world)
 
 	resp = r.buildScene(game)
+	return
 }
 
 func (r *HttpRunner) initGame(rw http.ResponseWriter, req *http.Request) (game *runner.Game) {
