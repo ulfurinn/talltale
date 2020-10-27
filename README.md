@@ -45,6 +45,8 @@ Built with Go and React.
 
 ### Local dev session
 
+Run `npm install` on a fresh checkout.
+
 [modd](https://github.com/cortesi/modd) is used to recompile and restart the Go server on code changes.
 To install it, run `go get github.com/cortesi/modd` and make sure it is visible in your `PATH` (recent Go versions will put it under `$HOME/go/bin` by default). On OS X, you can also get it with `brew install modd`.
 
