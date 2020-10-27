@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine AS server
+FROM golang:1.15-alpine AS server
 WORKDIR /build
 COPY go.mod go.sum *.go /build/
 COPY cmd /build/cmd
