@@ -2,8 +2,7 @@ import Config
 
 # Configure your database
 config :talltale, Talltale.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "talltale",
   hostname: "localhost",
   database: "talltale_dev",
   stacktrace: true,
