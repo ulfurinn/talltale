@@ -15,7 +15,7 @@ module.exports = {
     extend: {
       colors: {},
       backgroundImage: {
-        'card': "url('/images/back.svg')",
+        'card': "url('/images/card.svg')",
       }
     },
   },
