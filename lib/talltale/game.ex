@@ -63,6 +63,6 @@ defmodule Talltale.Game do
          %__MODULE__{qualities: updated_qualities},
          %__MODULE__{qualities: qualities}
        ) do
-    updated_qualities.area != qualities.area && updated_qualities.location != qualities.location
+    updated_qualities.area != qualities.area || updated_qualities.location != qualities.location
   end
 end
