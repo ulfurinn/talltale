@@ -13,6 +13,7 @@ config :talltale,
 
 # Configures the endpoint
 config :talltale, TalltaleWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   render_errors: [
     formats: [html: TalltaleWeb.ErrorHTML, json: TalltaleWeb.ErrorJSON],
