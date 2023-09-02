@@ -1,0 +1,3 @@
+<div class="px-6 flex space-x-1">
+  <.tab :for={{id, tab} <- @tabs.tabs} id={id} text={tab} current={id == @tabs.current} />
+</div>

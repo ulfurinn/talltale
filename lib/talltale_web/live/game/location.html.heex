@@ -1,9 +1,11 @@
-<div class="text-md py-10">
-  You are in
-  <span class="text-stone-200 font-semibold">
-    <%= @tale.areas[@area].locations[@location].title %>
-  </span>
-  <%= @tale.areas[
-    @area
-  ].locations[@location].description %>
+<div class="max-w-2xl mx-auto">
+  <div class="mt-12 mb-8 text-stone-300 font-bold">
+    <%= @game.locations[@area][@location].title %>
+  </div>
+
+  <div class="mb-8">
+    <div :for={para <- @game.locations[@area][@location].storyline} class="my-1">
+      <%= para %>
+    </div>
+  </div>
 </div>

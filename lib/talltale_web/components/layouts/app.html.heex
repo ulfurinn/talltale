@@ -1,18 +1,18 @@
 <header class="px-4 sm:px-6 lg:px-8 border-b border-stone-600">
   <div class="flex items-center justify-between py-3 text-sm">
-    <div class="m-auto text-stone-200 text-xl font-semibold">Tall Tale</div>
+    <div class="m-auto text-stone-300 text-xl font-semibold">Tall Tale</div>
   </div>
-  <div class="flex items-center justify-between py-1 text-sm">
+  <%!-- <div class="flex items-center justify-between py-1 text-sm">
     <div class="flex items-center gap-4">
       <!-- left block -->
     </div>
     <div class="flex items-center gap-4">
       <!-- right block -->
     </div>
-  </div>
+  </div> --%>
 </header>
 <main class="px-4 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-2xl">
+  <div>
     <.flash_group flash={@flash} />
     <%= @inner_content %>
   </div>

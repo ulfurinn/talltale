@@ -49,10 +49,10 @@ defmodule TalltaleWeb do
     end
   end
 
-  def live_view do
+  def live_view(args \\ []) do
     quote do
       use Phoenix.LiveView,
-        layout: {TalltaleWeb.Layouts, :app}
+        layout: {TalltaleWeb.Layouts, unquote(args)[:layout] || :app}
 
       unquote(html_helpers())
     end
@@ -109,5 +109,9 @@ defmodule TalltaleWeb do
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
+  end
+
+  defmacro __using__([which | args]) when is_atom(which) do
+    apply(__MODULE__, which, [args])
   end
 end

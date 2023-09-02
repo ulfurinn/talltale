@@ -1,5 +1,11 @@
-defmodule Talltale.Deck do
-  defstruct [:cards]
+defmodule Talltale.Game.Deck do
+  use Talltale.Schema
+
+  alias Talltale.Game.Card
+
+  schema "decks" do
+    has_many :cards, Card
+  end
 
   def draw(%__MODULE__{cards: cards}, n) do
     draw(cards, n)

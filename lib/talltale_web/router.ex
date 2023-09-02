@@ -18,6 +18,10 @@ defmodule TalltaleWeb.Router do
     pipe_through :browser
 
     live "/", GameLive
+
+    live_session :editor do
+      live "/edit", EditorLive
+    end
   end
 
   # Other scopes may use custom stacks.

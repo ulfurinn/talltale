@@ -1,0 +1,6 @@
+<section class="mt-4">
+  <.tabs tabs={@tabs} />
+  <section class="border rounded-xl p-8">
+    <%= apply(__MODULE__, @tabs.current, [assigns]) %>
+  </section>
+</section>

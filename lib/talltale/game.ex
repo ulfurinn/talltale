@@ -1,22 +1,33 @@
 defmodule Talltale.Game do
-  alias Talltale.Deck
-  alias Talltale.Tale
+  alias Talltale.Game.Deck
+  alias Talltale.Game.Tale
 
   defstruct [
     :tale,
+    :areas,
+    :locations,
     :qualities,
     :deck,
     :cards
   ]
 
   def new(tale) do
-    %__MODULE__{tale: tale, qualities: tale.start}
-    |> shuffle()
+    %__MODULE__{
+      tale: tale,
+      areas: Enum.into(tale.areas, %{}, fn area -> {area.slug, area} end),
+      locations:
+        Enum.into(tale.areas, %{}, fn area ->
+          {area.slug,
+           Enum.into(area.locations, %{}, fn location -> {location.slug, location} end)}
+        end),
+      qualities: tale.start |> Enum.into(%{}, fn {k, v} -> {String.to_atom(k), v} end)
+    }
+    |> form_deck()
     |> draw()
   end
 
-  def shuffle(game = %__MODULE__{tale: tale, qualities: qualities}) do
-    deck = Tale.shuffle(tale, qualities)
+  def form_deck(game = %__MODULE__{tale: tale, qualities: qualities}) do
+    deck = Tale.form_deck(tale, qualities)
     %__MODULE__{game | deck: deck}
   end
 
@@ -52,7 +63,7 @@ defmodule Talltale.Game do
   defp maybe_update_deck(updated_game, game) do
     if changed_location?(updated_game, game) do
       updated_game
-      |> shuffle()
+      |> form_deck()
       |> draw()
     else
       updated_game

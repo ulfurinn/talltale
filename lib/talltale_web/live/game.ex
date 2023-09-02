@@ -2,12 +2,12 @@ defmodule TalltaleWeb.GameLive do
   use TalltaleWeb, :live_view
 
   alias Talltale.Game
-  alias Talltale.Tale
+  alias Talltale.Repo
 
   embed_templates "game/*"
 
   def mount(_params, _session, socket) do
-    game = Game.new(Tale.talltale())
+    game = Game.new(Repo.load_tale("talltale"))
 
     socket
     |> put_game(game)

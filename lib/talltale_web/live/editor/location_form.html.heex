@@ -1,0 +1,26 @@
+<.simple_form :let={f} for={@changeset} phx-change={@validate_action} phx-submit={@submit_action}>
+  <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
+  <input type="hidden" name={f[:area_id].name} value={f[:area_id].value} />
+  <input type="hidden" name="_event" />
+  <.input field={f[:slug]} label="Slug" phx-debounce="blur" />
+  <.input field={f[:title]} label="Title" phx-debounce="blur" />
+  <div>
+    <.label>Storyline</.label>
+    <.button
+      type="button"
+      name="add"
+      id="location_add_paragraph"
+      phx-hook="AddDynamicItem"
+      data-override-event="location.add_storyline"
+    >
+      <.icon name="hero-plus-circle" /> add paragraph
+    </.button>
+    <.input
+      :for={field <- f[:storyline].value || []}
+      name={f[:storyline].name <> "[]"}
+      value={field}
+      phx-debounce="blur"
+    />
+  </div>
+  <.button>Save</.button>
+</.simple_form>
