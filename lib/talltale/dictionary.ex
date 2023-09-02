@@ -1,4 +1,5 @@
 defmodule Talltale.Dictionary do
+  @moduledoc "Ecto type for representing sa map as a key-value list for easier editing through PHoenix forms."
   use Ecto.Type
 
   def type, do: :map

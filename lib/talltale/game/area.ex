@@ -1,4 +1,5 @@
 defmodule Talltale.Game.Area do
+  @moduledoc "A larger area containing several locations."
   use Talltale.Schema
 
   alias Talltale.Game.Deck

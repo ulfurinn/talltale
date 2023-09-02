@@ -4,6 +4,7 @@ defmodule TalltaleWeb.EditorLive.Area do
   import Phoenix.LiveView
   import TalltaleWeb.EditorLive.Common
 
+  alias Talltale.Editor.Area
   alias Talltale.Editor.Tale
   alias Talltale.Repo
 
@@ -31,7 +32,7 @@ defmodule TalltaleWeb.EditorLive.Area do
     area = find_or_build_area(tale, params)
 
     changeset =
-      area |> Talltale.Editor.Area.changeset(params) |> Map.put(:action, :validate)
+      area |> Area.changeset(params) |> Map.put(:action, :validate)
 
     socket
     |> put_changeset(changeset)
@@ -43,7 +44,7 @@ defmodule TalltaleWeb.EditorLive.Area do
 
     result =
       area
-      |> Talltale.Editor.Area.changeset(params)
+      |> Area.changeset(params)
       |> Repo.insert_or_update()
 
     case result do

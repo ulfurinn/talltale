@@ -1,4 +1,5 @@
 defmodule Talltale.Editor.Card do
+  @moduledoc "An action."
   use Talltale.Schema
 
   alias Talltale.Editor.Deck

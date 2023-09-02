@@ -1,4 +1,5 @@
 defmodule Talltale.Game.Card do
+  @moduledoc "An action."
   use Talltale.Schema
 
   alias Talltale.Game.Deck

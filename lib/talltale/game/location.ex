@@ -1,4 +1,5 @@
 defmodule Talltale.Game.Location do
+  @moduledoc "A game location."
   use Talltale.Schema
 
   alias Talltale.Game.Area

@@ -1,4 +1,5 @@
 defmodule Talltale.Game.Tale do
+  @moduledoc "The entire story definition."
   use Talltale.Schema
 
   alias Talltale.Game.Area

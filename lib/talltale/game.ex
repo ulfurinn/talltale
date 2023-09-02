@@ -1,4 +1,5 @@
 defmodule Talltale.Game do
+  @moduledoc "Game state."
   alias Talltale.Game.Deck
   alias Talltale.Game.Tale
 

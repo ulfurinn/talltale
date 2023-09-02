@@ -1,4 +1,5 @@
 defmodule Talltale.Game.Deck do
+  @moduledoc "A deck of cards for a particular location."
   use Talltale.Schema
 
   alias Talltale.Game.Card

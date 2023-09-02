@@ -1,4 +1,5 @@
 defmodule Talltale.Editor.Area do
+  @moduledoc "A larger area containing several locations."
   use Talltale.Schema
 
   import Ecto.Changeset

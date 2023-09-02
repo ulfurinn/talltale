@@ -61,7 +61,7 @@ defmodule TalltaleWeb.EditorLive.Location do
 
     result =
       location
-      |> Talltale.Editor.Location.changeset(params)
+      |> Location.changeset(params)
       |> Repo.insert_or_update()
 
     case result do

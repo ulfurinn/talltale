@@ -1,4 +1,5 @@
 defmodule Talltale.Game.Quality do
+  @moduledoc "A game state quality definition."
   use Talltale.Schema
 
   alias Talltale.Game.Tale

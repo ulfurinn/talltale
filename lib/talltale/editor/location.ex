@@ -1,4 +1,5 @@
 defmodule Talltale.Editor.Location do
+  @moduledoc "A game location."
   use Talltale.Schema
 
   import Ecto.Changeset

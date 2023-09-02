@@ -1,4 +1,5 @@
 defmodule Talltale.Editor.Tale do
+  @moduledoc "The entire story definition."
   use Talltale.Schema
 
   import Ecto.Changeset

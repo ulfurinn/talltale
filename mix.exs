@@ -50,7 +50,8 @@ defmodule Talltale.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:bandit, "~> 1.0-pre"},
-      {:uniq, "~> 0.1"}
+      {:uniq, "~> 0.1"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 

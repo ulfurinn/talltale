@@ -4,11 +4,12 @@ defmodule TalltaleWeb.EditorLive.Tale do
   import Phoenix.LiveView
   import TalltaleWeb.EditorLive.Common
 
+  alias Talltale.Editor.Tale
   alias Talltale.Repo
 
   def handle_event("validate", %{"tale" => params}, socket = %{assigns: %{tale: tale}}) do
     params = transpose_start(params)
-    changeset = tale |> Talltale.Editor.Tale.changeset(params) |> Map.put(:action, :validate)
+    changeset = tale |> Tale.changeset(params) |> Map.put(:action, :validate)
 
     socket
     |> put_changeset(changeset)
@@ -27,7 +28,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
 
     changeset =
       tale
-      |> Talltale.Editor.Tale.changeset(params)
+      |> Tale.changeset(params)
       |> Map.put(:action, :validate)
 
     socket
@@ -52,7 +53,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
           params
       end
 
-    changeset = tale |> Talltale.Editor.Tale.changeset(params) |> Map.put(:action, :validate)
+    changeset = tale |> Tale.changeset(params) |> Map.put(:action, :validate)
 
     socket
     |> put_changeset(changeset)
@@ -61,7 +62,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
 
   def handle_event("create", %{"save" => _, "tale" => params}, socket = %{assigns: %{tale: tale}}) do
     params = transpose_start(params)
-    changeset = Talltale.Editor.Tale.changeset(tale, params)
+    changeset = Tale.changeset(tale, params)
 
     case Repo.insert(changeset) do
       {:ok, tale} ->
@@ -86,7 +87,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
 
   def handle_event("update", %{"save" => _, "tale" => params}, socket = %{assigns: %{tale: tale}}) do
     params = transpose_start(params)
-    changeset = Talltale.Editor.Tale.changeset(tale, params)
+    changeset = Tale.changeset(tale, params)
 
     case Repo.update(changeset) do
       {:ok, tale} ->
@@ -109,7 +110,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
     end
   end
 
-  defp transpose_start(%{"start" => start} = params) do
+  defp transpose_start(params = %{"start" => start}) do
     start =
       start["key"]
       |> Enum.zip(start["value"])

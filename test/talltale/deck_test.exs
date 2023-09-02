@@ -31,7 +31,7 @@ defmodule Talltale.DeckTest do
     1..100_000
     |> Enum.each(fn _ ->
       cards = [
-        %Card{frequency: 10000, action: 1},
+        %Card{frequency: 10_000, action: 1},
         %Card{frequency: 1, action: 2},
         %Card{frequency: 1, action: 3},
         %Card{frequency: 1, action: 4},
