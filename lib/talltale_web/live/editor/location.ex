@@ -52,6 +52,19 @@ defmodule TalltaleWeb.EditorLive.Location do
     validate(params, socket)
   end
 
+  def handle_event("save", %{"delete_storyline" => index, "location" => params}, socket) do
+    params =
+      case params do
+        %{"storyline" => storyline} ->
+          Map.put(params, "storyline", List.delete_at(storyline, String.to_integer(index)))
+
+        _ ->
+          params
+      end
+
+    validate(params, socket)
+  end
+
   def handle_event("save", %{"location" => params}, socket = %{assigns: %{tale: tale}}) do
     area =
       tale

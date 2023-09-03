@@ -4,23 +4,34 @@
   <input type="hidden" name="_event" />
   <.input field={f[:slug]} label="Slug" phx-debounce="blur" />
   <.input field={f[:title]} label="Title" phx-debounce="blur" />
-  <div>
+  <div class="flex flex-col gap-2">
     <.label>Storyline</.label>
+
+    <div :for={{field, index} <- Enum.with_index(f[:storyline].value || [])} class="flex gap-2">
+      <input
+        type="text"
+        name={f[:storyline].name <> "[]"}
+        value={field}
+        phx-debounce="blur"
+        class={[
+          "block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
+          "border-neutral-300 focus:border-neutral-400"
+        ]}
+      />
+      <.button name="delete_storyline" value={index}>
+        <.icon name="hero-minus-circle" />
+      </.button>
+    </div>
+
     <.button
       type="button"
-      name="add"
       id="location_add_paragraph"
       phx-hook="AddDynamicItem"
       data-override-event="location.add_storyline"
     >
       <.icon name="hero-plus-circle" /> add paragraph
     </.button>
-    <.input
-      :for={field <- f[:storyline].value || []}
-      name={f[:storyline].name <> "[]"}
-      value={field}
-      phx-debounce="blur"
-    />
   </div>
   <.button>Save</.button>
 </.simple_form>
