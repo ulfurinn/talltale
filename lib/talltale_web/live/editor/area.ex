@@ -12,7 +12,7 @@ defmodule TalltaleWeb.EditorLive.Area do
     area = Ecto.build_assoc(tale, :areas)
 
     socket
-    |> put_validate_action("area.validate")
+    |> put_change_action("area.validate")
     |> put_submit_action("area.save")
     |> put_changeset(Ecto.Changeset.change(area))
     |> noreply()
@@ -22,7 +22,7 @@ defmodule TalltaleWeb.EditorLive.Area do
     area = Tale.get_area(tale, id: id)
 
     socket
-    |> put_validate_action("area.validate")
+    |> put_change_action("area.validate")
     |> put_submit_action("area.save")
     |> put_changeset(Ecto.Changeset.change(area))
     |> noreply()

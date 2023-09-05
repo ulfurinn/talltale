@@ -3,7 +3,6 @@ defmodule Talltale.Game.Tale do
   use Talltale.Schema
 
   alias Talltale.Game.Area
-  alias Talltale.Game.Card
   alias Talltale.Game.Deck
   alias Talltale.Game.Quality
 
@@ -13,8 +12,8 @@ defmodule Talltale.Game.Tale do
     field :start, :map, default: %{}
 
     has_many :areas, Area
-    has_many :locations, through: [:areas, :locations]
-    has_many :cards, Card
+    # has_many :locations, through: [:areas, :locations]
+    has_many :decks, Deck
     has_many :qualities, Quality
   end
 

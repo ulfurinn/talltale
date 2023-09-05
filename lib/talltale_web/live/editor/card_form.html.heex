@@ -1,0 +1,31 @@
+<.simple_form :let={f} for={@changeset} phx-change={@change_action} phx-submit={@submit_action}>
+  <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
+  <input type="hidden" name={f[:deck_id].name} value={f[:deck_id].value} />
+  <.input field={f[:slug]} label="Slug" phx-debounce="blur" />
+  <.input field={f[:title]} label="Title" phx-debounce="blur" />
+  <.input field={f[:frequency]} type="number" label="Frequency" phx-debounce="blur" />
+  <div>
+    <.label>Effects</.label>
+    <input type="checkbox" name={f[:effect_order].name <> "[]"} />
+    <div class="grid grid-cols-[auto,minmax(0,1fr)] gap-1">
+      <.inputs_for :let={effect} field={f[:effect]}>
+        <input type="hidden" name={f[:effect_order].name <> "[]"} value={effect.index} />
+        <.input
+          type="select"
+          field={effect[:type]}
+          value={effect[:type].value || Talltale.Editor.Effect.type(effect.data)}
+          label="Type"
+          prompt="Select a type"
+          options={effect_type_options()}
+        />
+        <div>
+          <.effect_block
+            effect={effect}
+            type={effect[:type].value || Talltale.Editor.Effect.type(effect.data)}
+          />
+        </div>
+      </.inputs_for>
+    </div>
+  </div>
+  <.button>Save</.button>
+</.simple_form>

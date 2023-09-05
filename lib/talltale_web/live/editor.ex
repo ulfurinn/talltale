@@ -4,6 +4,8 @@ defmodule TalltaleWeb.EditorLive do
   import TalltaleWeb.EditorLive.Common
 
   alias Talltale.Editor.Area
+  alias Talltale.Editor.Card
+  alias Talltale.Editor.Deck
   alias Talltale.Editor.Location
   alias Talltale.Editor.Tale
   alias Talltale.Repo
@@ -18,7 +20,7 @@ defmodule TalltaleWeb.EditorLive do
         socket
         |> put_tale(tale)
         |> put_tabs(tabs_for_new_tale())
-        |> put_validate_action("tale.validate")
+        |> put_change_action("tale.validate")
         |> put_submit_action("tale.create")
         |> put_changeset()
         |> ok()
@@ -27,7 +29,7 @@ defmodule TalltaleWeb.EditorLive do
         socket
         |> put_tale(tale)
         |> put_tabs(tabs_for_existing_tale())
-        |> put_validate_action("tale.validate")
+        |> put_change_action("tale.validate")
         |> put_submit_action("tale.update")
         |> put_changeset()
         |> ok()
@@ -43,9 +45,6 @@ defmodule TalltaleWeb.EditorLive do
     |> noreply()
   end
 
-  def handle_event(_, params = %{"_event" => event}, socket) when event != "",
-    do: handle_event(event, Map.delete(params, "_event"), socket)
-
   def handle_event("tale." <> action, params, socket),
     do: TalltaleWeb.EditorLive.Tale.handle_event(action, params, socket)
 
@@ -55,11 +54,19 @@ defmodule TalltaleWeb.EditorLive do
   def handle_event("location." <> action, params, socket),
     do: TalltaleWeb.EditorLive.Location.handle_event(action, params, socket)
 
+  def handle_event("deck." <> action, params, socket),
+    do: TalltaleWeb.EditorLive.Deck.handle_event(action, params, socket)
+
+  def handle_event("card." <> action, params, socket),
+    do: TalltaleWeb.EditorLive.Card.handle_event(action, params, socket)
+
   defp editor_form(assigns = %{changeset: %Ecto.Changeset{data: data}}) do
     case data do
       %Tale{} -> tale_form(assigns)
       %Area{} -> area_form(assigns)
       %Location{} -> location_form(assigns)
+      %Deck{} -> deck_form(assigns)
+      %Card{} -> card_form(assigns)
     end
   end
 

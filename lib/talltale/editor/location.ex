@@ -18,7 +18,7 @@ defmodule Talltale.Editor.Location do
 
   def changeset(tale, attrs) do
     tale
-    |> cast(attrs, [:slug, :title, :storyline])
+    |> cast(attrs, [:slug, :title, :storyline, :deck_id])
     |> validate_required([:slug, :title])
   end
 end

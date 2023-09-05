@@ -14,7 +14,7 @@ defmodule TalltaleWeb.EditorLive.Location do
     location = build_location(area)
 
     socket
-    |> put_validate_action("location.validate")
+    |> put_change_action("location.validate")
     |> put_submit_action("location.save")
     |> put_changeset(Ecto.Changeset.change(location))
     |> noreply()
@@ -29,13 +29,17 @@ defmodule TalltaleWeb.EditorLive.Location do
     location = Area.get_location(area, id: id)
 
     socket
-    |> put_validate_action("location.validate")
+    |> put_change_action("location.validate")
     |> put_submit_action("location.save")
     |> put_changeset(Ecto.Changeset.change(location))
     |> noreply()
   end
 
-  def handle_event("add_storyline", %{"location" => params}, socket) do
+  def handle_event("validate", %{"location" => params}, socket) do
+    validate(params, socket)
+  end
+
+  def handle_event("save", %{"add_storyline" => _, "location" => params}, socket) do
     params =
       case params do
         %{"storyline" => storyline} ->
@@ -45,10 +49,6 @@ defmodule TalltaleWeb.EditorLive.Location do
           Map.put(params, "storyline", [""])
       end
 
-    validate(params, socket)
-  end
-
-  def handle_event("validate", %{"location" => params}, socket) do
     validate(params, socket)
   end
 
@@ -66,11 +66,7 @@ defmodule TalltaleWeb.EditorLive.Location do
   end
 
   def handle_event("save", %{"location" => params}, socket = %{assigns: %{tale: tale}}) do
-    area =
-      tale
-      |> Tale.get_area(id: params["area_id"])
-
-    location = find_or_build_location(area, params)
+    location = find_or_build_location(tale, params)
 
     result =
       location
@@ -97,7 +93,6 @@ defmodule TalltaleWeb.EditorLive.Location do
   defp validate(params, socket = %{assigns: %{tale: tale}}) do
     changeset =
       tale
-      |> Tale.get_area(id: params["area_id"])
       |> find_or_build_location(params)
       |> Location.changeset(params)
       |> Map.put(:action, :validate)
@@ -107,8 +102,14 @@ defmodule TalltaleWeb.EditorLive.Location do
     |> noreply()
   end
 
-  defp find_or_build_location(area, %{"id" => id}), do: Area.get_location(area, id: id)
-  defp find_or_build_location(area, _), do: build_location(area)
+  defp find_or_build_location(tale, params) do
+    area = tale |> Tale.get_area(id: params["area_id"])
+
+    case params do
+      %{"id" => id} -> Area.get_location(area, id: id)
+      _ -> build_location(area)
+    end
+  end
 
   defp build_location(area) do
     Ecto.build_assoc(area, :locations)

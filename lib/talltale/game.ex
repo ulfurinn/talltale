@@ -49,16 +49,16 @@ defmodule Talltale.Game do
     %__MODULE__{game | deck: deck}
   end
 
-  defp apply_effect(game, effect) do
-    effect
-    |> Enum.reduce(game, fn {key, value}, game ->
-      apply_effect(game, key, value)
-    end)
+  defp apply_effect(game, effects) when is_list(effects) do
+    effects
+    |> Enum.reduce(game, &apply_effect(&2, &1))
   end
 
-  defp apply_effect(game = %__MODULE__{qualities: qualities}, key, value)
+  defp apply_effect(game = %__MODULE__{qualities: qualities}, %{
+         "set_quality" => %{"quality" => quality, "value" => value}
+       })
        when is_binary(value) or is_number(value) do
-    %__MODULE__{game | qualities: Map.put(qualities, key, value)}
+    %__MODULE__{game | qualities: Map.put(qualities, String.to_atom(quality), value)}
   end
 
   defp maybe_update_deck(updated_game, game) do

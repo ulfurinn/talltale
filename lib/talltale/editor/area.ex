@@ -19,7 +19,7 @@ defmodule Talltale.Editor.Area do
 
   def changeset(area, attrs) do
     area
-    |> cast(attrs, [:slug, :title])
+    |> cast(attrs, [:slug, :title, :deck_id])
     |> validate_required([:slug, :title])
   end
 

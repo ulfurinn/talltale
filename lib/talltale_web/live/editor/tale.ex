@@ -71,7 +71,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
         socket
         |> put_tale(tale)
         |> put_tabs(tabs_for_existing_tale())
-        |> put_validate_action("tale.validate")
+        |> put_change_action("tale.validate")
         |> put_submit_action("tale.update")
         |> put_changeset()
         |> put_flash(:info, "Saved")
@@ -96,7 +96,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
         socket
         |> put_tale(tale)
         |> put_tabs(tabs_for_existing_tale())
-        |> put_validate_action("tale.validate")
+        |> put_change_action("tale.validate")
         |> put_submit_action("tale.update")
         |> put_changeset()
         |> put_flash(:info, "Saved")

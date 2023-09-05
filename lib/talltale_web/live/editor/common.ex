@@ -6,9 +6,9 @@ defmodule TalltaleWeb.EditorLive.Common do
     |> assign(:tale, tale)
   end
 
-  def put_validate_action(socket, action) do
+  def put_change_action(socket, action) do
     socket
-    |> assign(:validate_action, action)
+    |> assign(:change_action, action)
   end
 
   def put_submit_action(socket, action) do
@@ -58,8 +58,36 @@ defmodule TalltaleWeb.EditorLive.Common do
         areas: "Areas/Locations",
         cards: "Cards"
       ],
-      current: :areas
+      current: :tale
     }
+  end
+
+  def effect_type_options do
+    [
+      {"Set quality", "set_quality"}
+    ]
+  end
+
+  def effect_block(assigns = %{type: type}) do
+    case type do
+      nil ->
+        ~H"<div></div>"
+
+      "" ->
+        ~H"<div></div>"
+
+      type ->
+        assigns =
+          assigns
+          |> assign(:type, String.to_existing_atom(type))
+          |> assign(:component, String.to_existing_atom("effect_#{type}"))
+
+        ~H"""
+        <.inputs_for :let={effect} field={@effect[@type]}>
+          <%= apply(__MODULE__, @component, [assign(assigns, :effect, effect)]) %>
+        </.inputs_for>
+        """
+    end
   end
 
   def ok(socket) do

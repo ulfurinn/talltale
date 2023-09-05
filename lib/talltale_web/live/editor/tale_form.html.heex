@@ -1,4 +1,4 @@
-<.simple_form :let={f} for={@changeset} phx-change={@validate_action} phx-submit={@submit_action}>
+<.simple_form :let={f} for={@changeset} phx-change={@change_action} phx-submit={@submit_action}>
   <.input field={f[:slug]} label="Slug" phx-debounce="blur" />
   <.input field={f[:title]} label="Title" phx-debounce="blur" />
   <!-- Enter submits using the first submit button in the form, thanks -->

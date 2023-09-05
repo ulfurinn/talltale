@@ -3,8 +3,12 @@ defmodule Talltale.Game.Deck do
   use Talltale.Schema
 
   alias Talltale.Game.Card
+  alias Talltale.Game.Tale
 
   schema "decks" do
+    field :title, :string
+
+    belongs_to :tale, Tale
     has_many :cards, Card
   end
 

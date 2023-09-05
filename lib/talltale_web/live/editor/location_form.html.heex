@@ -1,9 +1,16 @@
-<.simple_form :let={f} for={@changeset} phx-change={@validate_action} phx-submit={@submit_action}>
+<.simple_form :let={f} for={@changeset} phx-change={@change_action} phx-submit={@submit_action}>
   <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
   <input type="hidden" name={f[:area_id].name} value={f[:area_id].value} />
   <input type="hidden" name="_event" />
   <.input field={f[:slug]} label="Slug" phx-debounce="blur" />
   <.input field={f[:title]} label="Title" phx-debounce="blur" />
+  <.input
+    type="select"
+    field={f[:deck_id]}
+    label="Deck"
+    prompt="Select a deck"
+    options={Enum.map(@tale.decks, &{&1.title, &1.id})}
+  />
   <div class="flex flex-col gap-2">
     <.label>Storyline</.label>
 
@@ -24,12 +31,7 @@
       </.button>
     </div>
 
-    <.button
-      type="button"
-      id="location_add_paragraph"
-      phx-hook="AddDynamicItem"
-      data-override-event="location.add_storyline"
-    >
+    <.button name="add_storyline">
       <.icon name="hero-plus-circle" /> add paragraph
     </.button>
   </div>

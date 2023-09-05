@@ -5,7 +5,7 @@ defmodule Talltale.Editor.Tale do
   import Ecto.Changeset
 
   alias Talltale.Editor.Area
-  alias Talltale.Editor.Card
+  alias Talltale.Editor.Deck
   alias Talltale.Editor.Quality
 
   schema "tales" do
@@ -15,7 +15,7 @@ defmodule Talltale.Editor.Tale do
 
     has_many :areas, Area
     has_many :locations, through: [:areas, :locations]
-    has_many :cards, Card
+    has_many :decks, Deck
     has_many :qualities, Quality
   end
 
@@ -27,5 +27,9 @@ defmodule Talltale.Editor.Tale do
 
   def get_area(%__MODULE__{areas: areas}, id: id) do
     areas |> Enum.find(&(&1.id == id))
+  end
+
+  def get_deck(%__MODULE__{decks: decks}, id: id) do
+    decks |> Enum.find(&(&1.id == id))
   end
 end

@@ -1,0 +1,37 @@
+<div class="flex flex-row gap-4 items-start">
+  <div class="basis-1/3 border rounded-md p-2 space-y-4">
+    <div phx-click="deck.new" class="cursor-pointer mb-2">
+      <.icon name="hero-plus-circle" /> new deck
+    </div>
+
+    <div
+      :for={deck <- @tale.decks}
+      phx-click="deck.edit"
+      phx-value-id={deck.id}
+      class="cursor-pointer"
+    >
+      <%= deck.title %>
+      <div class="ml-2">
+        <div phx-click="card.new" phx-value-deck_id={deck.id} class="cursor-pointer">
+          <.icon name="hero-plus-circle" /> new card
+        </div>
+        <div
+          :for={card <- deck.cards}
+          phx-click="card.edit"
+          phx-value-deck_id={deck.id}
+          phx-value-id={card.id}
+          class="cursor-pointer"
+        >
+          <%= card.title %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="basis-2/3">
+    <.editor_form
+      changeset={@changeset}
+      change_action={@change_action}
+      submit_action={@submit_action}
+    />
+  </div>
+</div>
