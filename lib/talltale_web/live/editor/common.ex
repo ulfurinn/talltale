@@ -6,6 +6,11 @@ defmodule TalltaleWeb.EditorLive.Common do
     |> assign(:tale, tale)
   end
 
+  def put_tales(socket, tales) do
+    socket
+    |> assign(:tales, tales)
+  end
+
   def put_change_action(socket, action) do
     socket
     |> assign(:change_action, action)
@@ -16,21 +21,9 @@ defmodule TalltaleWeb.EditorLive.Common do
     |> assign(:submit_action, action)
   end
 
-  def put_changeset(socket) do
-    put_changeset(socket, initial_tab_changeset(socket, socket.assigns.tabs.current))
-  end
-
   def put_changeset(socket, changeset) do
     socket
     |> assign(:changeset, changeset)
-  end
-
-  def initial_tab_changeset(socket, :tale) do
-    Ecto.Changeset.change(socket.assigns.tale)
-  end
-
-  def initial_tab_changeset(_, _) do
-    nil
   end
 
   def put_tabs(socket, tabs) do
@@ -43,14 +36,7 @@ defmodule TalltaleWeb.EditorLive.Common do
     |> assign(:tabs, %{tabs | current: id})
   end
 
-  def tabs_for_new_tale do
-    %{
-      tabs: [tale: "Tale"],
-      current: :tale
-    }
-  end
-
-  def tabs_for_existing_tale do
+  def tabs do
     %{
       tabs: [
         tale: "Tale",

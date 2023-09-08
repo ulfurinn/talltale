@@ -1,12 +1,20 @@
 <.simple_form :let={f} for={@changeset} phx-change={@change_action} phx-submit={@submit_action}>
-  <.input field={f[:slug]} label="Slug" phx-debounce="blur" />
-  <.input field={f[:title]} label="Title" phx-debounce="blur" />
-  <!-- Enter submits using the first submit button in the form, thanks -->
-  <.button name="save">Save</.button>
+  <.input field={f[:slug]} label="Slug" autocomplete="off" phx-debounce="blur" />
+  <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />
 
   <div>
     <.label>Starting qualities</.label>
-    <.button name="add"><.icon name="hero-plus-circle" /> add item</.button>
-    <.kv_input field={f[:start]} />
+    <.toggle_button field={f[:start_order]} checked={false} class="mb-2">
+      <:off><.icon name="hero-plus-circle" /> add quality</:off>
+    </.toggle_button>
+    <.kv_input field={f[:start]} sort_field={f[:start_order]} delete_field={f[:start_delete]} />
+    <.toggle_checkbox
+      field={f[:start_order]}
+      multiple={true}
+      checked={false}
+      value={Enum.count(f[:start].value)}
+    />
   </div>
+
+  <.button name="save">Save</.button>
 </.simple_form>

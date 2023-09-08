@@ -1,6 +1,14 @@
-<section class="mt-4">
+<section :if={@tabs} class="mt-4">
   <.tabs tabs={@tabs} />
   <section class="border rounded-xl p-8">
     <%= apply(__MODULE__, @tabs.current, [assigns]) %>
   </section>
 </section>
+
+<.tale_selector
+  :if={@tales}
+  tales={@tales}
+  changeset={@changeset}
+  change_action={@change_action}
+  submit_action={@submit_action}
+/>

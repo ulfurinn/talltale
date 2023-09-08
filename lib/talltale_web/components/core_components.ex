@@ -387,6 +387,8 @@ defmodule TalltaleWeb.CoreComponents do
 
   attr :id, :any, default: nil
   attr :field, :any, required: true
+  attr :sort_field, :any, default: nil
+  attr :delete_field, :any, default: nil
 
   def kv_input(assigns = %{field: field = %Phoenix.HTML.FormField{}}) do
     assigns
@@ -402,11 +404,13 @@ defmodule TalltaleWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name} class="space-y-3">
       <div :for={{{key, value}, index} <- Enum.with_index(@value)} class="flex gap-2">
+        <.input :if={@sort_field} type="hidden" name={@sort_field.name <> "[]"} value={index}/>
         <input
           type="text"
           name={@name <> "[key][]"}
           id={"#{@id}_key_#{index}"}
           value={key}
+          autocomplete="off"
           class={[
             "block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
             "phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
@@ -419,6 +423,7 @@ defmodule TalltaleWeb.CoreComponents do
           name={@name <> "[value][]"}
           id={"#{@id}_value_#{index}"}
           value={value}
+          autocomplete="off"
           class={[
             "block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
             "phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
@@ -426,10 +431,107 @@ defmodule TalltaleWeb.CoreComponents do
           ]}
           phx-debounce="blur"
         />
-        <.button name="delete" value={key}><.icon name="hero-minus-circle" /></.button>
+        <.toggle :if={@delete_field} field={@delete_field} id={"#{@delete_field.id}_#{key}"} name={"#{@delete_field.name}[]"} value={key} checked={false}>
+          <:off><.icon name="hero-minus-circle" /></:off>
+        </.toggle>
       </div>
       <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
+    """
+  end
+
+  @doc """
+  Renders a button tied to a hidden checkbox.
+  """
+
+  attr :field, Phoenix.HTML.FormField
+  attr :id, :string, default: nil
+  attr :name, :string, default: nil
+  attr :value, :string, default: nil
+  attr :checked, :boolean, default: nil
+  attr :multiple, :boolean, default: false
+
+  slot :on
+  slot :off
+
+  def toggle(assigns) do
+    ~H"""
+    <div>
+      <.toggle_checkbox
+        field={@field}
+        id={@id}
+        name={@name}
+        value={@value}
+        checked={@checked}
+        multiple={@multiple}
+      />
+      <.toggle_button field={@field} id={@id} checked={@checked}>
+        <:off><%= render_slot(@off) %></:off>
+        <:on><%= render_slot(@on) %></:on>
+      </.toggle_button>
+    </div>
+    """
+  end
+
+  @doc """
+  The hidden checkbox constituent of `toggle/1`.
+
+  Available separately in case you need to render the checkbox and its proxy button in different parts.
+  """
+
+  attr :field, Phoenix.HTML.FormField
+  attr :id, :string, default: nil
+  attr :name, :string, default: nil
+  attr :value, :string, default: nil
+  attr :checked, :boolean, default: nil
+  attr :multiple, :boolean, default: false
+
+  def toggle_checkbox(assigns) do
+    ~H"""
+    <input
+      type="checkbox"
+      id={(@id || @field.id) <> "_checkbox"}
+      name={(@name || @field.name) <> (if @multiple, do: "[]", else: "")}
+      value={@value || "on"}
+      checked={if @checked == nil, do: @field.value, else: @checked}
+      class="hidden"
+    />
+    """
+  end
+
+  @doc """
+  The proxy button constituent of `toggle/1`.
+
+  Available separately in case you need to render the checkbox and its proxy button in different parts.
+  """
+
+  attr :field, Phoenix.HTML.FormField
+  attr :id, :string, default: nil
+  attr :checked, :boolean, default: nil
+  attr :class, :string, default: nil
+
+  slot :on
+  slot :off
+
+  def toggle_button(assigns) do
+    assigns =
+      assigns
+      |> assign(
+        :checked,
+        if(assigns.checked == nil, do: assigns.field.value, else: assigns.checked)
+      )
+
+    ~H"""
+    <.button
+      type="button"
+      id={(@id || @field.id) <> "_toggle"}
+      phx-hook="CheckboxProxy"
+      data-checkbox={(@id || @field.id) <> "_checkbox"}
+      class={@class}
+    >
+      <%= if !@checked && @off, do: render_slot(@off) %>
+      <%= if @checked && @on, do: render_slot(@on) %>
+    </.button>
     """
   end
 

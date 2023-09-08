@@ -23,17 +23,14 @@ import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
 let hooks = {};
-
-hooks.AddDynamicItem = {
+hooks.CheckboxProxy = {
   mounted() {
     this.el.addEventListener("click", e => {
-      console.log(e.target.dataset.overrideEvent);
-      console.log(e.target.form.elements["_event"]);
-      e.target.form.elements["_event"].value = e.target.dataset.overrideEvent;
-      e.target.form.dispatchEvent(
-        new Event("submit", { bubbles: true, cancelable: true })
-      );
-      e.target.form.elements["_event"].value = null;
+      let checkbox = document.getElementById(this.el.dataset.checkbox);
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+      }
     });
   }
 };

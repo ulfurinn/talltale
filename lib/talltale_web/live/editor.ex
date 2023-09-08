@@ -12,26 +12,29 @@ defmodule TalltaleWeb.EditorLive do
 
   embed_templates "editor/*"
 
-  def mount(_params, _session, socket) do
-    case Repo.load_tale_for_editing("talltale") do
-      nil ->
-        tale = %Talltale.Editor.Tale{}
+  def mount(params, _session, socket) do
+    case params do
+      %{"tale" => id} ->
+        tale = Repo.load_tale_for_editing(id)
 
         socket
         |> put_tale(tale)
-        |> put_tabs(tabs_for_new_tale())
-        |> put_change_action("tale.validate")
-        |> put_submit_action("tale.create")
-        |> put_changeset()
+        |> put_tales(nil)
+        |> put_tabs(tabs())
+        |> put_change_action("tale.change")
+        |> put_submit_action("tale.update")
+        |> put_changeset(Ecto.Changeset.change(tale))
         |> ok()
 
-      tale ->
+      _ ->
+        tales = Repo.list_tales()
+
         socket
-        |> put_tale(tale)
-        |> put_tabs(tabs_for_existing_tale())
-        |> put_change_action("tale.validate")
-        |> put_submit_action("tale.update")
-        |> put_changeset()
+        |> put_tales(tales)
+        |> put_tabs(nil)
+        |> put_changeset(Ecto.Changeset.change(%Tale{}))
+        |> put_submit_action("tale.create")
+        |> put_change_action("select_tale")
         |> ok()
     end
   end
@@ -39,10 +42,29 @@ defmodule TalltaleWeb.EditorLive do
   def handle_event("select_tab", %{"id" => id}, socket) do
     tab = String.to_existing_atom(id)
 
+    changeset =
+      case tab do
+        :tale -> Ecto.Changeset.change(socket.assigns.tale)
+        _ -> nil
+      end
+
     socket
     |> put_current_tab(tab)
-    |> put_changeset()
+    |> put_changeset(changeset)
     |> noreply()
+  end
+
+  def handle_event("select_tale", params, socket) do
+    case params do
+      %{"slug" => slug} ->
+        socket
+        |> redirect(to: ~p"/edit?tale=#{slug}")
+        |> noreply()
+
+      _ ->
+        socket
+        |> noreply()
+    end
   end
 
   def handle_event("tale." <> action, params, socket),

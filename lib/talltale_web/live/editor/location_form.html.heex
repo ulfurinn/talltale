@@ -2,8 +2,8 @@
   <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
   <input type="hidden" name={f[:area_id].name} value={f[:area_id].value} />
   <input type="hidden" name="_event" />
-  <.input field={f[:slug]} label="Slug" phx-debounce="blur" />
-  <.input field={f[:title]} label="Title" phx-debounce="blur" />
+  <.input field={f[:slug]} label="Slug" autocomplete="off" phx-debounce="blur" />
+  <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />
   <.input
     type="select"
     field={f[:deck_id]}
@@ -15,17 +15,16 @@
     <.label>Storyline</.label>
 
     <div :for={{field, index} <- Enum.with_index(f[:storyline].value || [])} class="flex gap-2">
-      <input
-        type="text"
+      <textarea
+        rows="1"
         name={f[:storyline].name <> "[]"}
-        value={field}
         phx-debounce="blur"
         class={[
           "block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
           "border-neutral-300 focus:border-neutral-400"
         ]}
-      />
+      ><%= field %></textarea>
       <.button name="delete_storyline" value={index}>
         <.icon name="hero-minus-circle" />
       </.button>

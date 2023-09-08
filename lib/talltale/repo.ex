@@ -5,6 +5,12 @@ defmodule Talltale.Repo do
 
   import Ecto.Query, only: [from: 2]
 
+  def list_tales do
+    q = Talltale.Editor.Tale
+
+    all(q)
+  end
+
   def load_tale(slug) do
     assocs = all_assocs()
 
