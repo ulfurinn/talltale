@@ -70,7 +70,7 @@ defmodule TalltaleWeb.EditorLive.Common do
 
         ~H"""
         <.inputs_for :let={effect} field={@effect[@type]}>
-          <%= apply(__MODULE__, @component, [assign(assigns, :effect, effect)]) %>
+          <%= apply(TalltaleWeb.EditorLive, @component, [assign(assigns, :effect, effect)]) %>
         </.inputs_for>
         """
     end
