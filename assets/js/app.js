@@ -21,6 +21,7 @@ import "phoenix_html"
 import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import Sortable from "../vendor/sortable"
 
 let hooks = {};
 hooks.CheckboxProxy = {
@@ -32,6 +33,24 @@ hooks.CheckboxProxy = {
         checkbox.dispatchEvent(new Event("change", { bubbles: true }));
       }
     });
+  }
+};
+
+hooks.SortableInputsFor = {
+  mounted() {
+    let group = this.el.dataset.group;
+    let sorter = new Sortable(this.el, {
+      group: group ? { name: group, pull: true, put: true } : undefined,
+      animation: 150,
+      dragClass: "drag-item",
+      ghostClass: "drag-ghost",
+      handle: "[data-handle]",
+      forceFallback: true,
+      onEnd: e => {
+        this.el.closest("form").querySelector("input").dispatchEvent(new Event("input", { bubbles: true }))
+      }
+    });
+    console.log(sorter);
   }
 };
 

@@ -735,10 +735,11 @@ defmodule TalltaleWeb.CoreComponents do
   """
   attr :name, :string, required: true
   attr :class, :string, default: nil
+  attr :rest, :global
 
   def icon(assigns = %{name: "hero-" <> _}) do
     ~H"""
-    <span class={[@name, @class]} />
+    <span class={[@name, @class]} {@rest}/>
     """
   end
 
