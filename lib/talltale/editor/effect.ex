@@ -1,6 +1,6 @@
 defmodule Talltale.Editor.Effect do
   @moduledoc false
-  use Ecto.Schema
+  use Talltale.Schema
 
   import Ecto.Changeset
 

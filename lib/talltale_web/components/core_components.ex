@@ -350,8 +350,8 @@ defmodule TalltaleWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-neutral-300 focus:ring-0 sm:text-sm sm:leading-6",
-          "min-h-[6rem] phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
+          "mt-1 block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "min-h-[2rem] phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
           @errors == [] && "border-neutral-300 focus:border-neutral-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
@@ -373,7 +373,7 @@ defmodule TalltaleWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-1 block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
           @errors == [] && "border-neutral-300 focus:border-neutral-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -402,7 +402,7 @@ defmodule TalltaleWeb.CoreComponents do
 
   def kv_input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class="space-y-3">
+    <div phx-feedback-for={@name} class="space-y-2">
       <div :for={{{key, value}, index} <- Enum.with_index(@value)} class="flex gap-2">
         <.input :if={@sort_field} type="hidden" name={@sort_field.name <> "[]"} value={index}/>
         <input
