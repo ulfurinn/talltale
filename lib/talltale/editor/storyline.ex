@@ -6,6 +6,15 @@ defmodule Talltale.Editor.Storyline do
   embedded_schema do
     field :text, :string
     field :condition, :string
+
+    field :delete, :boolean, virtual: true
+  end
+
+  def changeset(storyline, %{"delete" => _}) do
+    storyline
+    |> change()
+    |> put_change(:delete, true)
+    |> Map.put(:action, :delete)
   end
 
   def changeset(storyline, attrs) do

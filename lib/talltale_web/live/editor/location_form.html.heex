@@ -18,12 +18,7 @@
         <.icon name="hero-bars-3" class="w-6 h-6" data-handle />
         <div class="flex justify-between">
           <.input field={s[:condition]} phx-debounce="blur" />
-          <.toggle
-            field={f[:storyline_delete]}
-            id={"#{f[:storyline_delete].id}_#{s.index}"}
-            multiple={true}
-            value={s.index}
-          >
+          <.toggle field={s[:delete]}>
             <:off><.icon name="hero-trash" /> delete</:off>
             <:on><.icon name="hero-arrow-path" /> restore</:on>
           </.toggle>

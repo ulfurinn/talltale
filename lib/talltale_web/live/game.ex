@@ -10,6 +10,7 @@ defmodule TalltaleWeb.GameLive do
     game = Game.new(Repo.load_tale("talltale"))
 
     socket
+    |> assign(:theme, "game")
     |> put_game(game)
     |> ok()
   end

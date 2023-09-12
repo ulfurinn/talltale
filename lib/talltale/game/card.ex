@@ -8,6 +8,7 @@ defmodule Talltale.Game.Card do
     field :slug, :string
     field :title, :string
     field :frequency, :integer
+    field :condition, :string
     field :effect, Talltale.JSONB
 
     belongs_to :deck, Deck

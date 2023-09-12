@@ -23,7 +23,6 @@ defmodule Talltale.Editor.Location do
     |> validate_required([:slug, :title])
     |> cast_embed(:storyline,
       sort_param: :storyline_order,
-      drop_param: :storyline_delete,
       with: &Storyline.changeset/2
     )
   end

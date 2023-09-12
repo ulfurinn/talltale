@@ -1,4 +1,8 @@
-<div class="flex gap-1">
-  <.input field={@effect[:quality]} label="Quality" />
-  <.input field={@effect[:value]} label="Value" />
+<div>
+  <.input
+    field={@effect[:expression]}
+    placeholder="Expression"
+    autocomplete="off"
+    phx-debounce="blur"
+  />
 </div>

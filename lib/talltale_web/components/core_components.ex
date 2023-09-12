@@ -330,7 +330,7 @@ defmodule TalltaleWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-2 block w-full rounded-md border border-gray-300 text-neutral-300 bg-neutral-900 shadow-sm focus:border-neutral-400 focus:ring-0 sm:text-sm"
+        class="mt-1 block w-full rounded-md border border-gray-300 text-neutral-300 bg-neutral-900 shadow-sm focus:border-neutral-400 focus:ring-0 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -373,7 +373,7 @@ defmodule TalltaleWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-1 block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-1 block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm",
           "phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
           @errors == [] && "border-neutral-300 focus:border-neutral-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -404,7 +404,7 @@ defmodule TalltaleWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name} class="space-y-2">
       <div :for={{{key, value}, index} <- Enum.with_index(@value)} class="flex gap-2">
-        <.input :if={@sort_field} type="hidden" name={@sort_field.name <> "[]"} value={index}/>
+        <.input :if={@sort_field} type="hidden" name={@sort_field.name <> "[]"} value={index} />
         <input
           type="text"
           name={@name <> "[key][]"}
@@ -431,7 +431,14 @@ defmodule TalltaleWeb.CoreComponents do
           ]}
           phx-debounce="blur"
         />
-        <.toggle :if={@delete_field} field={@delete_field} id={"#{@delete_field.id}_#{key}"} name={"#{@delete_field.name}[]"} value={key} checked={false}>
+        <.toggle
+          :if={@delete_field}
+          field={@delete_field}
+          id={"#{@delete_field.id}_#{key}"}
+          name={"#{@delete_field.name}[]"}
+          value={key}
+          checked={false}
+        >
           <:off><.icon name="hero-minus-circle" /></:off>
         </.toggle>
       </div>
@@ -450,26 +457,25 @@ defmodule TalltaleWeb.CoreComponents do
   attr :value, :string, default: nil
   attr :checked, :boolean, default: nil
   attr :multiple, :boolean, default: false
+  attr :class, :string, default: nil
 
   slot :on
   slot :off
 
   def toggle(assigns) do
     ~H"""
-    <div>
-      <.toggle_checkbox
-        field={@field}
-        id={@id}
-        name={@name}
-        value={@value}
-        checked={@checked}
-        multiple={@multiple}
-      />
-      <.toggle_button field={@field} id={@id} checked={@checked}>
-        <:off><%= render_slot(@off) %></:off>
-        <:on><%= render_slot(@on) %></:on>
-      </.toggle_button>
-    </div>
+    <.toggle_checkbox
+      field={@field}
+      id={@id}
+      name={@name}
+      value={@value}
+      checked={@checked}
+      multiple={@multiple}
+    />
+    <.toggle_button field={@field} id={@id} checked={@checked} class={@class}>
+      <:off><%= render_slot(@off) %></:off>
+      <:on><%= render_slot(@on) %></:on>
+    </.toggle_button>
     """
   end
 
@@ -739,7 +745,7 @@ defmodule TalltaleWeb.CoreComponents do
 
   def icon(assigns = %{name: "hero-" <> _}) do
     ~H"""
-    <span class={[@name, @class]} {@rest}/>
+    <span class={[@name, @class]} {@rest} />
     """
   end
 

@@ -18,6 +18,7 @@ defmodule TalltaleWeb.EditorLive do
         tale = Repo.load_tale_for_editing(id)
 
         socket
+        |> assign(:theme, "editor")
         |> put_tale(tale)
         |> put_tales(nil)
         |> put_tabs(tabs())
@@ -30,6 +31,7 @@ defmodule TalltaleWeb.EditorLive do
         tales = Repo.list_tales()
 
         socket
+        |> assign(:theme, "editor")
         |> put_tales(tales)
         |> put_tabs(nil)
         |> put_changeset(Ecto.Changeset.change(%Tale{}))
