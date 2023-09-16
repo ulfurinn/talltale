@@ -6,9 +6,10 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :talltale, Talltale.Repo,
-  username: "talltale",
-  hostname: "localhost",
-  database: "talltale_test#{System.get_env("MIX_TEST_PARTITION")}",
+  username: System.get_env("DBUSER", "talltale"),
+  password: System.get_env("DBPASS"),
+  hostname: System.get_env("DBHOST", "localhost"),
+  database: System.get_env("DBNAME", "talltale_test#{System.get_env("MIX_TEST_PARTITION")}"),
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 

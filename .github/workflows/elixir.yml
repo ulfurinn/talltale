@@ -20,6 +20,13 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: talltale
+          POSTGRES_PASSWORD: talltale
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up Elixir
@@ -37,3 +44,8 @@ jobs:
       run: mix deps.get
     - name: Run tests
       run: mix test
+      env:
+        DBHOST: postgres
+        DBUSER: talltale
+        DBPASS: talltale
+        DBNAME: talltale
