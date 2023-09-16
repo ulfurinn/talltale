@@ -4,8 +4,11 @@
   </div>
 
   <div class="mb-8">
-    <div :for={para <- @game.locations[@area][@location].storyline} class="my-1">
-      <%= para %>
+    <div
+      :for={para <- Game.build_storyline(@game.locations[@area][@location], @game.qualities)}
+      class="my-1"
+    >
+      <%= para.text %>
     </div>
   </div>
 </div>
