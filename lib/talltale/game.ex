@@ -35,13 +35,16 @@ defmodule Talltale.Game do
 
     deck =
       Tale.form_deck(tale, qualities)
-      |> Enum.filter(&(&1.condition == nil || eval_condition(&1.condition, qualities)))
 
     %__MODULE__{game | deck: deck}
   end
 
   def draw(game = %__MODULE__{deck: deck, qualities: qualities}) do
-    cards = Deck.draw(deck, qualities.hand_size)
+    cards =
+      deck
+      |> Enum.filter(&eval_condition(&1.condition, qualities))
+      |> Deck.draw(qualities.hand_size)
+
     %__MODULE__{game | cards: cards}
   end
 
@@ -60,8 +63,10 @@ defmodule Talltale.Game do
 
   def build_storyline(location, qualities) do
     location.storyline
-    |> Enum.filter(&(&1.condition == nil || eval_condition(&1.condition, qualities)))
+    |> Enum.filter(&eval_condition(&1.condition, qualities))
   end
+
+  defp eval_condition(nil, _), do: true
 
   defp eval_condition(expression, qualities) do
     Expression.eval(expression, qualities) == true
