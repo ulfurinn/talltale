@@ -16,20 +16,4 @@ defmodule Talltale.Game.Tale do
     has_many :decks, Deck
     has_many :qualities, Quality
   end
-
-  def form_deck(tale, qualities) do
-    area = tale.areas |> Enum.find(&(&1.slug == qualities.area))
-
-    location =
-      case area do
-        nil -> nil
-        area -> area.locations |> Enum.find(&(&1.slug == qualities.location))
-      end
-
-    deck_cards(area) ++ deck_cards(location)
-  end
-
-  defp deck_cards(%{deck: deck}), do: deck_cards(deck)
-  defp deck_cards(nil), do: []
-  defp deck_cards(%Deck{cards: cards}), do: cards
 end

@@ -30,14 +30,28 @@ defmodule Talltale.Game do
     |> draw()
   end
 
-  def form_deck(game = %__MODULE__{tale: tale, qualities: qualities}) do
-    Logger.debug("forming deck")
-
+  defp form_deck(game = %__MODULE__{tale: tale, qualities: qualities}) do
     deck =
-      Tale.form_deck(tale, qualities)
+      form_deck(tale, qualities)
 
     %__MODULE__{game | deck: deck}
   end
+
+  defp form_deck(%Tale{areas: areas}, qualities) do
+    area = areas |> Enum.find(&(&1.slug == qualities.area))
+
+    location =
+      case area do
+        nil -> nil
+        area -> area.locations |> Enum.find(&(&1.slug == qualities.location))
+      end
+
+    deck_cards(area) ++ deck_cards(location)
+  end
+
+  defp deck_cards(%{deck: deck}), do: deck_cards(deck)
+  defp deck_cards(nil), do: []
+  defp deck_cards(%Deck{cards: cards}), do: cards
 
   def draw(game = %__MODULE__{deck: deck, qualities: qualities}) do
     cards =

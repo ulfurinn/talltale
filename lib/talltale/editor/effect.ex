@@ -61,7 +61,7 @@ defmodule Talltale.Editor.Effect do
     changeset |> cast_embed(:set_quality, with: &SetQuality.changeset/2)
   end
 
-  defp cast_for_type(changeset, type), do: raise("unknown effect #{type}")
+  defp cast_for_type(_, type), do: raise("unknown effect #{type}")
 
   def type(%__MODULE__{set_quality: %{}}), do: "set_quality"
   def type(%__MODULE__{}), do: nil
