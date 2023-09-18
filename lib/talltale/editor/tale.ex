@@ -32,4 +32,8 @@ defmodule Talltale.Editor.Tale do
   def get_deck(%__MODULE__{decks: decks}, id: id) do
     decks |> Enum.find(&(&1.id == id))
   end
+
+  def get_quality(%__MODULE__{qualities: qualities}, id: id) do
+    qualities |> Enum.find(&(&1.id == id))
+  end
 end

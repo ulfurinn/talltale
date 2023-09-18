@@ -5,7 +5,6 @@ defmodule Talltale.Game.Card do
   alias Talltale.Game.Deck
 
   schema "cards" do
-    field :slug, :string
     field :title, :string
     field :frequency, :integer
     field :condition, :string

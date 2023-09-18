@@ -4,7 +4,17 @@
 
   <div>
     <.label>Starting qualities</.label>
-    <.kv_input field={f[:start]} sort_field={f[:start_order]} delete_field={f[:start_delete]} />
+    <.kv_input
+      field={f[:start]}
+      sort_field={f[:start_order]}
+      delete_field={f[:start_delete]}
+      options={
+        %{
+          "area" => Enum.map(@tale.areas, &{&1.title, &1.id}),
+          "location" => Enum.map(@tale.locations, &{&1.title, &1.id})
+        }
+      }
+    />
   </div>
   <.toggle
     field={f[:start_order]}

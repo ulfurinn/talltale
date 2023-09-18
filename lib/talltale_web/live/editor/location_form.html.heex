@@ -2,7 +2,6 @@
   <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
   <input type="hidden" name={f[:area_id].name} value={f[:area_id].value} />
   <input type="hidden" name="_event" />
-  <.input field={f[:slug]} label="Slug" autocomplete="off" phx-debounce="blur" />
   <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />
   <.input
     type="select"

@@ -8,7 +8,6 @@ defmodule Talltale.Editor.Card do
   alias Talltale.Editor.Effect
 
   schema "cards" do
-    field :slug, :string
     field :title, :string
     field :frequency, :integer
     field :condition, :string
@@ -20,8 +19,8 @@ defmodule Talltale.Editor.Card do
 
   def changeset(area, attrs) do
     area
-    |> cast(attrs, [:slug, :title, :frequency, :condition])
-    |> validate_required([:slug, :title, :frequency])
+    |> cast(attrs, [:title, :frequency, :condition])
+    |> validate_required([:title, :frequency])
     |> cast_embed(:effect,
       sort_param: :effect_order,
       with: &Effect.changeset/2

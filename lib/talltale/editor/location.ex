@@ -9,7 +9,6 @@ defmodule Talltale.Editor.Location do
   alias Talltale.Editor.Storyline
 
   schema "locations" do
-    field :slug, :string
     field :title, :string
     embeds_many :storyline, Storyline
 
@@ -19,8 +18,8 @@ defmodule Talltale.Editor.Location do
 
   def changeset(tale, attrs) do
     tale
-    |> cast(attrs, [:slug, :title, :deck_id])
-    |> validate_required([:slug, :title])
+    |> cast(attrs, [:title, :deck_id])
+    |> validate_required([:title])
     |> cast_embed(:storyline,
       sort_param: :storyline_order,
       with: &Storyline.changeset/2

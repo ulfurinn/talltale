@@ -18,11 +18,10 @@ defmodule Talltale.Game do
   def new(tale) do
     %__MODULE__{
       tale: tale,
-      areas: Enum.into(tale.areas, %{}, fn area -> {area.slug, area} end),
+      areas: Enum.into(tale.areas, %{}, fn area -> {area.id, area} end),
       locations:
         Enum.into(tale.areas, %{}, fn area ->
-          {area.slug,
-           Enum.into(area.locations, %{}, fn location -> {location.slug, location} end)}
+          {area.id, Enum.into(area.locations, %{}, fn location -> {location.id, location} end)}
         end),
       qualities: tale.start |> Enum.into(%{}, fn {k, v} -> {String.to_atom(k), v} end)
     }
@@ -38,12 +37,12 @@ defmodule Talltale.Game do
   end
 
   defp form_deck(%Tale{areas: areas}, qualities) do
-    area = areas |> Enum.find(&(&1.slug == qualities.area))
+    area = areas |> Enum.find(&(&1.id == qualities.area))
 
     location =
       case area do
         nil -> nil
-        area -> area.locations |> Enum.find(&(&1.slug == qualities.location))
+        area -> area.locations |> Enum.find(&(&1.id == qualities.location))
       end
 
     deck_cards(area) ++ deck_cards(location)
@@ -95,6 +94,10 @@ defmodule Talltale.Game do
          "set_quality" => %{"expression" => expression}
        }) do
     %__MODULE__{game | qualities: Expression.eval_assign(expression, qualities)}
+  end
+
+  defp apply_effect(game = %__MODULE__{}, nil) do
+    game
   end
 
   defp maybe_update_deck(updated_game, game) do

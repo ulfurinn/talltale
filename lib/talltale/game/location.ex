@@ -7,7 +7,6 @@ defmodule Talltale.Game.Location do
   alias Talltale.Game.Storyline
 
   schema "locations" do
-    field :slug, :string
     field :title, :string
     embeds_many :storyline, Storyline
 

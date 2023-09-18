@@ -9,7 +9,6 @@ defmodule Talltale.Editor.Area do
   alias Talltale.Editor.Tale
 
   schema "areas" do
-    field :slug, :string
     field :title, :string
 
     belongs_to :tale, Tale
@@ -19,8 +18,8 @@ defmodule Talltale.Editor.Area do
 
   def changeset(area, attrs) do
     area
-    |> cast(attrs, [:slug, :title, :deck_id])
-    |> validate_required([:slug, :title])
+    |> cast(attrs, [:title, :deck_id])
+    |> validate_required([:title])
   end
 
   def get_location(%__MODULE__{locations: locations}, id: id) do

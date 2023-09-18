@@ -7,7 +7,6 @@ defmodule Talltale.Game.Area do
   alias Talltale.Game.Tale
 
   schema "areas" do
-    field :slug, :string
     field :title, :string
 
     belongs_to :tale, Tale

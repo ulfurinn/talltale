@@ -1,4 +1,5 @@
 defmodule TalltaleWeb.EditorLive do
+  alias Talltale.Editor.Quality
   use TalltaleWeb, [:live_view, layout: :editor]
 
   import TalltaleWeb.EditorLive.Common
@@ -7,6 +8,7 @@ defmodule TalltaleWeb.EditorLive do
   alias Talltale.Editor.Card
   alias Talltale.Editor.Deck
   alias Talltale.Editor.Location
+  alias Talltale.Editor.Quality
   alias Talltale.Editor.Tale
   alias Talltale.Repo
 
@@ -84,6 +86,9 @@ defmodule TalltaleWeb.EditorLive do
   def handle_event("card." <> action, params, socket),
     do: TalltaleWeb.EditorLive.Card.handle_event(action, params, socket)
 
+  def handle_event("quality." <> action, params, socket),
+    do: TalltaleWeb.EditorLive.Quality.handle_event(action, params, socket)
+
   defp editor_form(assigns = %{changeset: %Ecto.Changeset{data: data}}) do
     case data do
       %Tale{} -> tale_form(assigns)
@@ -91,6 +96,7 @@ defmodule TalltaleWeb.EditorLive do
       %Location{} -> location_form(assigns)
       %Deck{} -> deck_form(assigns)
       %Card{} -> card_form(assigns)
+      %Quality{} -> quality_form(assigns)
     end
   end
 

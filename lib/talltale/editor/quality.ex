@@ -2,6 +2,8 @@ defmodule Talltale.Editor.Quality do
   @moduledoc "A game state quality definition."
   use Talltale.Schema
 
+  import Ecto.Changeset
+
   alias Talltale.Editor.Tale
 
   schema "qualities" do
@@ -12,5 +14,11 @@ defmodule Talltale.Editor.Quality do
     field :description, :string
 
     belongs_to :tale, Tale
+  end
+
+  def changeset(quality, attrs) do
+    quality
+    |> cast(attrs, [:slug, :title, :type, :category, :tale_id])
+    |> validate_required([:slug, :title, :type, :category, :tale_id])
   end
 end

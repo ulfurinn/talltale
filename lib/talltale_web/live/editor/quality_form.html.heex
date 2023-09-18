@@ -1,0 +1,23 @@
+<.simple_form :let={f} for={@changeset} phx-change={@change_action} phx-submit={@submit_action}>
+  <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
+  <input type="hidden" name={f[:tale_id].name} value={f[:tale_id].value} />
+  <.input field={f[:slug]} label="Slug" autocomplete="off" phx-debounce="blur" />
+  <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />
+  <.input
+    type="select"
+    field={f[:type]}
+    options={~w(number area location)}
+    label="Type"
+    autocomplete="off"
+    phx-debounce="blur"
+  />
+  <.input
+    type="select"
+    field={f[:category]}
+    options={~w(scene lateral progress equippable economy)}
+    label="Type"
+    autocomplete="off"
+    phx-debounce="blur"
+  />
+  <.button>Save</.button>
+</.simple_form>

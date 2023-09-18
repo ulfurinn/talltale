@@ -23,7 +23,7 @@ defmodule Talltale.Repo do
   end
 
   def load_tale_for_editing(slug) do
-    assocs = all_assocs()
+    assocs = [:locations | all_assocs()]
 
     q =
       from t in Talltale.Editor.Tale,

@@ -387,6 +387,7 @@ defmodule TalltaleWeb.CoreComponents do
 
   attr :id, :any, default: nil
   attr :field, :any, required: true
+  attr :options, :map, default: %{}
   attr :sort_field, :any, default: nil
   attr :delete_field, :any, default: nil
 
@@ -418,6 +419,21 @@ defmodule TalltaleWeb.CoreComponents do
           ]}
           phx-debounce="blur"
         />
+        <%= case @options do %>
+          <% %{^key => options} -> %>
+            <.input
+          type="select"
+          name={@name <> "[value][]"}
+          id={"#{@id}_value_#{index}"}
+          value={value}
+          options={options}
+          class={[
+            "block w-full rounded-lg text-neutral-300 bg-neutral-900 focus:ring-0 sm:text-sm sm:leading-6",
+            "phx-no-feedback:border-neutral-300 phx-no-feedback:focus:border-neutral-400",
+            "border-neutral-300 focus:border-neutral-400"
+          ]}
+        />
+          <% _ -> %>
         <input
           type="text"
           name={@name <> "[value][]"}
@@ -431,6 +447,7 @@ defmodule TalltaleWeb.CoreComponents do
           ]}
           phx-debounce="blur"
         />
+        <% end %>
         <.toggle
           :if={@delete_field}
           field={@delete_field}
