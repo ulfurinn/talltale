@@ -1,6 +1,6 @@
 <section
   id="deck"
-  class="py-6 border border-neutral-600 bg-stone-950 rounded-xl flex justify-center space-x-6"
+  class="py-6 border border-primary-600 bg-primary-950 rounded-xl flex justify-center space-x-6"
 >
   <.card :for={{card, index} <- Enum.with_index(@cards)} card={card} position={index} />
   <.empty_card :for={_ <- 0..(@capacity - length(@cards) - 1)//1} />

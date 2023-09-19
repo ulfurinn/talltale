@@ -21,6 +21,50 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
+    require('tailwindcss-themer')({
+      themes: [
+        {
+          name: "editor",
+          extend: {
+            colors: {
+              primary: {
+                '50': '#f4f4f2',
+                '100': '#e4e2dd',
+                '200': '#cbc7bd',
+                '300': '#aca698',
+                '400': '#948b7b',
+                '500': '#867b6c',
+                '600': '#72675c',
+                '700': '#5d534b',
+                '800': '#504843',
+                '900': '#423b38',
+                '950': '#272321',
+              }
+            }
+          }
+        },
+        {
+          name: "game",
+          extend: {
+            colors: {
+              primary: {
+                '50': '#f7f7f8',
+                '100': '#eeeef0',
+                '200': '#d9d9de',
+                '300': '#b7b7c2',
+                '400': '#9090a0',
+                '500': '#737484',
+                '600': '#676779',
+                '700': '#4c4c58',
+                '800': '#41414b',
+                '900': '#393941',
+                '950': '#26262b',
+              }
+            }
+          }
+        }
+      ]
+    }),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //
