@@ -96,6 +96,12 @@ defmodule Talltale.Game do
     %__MODULE__{game | qualities: Expression.eval_assign(expression, qualities)}
   end
 
+  defp apply_effect(game = %__MODULE__{qualities: qualities}, %{
+         "set_location" => %{"area_id" => area_id, "location_id" => location_id}
+       }) do
+    %__MODULE__{game | qualities: %{qualities | area: area_id, location: location_id}}
+  end
+
   defp apply_effect(game = %__MODULE__{}, nil) do
     game
   end

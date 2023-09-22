@@ -18,15 +18,21 @@
         <.input
           type="select"
           field={effect[:type]}
-          value={effect[:type].value || Talltale.Editor.Effect.type(effect.data)}
+          value={Talltale.Editor.Effect.type(effect.source)}
           prompt="Select a type"
           options={effect_type_options()}
         />
         <div>
-          <.effect_block
-            effect={effect}
-            type={effect[:type].value || Talltale.Editor.Effect.type(effect.data)}
-          />
+          <div class={Talltale.Editor.Effect.type(effect.source) == "set_quality" || "hidden"}>
+            <.inputs_for :let={effect} field={effect[:set_quality]}>
+              <.effect_set_quality effect={effect} tale={@tale} />
+            </.inputs_for>
+          </div>
+          <div class={Talltale.Editor.Effect.type(effect.source) == "set_location" || "hidden"}>
+            <.inputs_for :let={effect} field={effect[:set_location]}>
+              <.effect_set_location effect={effect} tale={@tale} />
+            </.inputs_for>
+          </div>
         </div>
         <.toggle field={effect[:delete]}>
           <:off><.icon name="hero-trash" /> delete</:off>

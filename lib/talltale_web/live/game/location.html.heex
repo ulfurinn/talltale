@@ -4,11 +4,12 @@
   </div>
 
   <div class="mb-8">
-    <div
-      :for={para <- Game.build_storyline(@game.locations[@area][@location], @game.qualities)}
-      class="my-1"
-    >
-      <%= para.text %>
-    </div>
+    <%= Game.build_storyline(@game.locations[@area][@location], @game.qualities)
+    |> Enum.map(fn para ->
+      para.text
+      |> String.split("\n\n")
+      |> Enum.map(&content_tag(:div, &1, class: "my-2"))
+    end)
+    |> List.flatten() %>
   </div>
 </div>

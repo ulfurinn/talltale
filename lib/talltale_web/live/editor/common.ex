@@ -50,30 +50,18 @@ defmodule TalltaleWeb.EditorLive.Common do
 
   def effect_type_options do
     [
-      {"Set quality", "set_quality"}
+      {"Set quality", "set_quality"},
+      {"Set area", "set_area"},
+      {"Set location", "set_location"}
     ]
   end
 
-  def effect_block(assigns = %{type: type}) do
-    case type do
-      nil ->
-        ~H"<div></div>"
+  def locations_in_area(_tale, nil), do: []
 
-      "" ->
-        ~H"<div></div>"
-
-      type ->
-        assigns =
-          assigns
-          |> assign(:type, String.to_existing_atom(type))
-          |> assign(:component, String.to_existing_atom("effect_#{type}"))
-
-        ~H"""
-        <.inputs_for :let={effect} field={@effect[@type]}>
-          <%= apply(TalltaleWeb.EditorLive, @component, [assign(assigns, :effect, effect)]) %>
-        </.inputs_for>
-        """
-    end
+  def locations_in_area(tale, area_id) do
+    tale.areas
+    |> Enum.find(&(&1.id == area_id))
+    |> Map.get(:locations, [])
   end
 
   def ok(socket) do

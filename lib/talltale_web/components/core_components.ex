@@ -351,7 +351,7 @@ defmodule TalltaleWeb.CoreComponents do
         name={@name}
         class={[
           "mt-1 block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-          "min-h-[2rem] phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
+          "min-h-[8rem] phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
           @errors == [] && "border-primary-300 focus:border-primary-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
