@@ -11,5 +11,7 @@ defmodule Talltale.Game.Card do
     field :effect, Talltale.JSONB
 
     belongs_to :deck, Deck
+
+    field :ref, :any, virtual: true
   end
 end

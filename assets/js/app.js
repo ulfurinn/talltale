@@ -54,6 +54,28 @@ hooks.SortableInputsFor = {
   }
 };
 
+hooks.Card = {
+  mounted() {
+    this.el.addEventListener("transitionend", e => {
+      console.log("unflipped");
+      this.el.addEventListener("click", e => {
+        this.el.classList.add("flipping");
+      });
+
+      this.el.addEventListener("transitionend", e => {
+        this.pushEvent("action", { position: this.el.dataset.position });
+      }, { once: true });
+    }, { once: true });
+
+    setTimeout(() => {
+      console.log("unflipping");
+      this.el.classList.remove("flipping");
+    }, 50);
+  }
+};
+
+
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks })
 

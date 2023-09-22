@@ -57,6 +57,7 @@ defmodule Talltale.Game do
       deck
       |> Enum.filter(&eval_condition(&1.condition, qualities))
       |> Deck.draw(qualities.hand_size)
+      |> Enum.map(&Map.put(&1, :ref, Uniq.UUID.uuid7()))
 
     %__MODULE__{game | cards: cards}
   end
