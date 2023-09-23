@@ -55,6 +55,15 @@ defmodule TalltaleWeb.EditorLive do
     socket
     |> put_current_tab(tab)
     |> put_changeset(changeset)
+    |> then(fn socket ->
+      if tab == :tale do
+        socket
+        |> put_submit_action("tale.create")
+        |> put_change_action("select_tale")
+      else
+        socket
+      end
+    end)
     |> noreply()
   end
 
