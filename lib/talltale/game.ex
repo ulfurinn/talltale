@@ -101,7 +101,7 @@ defmodule Talltale.Game do
   defp eval_condition(_, nil), do: true
 
   defp eval_condition(%__MODULE__{qualities: qualities}, expression) do
-    Expression.eval(expression, qualities) == true
+    Expression.eval_boolean(expression, qualities)
   end
 
   defp apply_effect(game, effects) when is_list(effects) do

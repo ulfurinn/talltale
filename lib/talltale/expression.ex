@@ -13,16 +13,33 @@ defmodule Talltale.Expression do
     Map.put(binding, var, max(0, evalp(value, binding)))
   end
 
+  def eval_boolean(expression, binding) when is_binary(expression) do
+    eval(expression, binding)
+    |> truthy?()
+  end
+
+  def truthy?(true), do: true
+  def truthy?(number) when is_number(number), do: number > 0
+  def truthy?(_), do: false
+
   defp evalp({:==, _, [x, y]}, binding), do: evalp(x, binding) == evalp(y, binding)
   defp evalp({:!=, _, [x, y]}, binding), do: evalp(x, binding) != evalp(y, binding)
   defp evalp({:<, _, [x, y]}, binding), do: evalp(x, binding) < evalp(y, binding)
   defp evalp({:<=, _, [x, y]}, binding), do: evalp(x, binding) <= evalp(y, binding)
   defp evalp({:>, _, [x, y]}, binding), do: evalp(x, binding) > evalp(y, binding)
   defp evalp({:>=, _, [x, y]}, binding), do: evalp(x, binding) >= evalp(y, binding)
-  defp evalp({:&&, _, [x, y]}, binding), do: evalp(x, binding) && evalp(y, binding)
-  defp evalp({:and, _, [x, y]}, binding), do: evalp(x, binding) && evalp(y, binding)
-  defp evalp({:||, _, [x, y]}, binding), do: evalp(x, binding) || evalp(y, binding)
-  defp evalp({:or, _, [x, y]}, binding), do: evalp(x, binding) || evalp(y, binding)
+
+  defp evalp({:&&, _, [x, y]}, binding),
+    do: truthy?(evalp(x, binding)) && truthy?(evalp(y, binding))
+
+  defp evalp({:and, _, [x, y]}, binding),
+    do: truthy?(evalp(x, binding)) && truthy?(evalp(y, binding))
+
+  defp evalp({:||, _, [x, y]}, binding),
+    do: truthy?(evalp(x, binding)) || truthy?(evalp(y, binding))
+
+  defp evalp({:or, _, [x, y]}, binding),
+    do: truthy?(evalp(x, binding)) || truthy?(evalp(y, binding))
 
   defp evalp({:+, _, [x, y]}, binding), do: evalp(x, binding) + evalp(y, binding)
   defp evalp({:-, _, [x, y]}, binding), do: evalp(x, binding) - evalp(y, binding)
