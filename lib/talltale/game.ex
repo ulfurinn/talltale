@@ -2,7 +2,6 @@ defmodule Talltale.Game do
   @moduledoc "Game state."
   alias Talltale.Expression
   alias Talltale.Game.Deck
-  alias Talltale.Game.Tale
 
   require Logger
 
@@ -30,14 +29,8 @@ defmodule Talltale.Game do
   end
 
   defp form_deck(game = %__MODULE__{tale: tale, qualities: qualities}) do
-    deck =
-      form_deck(tale, qualities)
-
-    %__MODULE__{game | deck: deck}
-  end
-
-  defp form_deck(%Tale{areas: areas}, qualities) do
-    area = areas |> Enum.find(&(&1.id == qualities.area))
+    Logger.info("forming deck")
+    area = tale.areas |> Enum.find(&(&1.id == qualities.area))
 
     location =
       case area do
@@ -45,7 +38,9 @@ defmodule Talltale.Game do
         area -> area.locations |> Enum.find(&(&1.id == qualities.location))
       end
 
-    deck_cards(area) ++ deck_cards(location)
+    deck = deck_cards(area) ++ deck_cards(location)
+
+    %__MODULE__{game | deck: deck}
   end
 
   defp deck_cards(%{deck: deck}), do: deck_cards(deck)
@@ -67,6 +62,7 @@ defmodule Talltale.Game do
     |> remove_card(card.id)
     |> apply_effect(card.effect)
     |> maybe_update_deck(game)
+    |> tap(&log_game_state/1)
   end
 
   defp remove_card(game = %__MODULE__{cards: cards}, id) do
@@ -122,5 +118,10 @@ defmodule Talltale.Game do
          %__MODULE__{qualities: qualities}
        ) do
     updated_qualities.area != qualities.area || updated_qualities.location != qualities.location
+  end
+
+  defp log_game_state(game) do
+    Logger.debug("qualities: #{inspect(game.qualities)}")
+    Logger.debug("hand: #{inspect(Enum.map(game.cards, & &1.title))}")
   end
 end
