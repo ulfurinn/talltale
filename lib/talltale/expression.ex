@@ -71,4 +71,30 @@ defmodule Talltale.Expression do
       evalp(b, binding)
     end
   end
+
+  defp evalp({:clamp, _, [x, min, max]}, binding) do
+    x = evalp(x, binding)
+    min = evalp(min, binding)
+    max = evalp(max, binding)
+
+    cond do
+      x < min -> min
+      x > max -> max
+      true -> x
+    end
+  end
+
+  defp evalp({:rand, _, [{:uniform, _, nil}]}, _), do: :rand.uniform_real()
+  defp evalp({:rand, _, [{:uniform, _, nil}, x]}, binding), do: :rand.uniform(evalp(x, binding))
+
+  defp evalp({:rand, _, [{:uniform0, _, nil}, x]}, binding),
+    do: :rand.uniform(evalp(x, binding)) - 1
+
+  defp evalp({:rand, _, [{:normal, _, nil}]}, _), do: :rand.normal()
+
+  defp evalp({:rand, _, [{:normal, _, nil}, mean]}, binding),
+    do: :rand.normal(evalp(mean, binding), 1)
+
+  defp evalp({:rand, _, [{:normal, _, nil}, mean, stddev]}, binding),
+    do: :rand.normal(evalp(mean, binding), evalp(stddev, binding))
 end
