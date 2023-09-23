@@ -10,7 +10,7 @@ defmodule Talltale.Expression do
       expression
       |> Code.string_to_quoted!()
 
-    Map.put(binding, var, evalp(value, binding))
+    Map.put(binding, var, max(0, evalp(value, binding)))
   end
 
   defp evalp({:==, _, [x, y]}, binding), do: evalp(x, binding) == evalp(y, binding)
@@ -19,6 +19,10 @@ defmodule Talltale.Expression do
   defp evalp({:<=, _, [x, y]}, binding), do: evalp(x, binding) <= evalp(y, binding)
   defp evalp({:>, _, [x, y]}, binding), do: evalp(x, binding) > evalp(y, binding)
   defp evalp({:>=, _, [x, y]}, binding), do: evalp(x, binding) >= evalp(y, binding)
+  defp evalp({:&&, _, [x, y]}, binding), do: evalp(x, binding) && evalp(y, binding)
+  defp evalp({:and, _, [x, y]}, binding), do: evalp(x, binding) && evalp(y, binding)
+  defp evalp({:||, _, [x, y]}, binding), do: evalp(x, binding) || evalp(y, binding)
+  defp evalp({:or, _, [x, y]}, binding), do: evalp(x, binding) || evalp(y, binding)
 
   defp evalp({:+, _, [x, y]}, binding), do: evalp(x, binding) + evalp(y, binding)
   defp evalp({:-, _, [x, y]}, binding), do: evalp(x, binding) - evalp(y, binding)
