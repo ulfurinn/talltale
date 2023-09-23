@@ -36,8 +36,6 @@ defmodule TalltaleWeb.EditorLive.Card do
     changeset =
       card |> Card.changeset(params) |> Map.put(:action, :validate)
 
-    dbg(changeset)
-
     socket
     |> put_changeset(changeset)
     |> noreply()

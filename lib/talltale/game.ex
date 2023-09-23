@@ -1,6 +1,7 @@
 defmodule Talltale.Game do
   @moduledoc "Game state."
   alias Talltale.Expression
+  alias Talltale.Game.Card
   alias Talltale.Game.Deck
 
   require Logger
@@ -50,35 +51,56 @@ defmodule Talltale.Game do
   def draw(game = %__MODULE__{deck: deck, qualities: qualities}) do
     cards =
       deck
-      |> Enum.filter(&eval_condition(&1.condition, qualities))
+      |> Enum.filter(&eval_condition(game, &1.condition))
       |> Deck.draw(qualities.hand_size)
-      |> Enum.map(&Map.put(&1, :ref, Uniq.UUID.uuid7()))
+      |> Enum.map(&Card.gen_ref/1)
+      |> Enum.into(IntoArray.new(Arrays.empty(size: qualities.hand_size)))
 
     %__MODULE__{game | cards: cards}
   end
 
   def play_card(game, card) do
     game
-    |> remove_card(card.id)
     |> apply_effect(card.effect)
+    |> remove_card(card)
+    |> check_card_conditions()
     |> maybe_update_deck(game)
     |> tap(&log_game_state/1)
   end
 
-  defp remove_card(game = %__MODULE__{cards: cards}, id) do
-    Logger.debug("removing card #{id}")
-    cards = cards |> Enum.reject(&(&1.id == id))
+  defp remove_card(game = %__MODULE__{cards: cards}, card) do
+    replacement =
+      if card.sticky do
+        Card.gen_ref(card)
+      else
+        nil
+      end
+
+    index = cards |> Enum.find_index(&(&1 && &1.id == card.id))
+    cards = cards |> Arrays.replace(index, replacement)
     %__MODULE__{game | cards: cards}
   end
 
-  def build_storyline(location, qualities) do
-    location.storyline
-    |> Enum.filter(&eval_condition(&1.condition, qualities))
+  defp check_card_conditions(game = %__MODULE__{cards: cards}) do
+    cards
+    |> Arrays.map(fn card ->
+      if eval_condition(game, card && card.condition) do
+        card
+      else
+        nil
+      end
+    end)
+    |> then(&%__MODULE__{game | cards: &1})
   end
 
-  defp eval_condition(nil, _), do: true
+  def build_storyline(game, location) do
+    location.storyline
+    |> Enum.filter(&eval_condition(game, &1.condition))
+  end
 
-  defp eval_condition(expression, qualities) do
+  defp eval_condition(_, nil), do: true
+
+  defp eval_condition(%__MODULE__{qualities: qualities}, expression) do
     Expression.eval(expression, qualities) == true
   end
 
@@ -104,7 +126,7 @@ defmodule Talltale.Game do
   end
 
   defp maybe_update_deck(updated_game, game) do
-    if changed_location?(updated_game, game) || Enum.empty?(updated_game.cards) do
+    if changed_location?(updated_game, game) || empty_hand?(updated_game) do
       updated_game
       |> form_deck()
       |> draw()
@@ -112,6 +134,8 @@ defmodule Talltale.Game do
       updated_game
     end
   end
+
+  defp empty_hand?(%__MODULE__{cards: cards}), do: Enum.all?(cards, &is_nil/1)
 
   defp changed_location?(
          %__MODULE__{qualities: updated_qualities},
@@ -122,6 +146,6 @@ defmodule Talltale.Game do
 
   defp log_game_state(game) do
     Logger.debug("qualities: #{inspect(game.qualities)}")
-    Logger.debug("hand: #{inspect(Enum.map(game.cards, & &1.title))}")
+    Logger.debug("hand: #{inspect(Enum.map(game.cards, &(&1 && &1.title)))}")
   end
 end

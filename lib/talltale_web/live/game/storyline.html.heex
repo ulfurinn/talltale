@@ -1,6 +1,6 @@
 <div class="max-w-2xl mx-auto">
   <div class="mt-8">
-    <%= Game.build_storyline(@game.locations[@area][@location], @game.qualities)
+    <%= Game.build_storyline(@game, @game.locations[@area][@location])
     |> Enum.map(fn para ->
       para.text
       |> String.split("\n\n")
