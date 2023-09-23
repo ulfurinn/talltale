@@ -10,7 +10,13 @@ defmodule Talltale.Expression do
       expression
       |> Code.string_to_quoted!()
 
-    Map.put(binding, var, max(0, evalp(value, binding)))
+    value =
+      case evalp(value, binding) do
+        int when is_integer(int) -> max(0, int)
+        f when is_float(f) -> max(0, round(f))
+      end
+
+    Map.put(binding, var, value)
   end
 
   def eval_boolean(expression, binding) when is_binary(expression) do
@@ -47,7 +53,22 @@ defmodule Talltale.Expression do
 
   defp evalp({:+, _, [x, y]}, binding), do: evalp(x, binding) + evalp(y, binding)
   defp evalp({:-, _, [x, y]}, binding), do: evalp(x, binding) - evalp(y, binding)
+  defp evalp({:*, _, [x, y]}, binding), do: evalp(x, binding) * evalp(y, binding)
+  defp evalp({:/, _, [x, y]}, binding), do: evalp(x, binding) / evalp(y, binding)
+  defp evalp({:**, _, [x, y]}, binding), do: evalp(x, binding) ** evalp(y, binding)
+  defp evalp({:div, _, [x, y]}, binding), do: div(evalp(x, binding), evalp(y, binding))
+  defp evalp({:mod, _, [x, y]}, binding), do: rem(evalp(x, binding), evalp(y, binding))
+  defp evalp({:rem, _, [x, y]}, binding), do: rem(evalp(x, binding), evalp(y, binding))
   defp evalp({:.., _, [x, y]}, binding), do: evalp(x, binding)..evalp(y, binding)
+
   defp evalp({var, _, nil}, binding) when is_atom(var), do: Map.get(binding, var, 0)
   defp evalp(literal, _) when is_number(literal), do: literal
+
+  defp evalp({:if, _, [x, a, b]}, binding) do
+    if truthy?(evalp(x, binding)) do
+      evalp(a, binding)
+    else
+      evalp(b, binding)
+    end
+  end
 end
