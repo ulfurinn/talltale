@@ -28,6 +28,7 @@ defmodule Talltale.Expression do
   defp evalp({:<=, _, [x, y]}, binding), do: evalp(x, binding) <= evalp(y, binding)
   defp evalp({:>, _, [x, y]}, binding), do: evalp(x, binding) > evalp(y, binding)
   defp evalp({:>=, _, [x, y]}, binding), do: evalp(x, binding) >= evalp(y, binding)
+  defp evalp({:in, _, [x, y]}, binding), do: evalp(x, binding) in evalp(y, binding)
 
   defp evalp({:not, _, [x]}, binding), do: !truthy?(evalp(x, binding))
   defp evalp({:!, _, [x]}, binding), do: !truthy?(evalp(x, binding))
@@ -46,6 +47,7 @@ defmodule Talltale.Expression do
 
   defp evalp({:+, _, [x, y]}, binding), do: evalp(x, binding) + evalp(y, binding)
   defp evalp({:-, _, [x, y]}, binding), do: evalp(x, binding) - evalp(y, binding)
+  defp evalp({:.., _, [x, y]}, binding), do: evalp(x, binding)..evalp(y, binding)
   defp evalp({var, _, nil}, binding) when is_atom(var), do: Map.get(binding, var, 0)
   defp evalp(literal, _) when is_number(literal), do: literal
 end
