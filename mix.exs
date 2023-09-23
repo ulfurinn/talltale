@@ -51,6 +51,7 @@ defmodule Talltale.MixProject do
       {:jason, "~> 1.2"},
       {:bandit, "~> 1.0-pre"},
       {:uniq, "~> 0.1"},
+      {:arrays, "~> 2.0"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
