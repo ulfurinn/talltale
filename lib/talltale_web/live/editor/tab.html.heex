@@ -1,7 +1,10 @@
 <div
   phx-click="select_tab"
   phx-value-id={@id}
-  class={["border border-b-0 rounded-t-md px-4 py-1 cursor-pointer", @current && "bg-primary-800"]}
+  class={[
+    "border border-b-0 rounded-t-md px-4 py-1 cursor-pointer",
+    @current && "bg-primary-300 text-primary-950"
+  ]}
 >
   <%= @text %>
 </div>
