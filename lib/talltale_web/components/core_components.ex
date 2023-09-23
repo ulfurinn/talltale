@@ -351,7 +351,7 @@ defmodule TalltaleWeb.CoreComponents do
         name={@name}
         class={[
           "mt-1 block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-          "min-h-[8rem] phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
+          "min-h-[4rem] h-[6rem] phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
           @errors == [] && "border-primary-300 focus:border-primary-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
@@ -422,31 +422,31 @@ defmodule TalltaleWeb.CoreComponents do
         <%= case @options do %>
           <% %{^key => options} -> %>
             <.input
-          type="select"
-          name={@name <> "[value][]"}
-          id={"#{@id}_value_#{index}"}
-          value={value}
-          options={options}
-          class={[
-            "block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-            "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
-            "border-primary-300 focus:border-primary-400"
-          ]}
-        />
+              type="select"
+              name={@name <> "[value][]"}
+              id={"#{@id}_value_#{index}"}
+              value={value}
+              options={options}
+              class={[
+                "block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
+                "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
+                "border-primary-300 focus:border-primary-400"
+              ]}
+            />
           <% _ -> %>
-        <input
-          type="text"
-          name={@name <> "[value][]"}
-          id={"#{@id}_value_#{index}"}
-          value={value}
-          autocomplete="off"
-          class={[
-            "block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-            "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
-            "border-primary-300 focus:border-primary-400"
-          ]}
-          phx-debounce="blur"
-        />
+            <input
+              type="text"
+              name={@name <> "[value][]"}
+              id={"#{@id}_value_#{index}"}
+              value={value}
+              autocomplete="off"
+              class={[
+                "block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
+                "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
+                "border-primary-300 focus:border-primary-400"
+              ]}
+              phx-debounce="blur"
+            />
         <% end %>
         <.toggle
           :if={@delete_field}
