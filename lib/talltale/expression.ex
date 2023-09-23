@@ -29,6 +29,9 @@ defmodule Talltale.Expression do
   defp evalp({:>, _, [x, y]}, binding), do: evalp(x, binding) > evalp(y, binding)
   defp evalp({:>=, _, [x, y]}, binding), do: evalp(x, binding) >= evalp(y, binding)
 
+  defp evalp({:not, _, [x]}, binding), do: !truthy?(evalp(x, binding))
+  defp evalp({:!, _, [x]}, binding), do: !truthy?(evalp(x, binding))
+
   defp evalp({:&&, _, [x, y]}, binding),
     do: truthy?(evalp(x, binding)) && truthy?(evalp(y, binding))
 
