@@ -14,8 +14,8 @@
   <div class="flex flex-col gap-1" id="storyline_container" phx-hook="SortableInputsFor">
     <.inputs_for :let={s} field={f[:storyline]}>
       <div class="drag-item">
-        <.icon name="hero-bars-3" class="w-6 h-6" data-handle />
         <div class="flex justify-between">
+          <.icon name="hero-bars-3" class="w-6 h-6" data-handle />
           <.input field={s[:condition]} phx-debounce="blur" />
           <.toggle field={s[:delete]}>
             <:off><.icon name="hero-trash" /> delete</:off>
