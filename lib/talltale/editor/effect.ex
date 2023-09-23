@@ -87,7 +87,6 @@ defmodule Talltale.Editor.Effect do
           put_embed(changeset, field, value)
       end
     end)
-    |> dbg
   end
 
   defp cast_for_type(changeset), do: cast_for_type(changeset, get_field(changeset, :type))

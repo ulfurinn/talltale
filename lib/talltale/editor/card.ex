@@ -11,6 +11,7 @@ defmodule Talltale.Editor.Card do
     field :title, :string
     field :frequency, :integer
     field :condition, :string
+    field :sticky, :boolean, default: false
 
     embeds_many :effect, Effect
 
@@ -19,7 +20,7 @@ defmodule Talltale.Editor.Card do
 
   def changeset(area, attrs) do
     area
-    |> cast(attrs, [:title, :frequency, :condition])
+    |> cast(attrs, [:title, :frequency, :condition, :sticky])
     |> validate_required([:title, :frequency])
     |> cast_embed(:effect,
       sort_param: :effect_order,
