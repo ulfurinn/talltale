@@ -98,12 +98,6 @@ defmodule TalltaleWeb do
     end
   end
 
-  defp live_helpers() do
-    quote do
-      import TalltaleWeb.LiveHelpers
-    end
-  end
-
   defp live_helpers(:game) do
     quote do
       import TalltaleWeb.LiveHelpers

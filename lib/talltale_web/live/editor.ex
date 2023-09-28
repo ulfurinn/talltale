@@ -5,8 +5,6 @@ defmodule TalltaleWeb.EditorLive do
   import TalltaleWeb.EditorLive.Common
 
   alias Talltale.Editor.Area
-  alias Talltale.Editor.Card
-  alias Talltale.Editor.Deck
   alias Talltale.Editor.Location
   alias Talltale.Editor.Quality
   alias Talltale.Editor.Tale
