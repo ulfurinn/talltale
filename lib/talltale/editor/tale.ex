@@ -33,7 +33,13 @@ defmodule Talltale.Editor.Tale do
     decks |> Enum.find(&(&1.id == id))
   end
 
+  def build_deck(tale), do: Ecto.build_assoc(tale, :decks)
+
   def get_quality(%__MODULE__{qualities: qualities}, id: id) do
     qualities |> Enum.find(&(&1.id == id))
+  end
+
+  defimpl Phoenix.Param do
+    def to_param(%{slug: slug}), do: slug
   end
 end

@@ -52,17 +52,19 @@ defmodule TalltaleWeb do
   def live_view(args \\ []) do
     quote do
       use Phoenix.LiveView,
-        layout: {TalltaleWeb.Layouts, unquote(args)[:layout] || :app}
+        layout: {TalltaleWeb.Layouts, unquote(args)[:mode] || :game}
 
       unquote(html_helpers())
+      unquote(live_helpers(args[:mode] || :game))
     end
   end
 
-  def live_component do
+  def live_component(args \\ []) do
     quote do
       use Phoenix.LiveComponent
 
       unquote(html_helpers())
+      unquote(live_helpers(args[:mode] || :game))
     end
   end
 
@@ -93,6 +95,34 @@ defmodule TalltaleWeb do
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
+    end
+  end
+
+  defp live_helpers() do
+    quote do
+      import TalltaleWeb.LiveHelpers
+    end
+  end
+
+  defp live_helpers(:game) do
+    quote do
+      import TalltaleWeb.LiveHelpers
+      import TalltaleWeb.LiveHelpers.Game
+    end
+  end
+
+  defp live_helpers(:editor) do
+    quote do
+      import TalltaleWeb.LiveHelpers
+      import TalltaleWeb.LiveHelpers.Editor
+
+      alias Talltale.Editor.Area
+      alias Talltale.Editor.Card
+      alias Talltale.Editor.Deck
+      alias Talltale.Editor.Location
+      alias Talltale.Editor.Quality
+      alias Talltale.Editor.Tale
+      alias Talltale.Repo
     end
   end
 

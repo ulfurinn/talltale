@@ -1,5 +1,5 @@
 defmodule TalltaleWeb.GameLive do
-  use TalltaleWeb, :live_view
+  use TalltaleWeb, [:live_view, mode: :game]
 
   alias Talltale.Game
   alias Talltale.Repo
@@ -28,13 +28,5 @@ defmodule TalltaleWeb.GameLive do
   defp put_game(socket, game) do
     socket
     |> assign(:game, game)
-  end
-
-  defp ok(socket) do
-    {:ok, socket}
-  end
-
-  defp noreply(socket) do
-    {:noreply, socket}
   end
 end

@@ -3,6 +3,8 @@ defmodule TalltaleWeb.EditorLive.Quality do
 
   import Phoenix.LiveView
   import TalltaleWeb.EditorLive.Common
+  import TalltaleWeb.LiveHelpers
+  import TalltaleWeb.LiveHelpers.Editor
 
   alias Talltale.Editor.Quality
   alias Talltale.Editor.Tale

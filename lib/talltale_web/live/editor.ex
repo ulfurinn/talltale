@@ -1,6 +1,6 @@
 defmodule TalltaleWeb.EditorLive do
   alias Talltale.Editor.Quality
-  use TalltaleWeb, [:live_view, layout: :editor]
+  use TalltaleWeb, [:live_view, mode: :editor]
 
   import TalltaleWeb.EditorLive.Common
 
@@ -23,7 +23,7 @@ defmodule TalltaleWeb.EditorLive do
         |> assign(:theme, "editor")
         |> put_tale(tale)
         |> put_tales(nil)
-        |> put_tabs(tabs())
+        |> put_tabs(tabs(tale))
         |> put_change_action("tale.change")
         |> put_submit_action("tale.update")
         |> put_changeset(Ecto.Changeset.change(tale))
@@ -89,12 +89,6 @@ defmodule TalltaleWeb.EditorLive do
   def handle_event("location." <> action, params, socket),
     do: TalltaleWeb.EditorLive.Location.handle_event(action, params, socket)
 
-  def handle_event("deck." <> action, params, socket),
-    do: TalltaleWeb.EditorLive.Deck.handle_event(action, params, socket)
-
-  def handle_event("card." <> action, params, socket),
-    do: TalltaleWeb.EditorLive.Card.handle_event(action, params, socket)
-
   def handle_event("quality." <> action, params, socket),
     do: TalltaleWeb.EditorLive.Quality.handle_event(action, params, socket)
 
@@ -103,8 +97,6 @@ defmodule TalltaleWeb.EditorLive do
       %Tale{} -> tale_form(assigns)
       %Area{} -> area_form(assigns)
       %Location{} -> location_form(assigns)
-      %Deck{} -> deck_form(assigns)
-      %Card{} -> card_form(assigns)
       %Quality{} -> quality_form(assigns)
     end
   end

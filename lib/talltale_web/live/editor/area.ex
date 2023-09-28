@@ -3,6 +3,8 @@ defmodule TalltaleWeb.EditorLive.Area do
 
   import Phoenix.LiveView
   import TalltaleWeb.EditorLive.Common
+  import TalltaleWeb.LiveHelpers
+  import TalltaleWeb.LiveHelpers.Editor
 
   alias Talltale.Editor.Area
   alias Talltale.Editor.Tale
