@@ -27,7 +27,7 @@ defmodule TalltaleWeb.EditorLive.Tale do
         tale = Repo.refresh(tale)
 
         socket
-        |> redirect(to: ~p"/edit?tale=#{tale.slug}")
+        |> redirect(to: ~p"/edit/#{tale.slug}")
         |> put_flash(:info, "Saved")
         |> noreply()
 

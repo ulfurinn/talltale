@@ -39,6 +39,7 @@ defmodule TalltaleWeb.EditorLive.Deck.DeckForm do
         socket
         |> put_flash(:info, "Deck saved")
         |> put_form(Ecto.Changeset.change(deck))
+        |> maybe_patch()
         |> noreply()
 
       {:error, changeset} ->
@@ -51,4 +52,7 @@ defmodule TalltaleWeb.EditorLive.Deck.DeckForm do
 
   defp find_or_build_deck(tale, %{"id" => id}), do: Tale.get_deck(tale, id: id)
   defp find_or_build_deck(tale, _), do: Tale.build_deck(tale)
+
+  defp maybe_patch(socket = %{assigns: %{patch: url}}), do: socket |> push_patch(to: url)
+  defp maybe_patch(socket), do: socket
 end

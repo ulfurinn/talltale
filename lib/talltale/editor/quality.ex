@@ -21,4 +21,8 @@ defmodule Talltale.Editor.Quality do
     |> cast(attrs, [:slug, :title, :type, :category, :tale_id])
     |> validate_required([:slug, :title, :type, :category, :tale_id])
   end
+
+  defimpl Phoenix.Param do
+    def to_param(%{slug: slug}), do: slug
+  end
 end

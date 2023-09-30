@@ -1,0 +1,11 @@
+<section class="border-b-2 pb-1 mb-2">
+  <span><.link patch={~p"/edit/#{@tale}/qualities"}>Qualities</.link></span>
+  <span>›› <%= @quality.title %></span>
+</section>
+
+<.live_component
+  module={TalltaleWeb.EditorLive.Quality.Form}
+  id="quality_form"
+  tale={@tale}
+  quality={@quality}
+/>

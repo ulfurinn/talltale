@@ -1,4 +1,5 @@
 defmodule TalltaleWeb.Router do
+  # alias TalltaleWeb.EditorLive
   use TalltaleWeb, :router
 
   pipeline :browser do
@@ -21,6 +22,10 @@ defmodule TalltaleWeb.Router do
 
     live_session :editor do
       live "/edit/:tale", EditorLive
+
+      live "/edit/:tale/qualities", EditorLive.Qualities, :index
+      live "/edit/:tale/qualities/new", EditorLive.Qualities, :new
+      live "/edit/:tale/quality/:slug", EditorLive.Quality, :edit
 
       live "/edit/:tale/decks", EditorLive.Decks, :index
       live "/edit/:tale/decks/new", EditorLive.Decks, :new
