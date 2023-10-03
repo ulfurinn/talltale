@@ -28,16 +28,15 @@ defmodule TalltaleWeb.LiveHelpers do
 
     def tale(%{assigns: %{tale: tale}}), do: tale
     def deck(%{assigns: %{deck: deck}}), do: deck
+    def area(%{assigns: %{area: area}}), do: area
 
-    def put_tale(socket, tale) do
-      socket
-      |> assign(:tale, tale)
-    end
-
-    def put_form(socket, source) do
-      socket
-      |> assign(:form, source)
-    end
+    def put_tale(socket, tale), do: assign(socket, :tale, tale)
+    def put_quality(socket, quality), do: assign(socket, :quality, quality)
+    def put_deck(socket, deck), do: assign(socket, :deck, deck)
+    def put_card(socket, card), do: assign(socket, :card, card)
+    def put_area(socket, area), do: assign(socket, :area, area)
+    def put_location(socket, location), do: assign(socket, :location, location)
+    def put_form(socket, source), do: assign(socket, :form, source)
 
     def put_tabs(socket, tabs) do
       socket

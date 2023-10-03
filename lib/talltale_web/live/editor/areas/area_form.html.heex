@@ -1,0 +1,24 @@
+<section>
+  <.simple_form :let={f} for={@form} phx-target={@myself} phx-change="validate" phx-submit="save">
+    <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
+    <input type="hidden" name={f[:tale_id].name} value={f[:tale_id].value} />
+    <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />
+    <div class="flex">
+      <.input
+        type="select"
+        field={f[:deck_id]}
+        label="Deck"
+        prompt="Select a deck"
+        options={Enum.map(@tale.decks, &{&1.title, &1.id})}
+      />
+      <.button
+        :if={f.source |> Ecto.Changeset.get_field(:deck_id)}
+        type="button"
+        phx-click={JS.patch(~p"/edit/#{@tale.slug}/deck/#{f[:deck_id].value}")}
+      >
+        <.icon name="hero-arrow-right" />
+      </.button>
+    </div>
+    <.button>Save</.button>
+  </.simple_form>
+</section>

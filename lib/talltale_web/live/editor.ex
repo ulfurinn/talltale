@@ -3,8 +3,6 @@ defmodule TalltaleWeb.EditorLive do
 
   import TalltaleWeb.EditorLive.Common
 
-  alias Talltale.Editor.Area
-  alias Talltale.Editor.Location
   alias Talltale.Editor.Tale
   alias Talltale.Repo
 
@@ -79,17 +77,9 @@ defmodule TalltaleWeb.EditorLive do
   def handle_event("tale." <> action, params, socket),
     do: TalltaleWeb.EditorLive.Tale.handle_event(action, params, socket)
 
-  def handle_event("area." <> action, params, socket),
-    do: TalltaleWeb.EditorLive.Area.handle_event(action, params, socket)
-
-  def handle_event("location." <> action, params, socket),
-    do: TalltaleWeb.EditorLive.Location.handle_event(action, params, socket)
-
   defp editor_form(assigns = %{changeset: %Ecto.Changeset{data: data}}) do
     case data do
       %Tale{} -> tale_form(assigns)
-      %Area{} -> area_form(assigns)
-      %Location{} -> location_form(assigns)
     end
   end
 

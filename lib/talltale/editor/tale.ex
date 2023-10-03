@@ -29,6 +29,8 @@ defmodule Talltale.Editor.Tale do
     areas |> Enum.find(&(&1.id == id))
   end
 
+  def build_area(tale), do: Ecto.build_assoc(tale, :areas)
+
   def get_deck(%__MODULE__{decks: decks}, id: id) do
     decks |> Enum.find(&(&1.id == id))
   end

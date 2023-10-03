@@ -12,6 +12,4 @@ defmodule TalltaleWeb.EditorLive.Quality do
 
   def handle_info({:quality_updated, quality}, socket),
     do: socket |> put_quality(quality) |> noreply()
-
-  defp put_quality(socket, quality), do: assign(socket, :quality, quality)
 end

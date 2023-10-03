@@ -1,0 +1,33 @@
+<section class="border-b-2 pb-1 mb-2">
+  <span><.link patch={~p"/edit/#{@tale}/areas"}>areas</.link></span>
+  <span><.link patch={~p"/edit/#{@tale}/area/#{@area}"}>›› <%= @area.title %></.link></span>
+  <span :if={@live_action == :new_location}>›› New location</span>
+  <span :if={@live_action == :edit_location}>›› <%= @location.title %></span>
+</section>
+<.live_component
+  :if={@live_action in [:edit]}
+  module={TalltaleWeb.EditorLive.Area.AreaForm}
+  id="area_form"
+  tale={@tale}
+  area={@area}
+/>
+
+<section id="locations" phx-update="stream">
+  <div :for={{id, location} <- @streams.locations} id={id}>
+    <.link patch={~p"/edit/#{@tale}/area/#{@area}/location/#{location}"}>
+      <%= location.title %>
+    </.link>
+  </div>
+</section>
+<.link patch={~p"/edit/#{@tale}/area/#{@area}/location/new"}>
+  <.icon name="hero-plus-circle" /> Add location
+</.link>
+
+<.live_component
+  :if={@live_action in [:new_location, :edit_location]}
+  module={TalltaleWeb.EditorLive.Area.LocationForm}
+  id="location_form"
+  tale={@tale}
+  area={@area}
+  location={@location}
+/>

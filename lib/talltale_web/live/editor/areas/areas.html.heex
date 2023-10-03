@@ -1,0 +1,22 @@
+<section class="border-b-2 pb-1 mb-2">
+  <span><.link patch={~p"/edit/#{@tale}/areas"}>Areas</.link></span>
+  <span :if={@live_action == :new}>›› New area</span>
+</section>
+
+<section id="areas" phx-update="stream">
+  <div :for={{id, area} <- @streams.areas} id={id}>
+    <.link patch={~p"/edit/#{@tale}/area/#{area}"}><%= area.title %></.link>
+  </div>
+</section>
+<.link patch={~p"/edit/#{@tale}/areas/new"}>
+  <.icon name="hero-plus-circle" /> Add area
+</.link>
+
+<.live_component
+  :if={@live_action in [:new]}
+  module={TalltaleWeb.EditorLive.Area.AreaForm}
+  id="area_form"
+  tale={@tale}
+  area={@area}
+  patch={~p"/edit/#{@tale}/areas"}
+/>

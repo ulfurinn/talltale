@@ -27,6 +27,12 @@ defmodule TalltaleWeb.Router do
       live "/edit/:tale/qualities/new", EditorLive.Qualities, :new
       live "/edit/:tale/quality/:slug", EditorLive.Quality, :edit
 
+      live "/edit/:tale/areas", EditorLive.Areas, :index
+      live "/edit/:tale/areas/new", EditorLive.Areas, :new
+      live "/edit/:tale/area/:id", EditorLive.Area, :edit
+      live "/edit/:tale/area/:id/location/new", EditorLive.Area, :new_location
+      live "/edit/:tale/area/:id/location/:location_id", EditorLive.Area, :edit_location
+
       live "/edit/:tale/decks", EditorLive.Decks, :index
       live "/edit/:tale/decks/new", EditorLive.Decks, :new
       live "/edit/:tale/deck/:id", EditorLive.Deck, :edit

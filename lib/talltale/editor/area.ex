@@ -25,4 +25,6 @@ defmodule Talltale.Editor.Area do
   def get_location(%__MODULE__{locations: locations}, id: id) do
     locations |> Enum.find(&(&1.id == id))
   end
+
+  def build_location(area), do: area |> Ecto.build_assoc(:locations)
 end

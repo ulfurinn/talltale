@@ -31,6 +31,12 @@ defmodule TalltaleWeb.EditorLive.Deck do
     |> assign(:card, deck(socket) |> Deck.get_card(id: card_id))
   end
 
+  def handle_info({:deck_updated, deck}, socket) do
+    socket
+    |> put_deck(deck)
+    |> noreply()
+  end
+
   def handle_info({:card_created, card}, socket) do
     socket
     |> stream_insert(:cards, card)
@@ -44,6 +50,4 @@ defmodule TalltaleWeb.EditorLive.Deck do
   end
 
   def handle_info(_, socket), do: noreply(socket)
-
-  defp put_deck(socket, deck), do: assign(socket, :deck, deck)
 end
