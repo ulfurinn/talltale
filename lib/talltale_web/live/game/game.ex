@@ -4,7 +4,7 @@ defmodule TalltaleWeb.GameLive do
   alias Talltale.Game
   alias Talltale.Repo
 
-  embed_templates "game/*"
+  embed_templates "*"
 
   def mount(_params, _session, socket) do
     game = Game.new(Repo.load_tale("talltale"))
