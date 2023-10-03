@@ -21,7 +21,7 @@ defmodule TalltaleWeb.Router do
     live "/", GameLive
 
     live_session :editor do
-      live "/edit/:tale", EditorLive
+      live "/edit/:tale", EditorLive.Tale
 
       live "/edit/:tale/qualities", EditorLive.Qualities, :index
       live "/edit/:tale/qualities/new", EditorLive.Qualities, :new

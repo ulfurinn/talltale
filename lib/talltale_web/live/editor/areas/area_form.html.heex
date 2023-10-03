@@ -14,7 +14,7 @@
       <.button
         :if={f.source |> Ecto.Changeset.get_field(:deck_id)}
         type="button"
-        phx-click={JS.patch(~p"/edit/#{@tale.slug}/deck/#{f[:deck_id].value}")}
+        phx-click={JS.navigate(~p"/edit/#{@tale.slug}/deck/#{f[:deck_id].value}")}
       >
         <.icon name="hero-arrow-right" />
       </.button>

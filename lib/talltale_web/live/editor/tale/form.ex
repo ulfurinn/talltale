@@ -1,63 +1,44 @@
-defmodule TalltaleWeb.EditorLive.Tale do
-  use TalltaleWeb, :html
+defmodule TalltaleWeb.EditorLive.Tale.Form do
+  use TalltaleWeb, [:live_component, mode: :editor]
 
   import Phoenix.LiveView
-  import TalltaleWeb.EditorLive.Common
   import TalltaleWeb.LiveHelpers
   import TalltaleWeb.LiveHelpers.Editor
 
   alias Talltale.Editor.Tale
   alias Talltale.Repo
 
-  def handle_event("change", %{"tale" => params}, socket = %{assigns: %{tale: tale}}) do
+  def update(assigns, socket) do
+    socket
+    |> assign(assigns)
+    |> put_form(Ecto.Changeset.change(assigns.tale))
+    |> ok()
+  end
+
+  def handle_event("validate", %{"tale" => params}, socket = %{assigns: %{tale: tale}}) do
     params = transpose_start(params)
     changeset = tale |> Tale.changeset(params) |> Map.put(:action, :validate)
 
     socket
-    |> put_changeset(changeset)
+    |> put_form(changeset)
     |> noreply()
   end
 
-  def handle_event("create", %{"save" => _, "tale" => params}, socket) do
-    params = transpose_start(params)
-    changeset = Tale.changeset(%Tale{}, params)
-
-    case Repo.insert(changeset) do
-      {:ok, tale} ->
-        tale = Repo.refresh(tale)
-
-        socket
-        |> redirect(to: ~p"/edit/#{tale.slug}")
-        |> put_flash(:info, "Saved")
-        |> noreply()
-
-      {:error, changeset} ->
-        socket
-        |> put_changeset(changeset)
-        |> put_flash(:error, "Failed")
-        |> noreply()
-    end
-  end
-
-  def handle_event("update", %{"save" => _, "tale" => params}, socket = %{assigns: %{tale: tale}}) do
+  def handle_event("save", %{"tale" => params}, socket = %{assigns: %{tale: tale}}) do
     params = transpose_start(params)
     changeset = Tale.changeset(tale, params)
 
     case Repo.update(changeset) do
       {:ok, tale} ->
-        tale = Repo.refresh(tale)
-
         socket
         |> put_tale(tale)
-        |> put_change_action("tale.change")
-        |> put_submit_action("tale.update")
-        |> put_changeset(Ecto.Changeset.change(tale))
+        |> put_form(Ecto.Changeset.change(tale))
         |> put_flash(:info, "Saved")
         |> noreply()
 
       {:error, changeset} ->
         socket
-        |> put_changeset(changeset)
+        |> put_form(changeset)
         |> put_flash(:error, "Failed")
         |> noreply()
     end
