@@ -32,7 +32,7 @@ defmodule TalltaleWeb.EditorLive.Deck.CardForm do
 
     case result do
       {:ok, card} ->
-        notify_parent({event, card})
+        notify_view({event, card})
 
         socket
         |> put_flash(:info, "Card saved")

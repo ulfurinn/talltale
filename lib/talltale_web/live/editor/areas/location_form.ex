@@ -32,7 +32,7 @@ defmodule TalltaleWeb.EditorLive.Area.LocationForm do
 
     case result do
       {:ok, location} ->
-        notify_parent({event, location})
+        notify_view({event, location})
 
         socket
         |> put_form(Ecto.Changeset.change(location))

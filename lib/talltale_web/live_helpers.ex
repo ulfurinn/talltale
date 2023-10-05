@@ -55,7 +55,7 @@ defmodule TalltaleWeb.LiveHelpers do
       }
     end
 
-    def notify_parent(msg), do: send(self(), msg)
+    def notify_view(msg), do: send(self(), msg)
   end
 
   defmodule Game do

@@ -50,4 +50,10 @@ defmodule Talltale.Editor.Tale do
   defimpl Phoenix.Param do
     def to_param(%{slug: slug}), do: slug
   end
+
+  defimpl Inspect do
+    def inspect(%@for{}, _opts) do
+      "%Talltale.Editor.Tale{}"
+    end
+  end
 end

@@ -30,7 +30,7 @@ defmodule TalltaleWeb.EditorLive.Quality.Form do
 
     case result do
       {:ok, quality} ->
-        notify_parent({event, quality})
+        notify_view({event, quality})
 
         socket
         |> put_form(Ecto.Changeset.change(quality))

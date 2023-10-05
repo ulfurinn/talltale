@@ -24,31 +24,37 @@ defmodule TalltaleWeb.EditorLive.Area.AreaForm do
     |> noreply()
   end
 
-  def handle_event("save", %{"area" => params}, socket = %{assigns: %{tale: tale}}) do
-    area = find_or_build_area(tale, params)
-    event = if area.id == nil, do: :area_created, else: :area_updated
-
-    result =
-      area
-      |> Area.changeset(params)
-      |> Repo.insert_or_update()
-
-    case result do
-      {:ok, area} ->
-        notify_parent({event, area})
-
-        socket
-        |> put_form(Ecto.Changeset.change(area))
-        |> maybe_patch()
-        |> noreply()
-
-      {:error, changeset} ->
-        socket
-        |> put_form(changeset)
-        |> put_flash(:error, "Failed")
-        |> noreply()
-    end
+  def handle_event("save", %{"area" => params}, socket) do
+    socket
+    |> tale()
+    |> find_or_build_area(params)
+    |> Area.changeset(params)
+    |> save(socket)
+    |> handle_save_result(socket)
   end
+
+  defp save(area, %{assigns: %{action: :new}}), do: Repo.insert(area)
+  defp save(area, %{assigns: %{action: :edit}}), do: Repo.update(area)
+
+  defp handle_save_result({:ok, area}, socket) do
+    notify_view({event(socket), area})
+
+    socket
+    |> put_form(Ecto.Changeset.change(area))
+    |> put_flash(:info, "Saved")
+    |> maybe_patch()
+    |> noreply()
+  end
+
+  defp handle_save_result({:error, changeset}, socket) do
+    socket
+    |> put_form(changeset)
+    |> put_flash(:error, "Failed")
+    |> noreply()
+  end
+
+  defp event(%{assigns: %{action: :new}}), do: :area_created
+  defp event(%{assigns: %{action: :edit}}), do: :area_updated
 
   defp find_or_build_area(tale, %{"id" => id}), do: Tale.get_area(tale, id: id)
   defp find_or_build_area(tale, _), do: Tale.build_area(tale)

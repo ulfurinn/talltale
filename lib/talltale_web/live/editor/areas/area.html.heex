@@ -8,6 +8,7 @@
   :if={@live_action in [:edit]}
   module={TalltaleWeb.EditorLive.Area.AreaForm}
   id="area_form"
+  action={@live_action}
   tale={@tale}
   area={@area}
 />
@@ -27,6 +28,7 @@
   :if={@live_action in [:new_location, :edit_location]}
   module={TalltaleWeb.EditorLive.Area.LocationForm}
   id="location_form"
+  action={@live_action}
   tale={@tale}
   area={@area}
   location={@location}

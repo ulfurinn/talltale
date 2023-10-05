@@ -34,7 +34,7 @@ defmodule TalltaleWeb.EditorLive.Deck.DeckForm do
 
     case result do
       {:ok, deck} ->
-        notify_parent({event, deck})
+        notify_view({event, deck})
 
         socket
         |> put_flash(:info, "Deck saved")
