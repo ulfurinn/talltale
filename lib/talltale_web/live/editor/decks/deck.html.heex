@@ -14,7 +14,9 @@
 
 <section id="cards" phx-update="stream">
   <div :for={{id, card} <- @streams.cards} id={id}>
-    <.link patch={~p"/edit/#{@tale}/deck/#{@deck}/card/#{card}"}><%= card.title %></.link>
+    <.link patch={~p"/edit/#{@tale}/deck/#{@deck}/card/#{card}"}>
+      <%= card.title %><span :if={card.note}> (<%= card.note %>)</span>
+    </.link>
   </div>
 </section>
 <.link patch={~p"/edit/#{@tale}/deck/#{@deck}/card/new"}>
