@@ -19,6 +19,9 @@ defmodule Talltale.Editor.Tale do
     has_many :qualities, Quality
   end
 
+  @required_attributes [:area, :location, :hand_size]
+  def required_attributes, do: @required_attributes
+
   def changeset(tale, attrs) do
     tale
     |> cast(attrs, [:slug, :title, :start])

@@ -390,6 +390,7 @@ defmodule TalltaleWeb.CoreComponents do
   attr :options, :map, default: %{}
   attr :sort_field, :any, default: nil
   attr :delete_field, :any, default: nil
+  attr :required, :list, default: []
 
   def kv_input(assigns = %{field: field = %Phoenix.HTML.FormField{}}) do
     assigns
@@ -455,6 +456,7 @@ defmodule TalltaleWeb.CoreComponents do
           name={"#{@delete_field.name}[]"}
           value={key}
           checked={false}
+          disabled={dbg(key) in @required}
         >
           <:off><.icon name="hero-minus-circle" /></:off>
         </.toggle>
@@ -475,6 +477,7 @@ defmodule TalltaleWeb.CoreComponents do
   attr :checked, :boolean, default: nil
   attr :multiple, :boolean, default: false
   attr :class, :string, default: nil
+  attr :disabled, :boolean, default: false
 
   slot :on
   slot :off
@@ -489,7 +492,7 @@ defmodule TalltaleWeb.CoreComponents do
       checked={@checked}
       multiple={@multiple}
     />
-    <.toggle_button field={@field} id={@id} checked={@checked} class={@class}>
+    <.toggle_button field={@field} id={@id} checked={@checked} disabled={@disabled} class={@class}>
       <:off><%= render_slot(@off) %></:off>
       <:on><%= render_slot(@on) %></:on>
     </.toggle_button>
@@ -531,6 +534,7 @@ defmodule TalltaleWeb.CoreComponents do
   attr :field, Phoenix.HTML.FormField
   attr :id, :string, default: nil
   attr :checked, :boolean, default: nil
+  attr :disabled, :boolean, default: false
   attr :class, :string, default: nil
 
   slot :on
@@ -550,6 +554,7 @@ defmodule TalltaleWeb.CoreComponents do
       id={(@id || @field.id) <> "_toggle"}
       phx-hook="CheckboxProxy"
       data-checkbox={(@id || @field.id) <> "_checkbox"}
+      disabled={@disabled}
       class={@class}
     >
       <%= if !@checked && @off, do: render_slot(@off) %>

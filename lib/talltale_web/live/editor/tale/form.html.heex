@@ -9,6 +9,7 @@
         field={f[:start]}
         sort_field={f[:start_order]}
         delete_field={f[:start_delete]}
+        required={Enum.map(Talltale.Editor.Tale.required_attributes(), &Atom.to_string/1)}
         options={
           %{
             "area" => Enum.map(@tale.areas, &{&1.title, &1.id}),
