@@ -4,7 +4,7 @@
     <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
     <input type="hidden" name={f[:deck_id].name} value={f[:deck_id].value} />
     <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />
-    <.input field={f[:note]} label="Note" autocomplete="off" phx-debounce="blur" />
+    <.input field={f[:note]} label="Note" autocomplete="off" phx-debounce="blur" data-1p-ignore />
     <.input
       field={f[:frequency]}
       type="number"
