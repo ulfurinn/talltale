@@ -1,4 +1,5 @@
 <section>
+  <.flash_group flash={@flash} />
   <.simple_form :let={f} for={@form} phx-target={@myself} phx-change="validate" phx-submit="save">
     <.input field={f[:slug]} label="Slug" autocomplete="off" phx-debounce="blur" />
     <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />

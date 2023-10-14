@@ -1,4 +1,5 @@
 <section>
+  <.flash_group flash={@flash} />
   <.simple_form :let={f} for={@form} phx-target={@myself} phx-change="validate" phx-submit="save">
     <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
     <input type="hidden" name={f[:area_id].name} value={f[:area_id].value} />
