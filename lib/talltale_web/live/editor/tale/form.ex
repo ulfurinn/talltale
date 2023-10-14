@@ -34,6 +34,7 @@ defmodule TalltaleWeb.EditorLive.Tale.Form do
         |> put_tale(tale)
         |> put_form(Ecto.Changeset.change(tale))
         |> put_flash(:info, "Saved")
+        |> redirect_if_slug_changed(changeset)
         |> noreply()
 
       {:error, changeset} ->
@@ -43,6 +44,13 @@ defmodule TalltaleWeb.EditorLive.Tale.Form do
         |> noreply()
     end
   end
+
+  defp redirect_if_slug_changed(socket, changeset = %Ecto.Changeset{changes: %{slug: new_slug}}) do
+    socket
+    |> redirect(to: ~p"/edit/#{new_slug}")
+  end
+
+  defp redirect_if_slug_changed(socket, _changeset), do: socket
 
   defp transpose_start(params = %{"start" => start, "start_order" => order}) do
     start =
