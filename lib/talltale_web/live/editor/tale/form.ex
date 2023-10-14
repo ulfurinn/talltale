@@ -47,7 +47,7 @@ defmodule TalltaleWeb.EditorLive.Tale.Form do
 
   defp redirect_if_slug_changed(socket, changeset = %Ecto.Changeset{changes: %{slug: new_slug}}) do
     socket
-    |> redirect(to: ~p"/edit/#{new_slug}")
+    |> push_navigate(to: ~p"/edit/#{new_slug}")
   end
 
   defp redirect_if_slug_changed(socket, _changeset), do: socket
