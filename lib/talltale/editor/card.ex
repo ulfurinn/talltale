@@ -6,6 +6,7 @@ defmodule Talltale.Editor.Card do
 
   alias Talltale.Editor.Deck
   alias Talltale.Editor.Effect
+  alias Talltale.Editor.Storylet
 
   schema "cards" do
     field :title, :string
@@ -17,6 +18,7 @@ defmodule Talltale.Editor.Card do
     embeds_many :effect, Effect
 
     belongs_to :deck, Deck
+    belongs_to :storylet, Storylet
   end
 
   def changeset(area, attrs) do

@@ -7,6 +7,7 @@ defmodule Talltale.Editor.Tale do
   alias Talltale.Editor.Area
   alias Talltale.Editor.Deck
   alias Talltale.Editor.Quality
+  alias Talltale.Editor.Storylet
 
   schema "tales" do
     field :slug, :string
@@ -17,6 +18,7 @@ defmodule Talltale.Editor.Tale do
     has_many :locations, through: [:areas, :locations]
     has_many :decks, Deck
     has_many :qualities, Quality
+    has_many :storylets, Storylet
   end
 
   @required_attributes [:area, :location, :hand_size]

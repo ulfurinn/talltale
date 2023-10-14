@@ -38,6 +38,11 @@ defmodule Talltale.Repo do
   end
 
   defp all_assocs do
-    [:qualities, areas: [deck: :cards, locations: [deck: :cards]], decks: :cards]
+    [
+      :qualities,
+      storylets: :cards,
+      areas: [deck: :cards, locations: [deck: :cards]],
+      decks: :cards
+    ]
   end
 end
