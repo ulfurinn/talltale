@@ -456,7 +456,7 @@ defmodule TalltaleWeb.CoreComponents do
           name={"#{@delete_field.name}[]"}
           value={key}
           checked={false}
-          disabled={dbg(key) in @required}
+          disabled={key in @required}
         >
           <:off><.icon name="hero-minus-circle" /></:off>
         </.toggle>
