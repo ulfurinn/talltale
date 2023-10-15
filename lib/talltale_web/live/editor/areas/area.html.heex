@@ -1,6 +1,6 @@
 <section class="border-b-2 pb-1 mb-2">
-  <span><.link patch={~p"/edit/#{@tale}/areas"}>Areas</.link></span>
-  <span><.link patch={~p"/edit/#{@tale}/area/#{@area}"}>›› <%= @area.title %></.link></span>
+  <span><.link navigate={~p"/edit/#{@tale}/areas"}>Areas</.link></span>
+  <span>›› <.link patch={~p"/edit/#{@tale}/area/#{@area}"}><%= @area.title %></.link></span>
   <span :if={@live_action == :new_location}>›› New location</span>
   <span :if={@live_action == :edit_location}>›› <%= @location.title %></span>
 </section>

@@ -5,7 +5,7 @@
 
 <section id="areas" phx-update="stream">
   <div :for={{id, area} <- @streams.areas} id={id}>
-    <.link patch={~p"/edit/#{@tale}/area/#{area}"}><%= area.title %></.link>
+    <.link navigate={~p"/edit/#{@tale}/area/#{area}"}><%= area.title %></.link>
   </div>
 </section>
 <.link patch={~p"/edit/#{@tale}/areas/new"}>
