@@ -52,7 +52,14 @@ defmodule Talltale.Editor.Tale do
 
   def build_quality(tale), do: Ecto.build_assoc(tale, :qualities)
 
+  def get_storylet(%__MODULE__{storylets: storylets}, id: id) do
+    storylets |> Enum.find(&(&1.id == id))
+  end
+
+  def build_storylet(tale), do: Ecto.build_assoc(tale, :storylets)
+
   defimpl Phoenix.Param do
+    @spec to_param(%Talltale.Editor.Tale{}) :: any()
     def to_param(%{slug: slug}), do: slug
   end
 

@@ -38,6 +38,10 @@ defmodule TalltaleWeb.Router do
       live "/edit/:tale/deck/:id", EditorLive.Deck, :edit
       live "/edit/:tale/deck/:id/card/new", EditorLive.Deck, :new_card
       live "/edit/:tale/deck/:id/card/:card_id", EditorLive.Deck, :edit_card
+
+      live "/edit/:tale/storylets", EditorLive.Storylets, :index
+      live "/edit/:tale/storylets/new", EditorLive.Storylets, :new
+      live "/edit/:tale/storylet/:id", EditorLive.Storylet, :edit
     end
   end
 

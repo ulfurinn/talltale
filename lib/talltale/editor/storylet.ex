@@ -1,7 +1,7 @@
 defmodule Talltale.Editor.Storylet do
   use Talltale.Schema
 
-  # import Ecto.Changeset
+  import Ecto.Changeset
 
   alias Talltale.Editor.Card
   alias Talltale.Editor.Tale
@@ -12,5 +12,11 @@ defmodule Talltale.Editor.Storylet do
 
     belongs_to :tale, Tale
     has_many :cards, Card
+  end
+
+  def changeset(storylet, attrs) do
+    storylet
+    |> cast(attrs, [:title, :description])
+    |> validate_required([:title, :description])
   end
 end

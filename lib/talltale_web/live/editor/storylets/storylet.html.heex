@@ -1,33 +1,35 @@
 <section class="border-b-2 pb-1 mb-2">
-  <span><.link navigate={~p"/edit/#{@tale}/decks"}>Decks</.link></span>
-  <span><.link patch={~p"/edit/#{@tale}/deck/#{@deck}"}>›› <%= @deck.title %></.link></span>
+  <span><.link navigate={~p"/edit/#{@tale}/storylets"}>Storylets</.link></span>
+  <span>
+    <.link patch={~p"/edit/#{@tale}/storylet/#{@storylet}"}>›› <%= @storylet.title %></.link>
+  </span>
   <span :if={@live_action == :new_card}>›› New card</span>
   <span :if={@live_action == :edit_card}>›› <%= @card.title %></span>
 </section>
 <.live_component
   :if={@live_action in [:edit]}
-  module={TalltaleWeb.EditorLive.Deck.DeckForm}
-  id="deck_form"
+  module={TalltaleWeb.EditorLive.Storylet.StoryletForm}
+  id="storylet_form"
   tale={@tale}
-  deck={@deck}
+  storylet={@storylet}
 />
 
 <section id="cards" phx-update="stream">
   <div :for={{id, card} <- @streams.cards} id={id}>
-    <.link patch={~p"/edit/#{@tale}/deck/#{@deck}/card/#{card}"}>
+    <.link patch={~p"/edit/#{@tale}/storylet/#{@storylet}/card/#{card}"}>
       <%= card.title %><span :if={card.note}> (<%= card.note %>)</span>
     </.link>
   </div>
 </section>
-<.link patch={~p"/edit/#{@tale}/deck/#{@deck}/card/new"}>
+<.link patch={~p"/edit/#{@tale}/storylet/#{@storylet}/card/new"}>
   <.icon name="hero-plus-circle" /> Add card
 </.link>
 
 <.live_component
   :if={@live_action in [:new_card, :edit_card]}
-  module={TalltaleWeb.EditorLive.Deck.CardForm}
+  module={TalltaleWeb.EditorLive.Storylet.CardForm}
   id="card_form"
   tale={@tale}
-  deck={@deck}
+  storylet={@storylet}
   card={@card}
 />
