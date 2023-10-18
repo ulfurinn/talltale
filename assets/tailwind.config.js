@@ -5,6 +5,8 @@ const plugin = require("tailwindcss/plugin")
 const fs = require("fs")
 const path = require("path")
 
+const harmony = require("@evilmartians/harmony/tailwind");
+
 module.exports = {
   content: [
     "./js/**/*.js",
@@ -13,7 +15,7 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {},
+      colors: harmony,
       backgroundImage: {
         'card': "url('/images/card.svg')",
       }
