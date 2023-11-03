@@ -39,12 +39,24 @@ defmodule TalltaleWeb.EditorLive.Storylet do
 
   def handle_info({:card_created, card}, socket) do
     socket
+    |> put_storylet(socket |> storylet() |> then(&%{&1 | cards: &1.cards ++ [card]}))
     |> stream_insert(:cards, card)
     |> noreply()
   end
 
-  def handle_info({:card_updated, card}, socket) do
+  def handle_info({:card_updated, card = %{id: id}}, socket) do
     socket
+    |> put_storylet(
+      socket
+      |> storylet
+      |> then(&%{&1 | cards: EnumEx.replace(&1.cards, fn c -> c.id == id end, card)})
+    )
+    |> put_card(
+      case socket.assigns.card do
+        %{id: ^id} -> card
+        card -> card
+      end
+    )
     |> stream_insert(:cards, card)
     |> noreply()
   end

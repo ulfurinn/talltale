@@ -11,7 +11,7 @@ defmodule Talltale.Editor.Card do
   schema "cards" do
     field :title, :string
     field :note, :string
-    field :frequency, :integer
+    field :frequency, :integer, default: 1
     field :condition, :string
     field :sticky, :boolean, default: false
 

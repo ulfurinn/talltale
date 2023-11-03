@@ -1,10 +1,10 @@
-defmodule TalltaleWeb.EditorLive.Deck.CardForm do
+defmodule TalltaleWeb.EditorLive.Storylet.CardForm do
   use TalltaleWeb, [:live_component, mode: :editor]
 
   embed_templates "card_form/*"
 
   alias Talltale.Editor.Card
-  alias Talltale.Editor.Deck
+  alias Talltale.Editor.Storylet
   alias Talltale.Editor.Tale
 
   def update(assigns, socket) do
@@ -40,7 +40,6 @@ defmodule TalltaleWeb.EditorLive.Deck.CardForm do
 
         socket
         |> put_flash(:info, "Card saved")
-        |> put_form(Ecto.Changeset.change(card))
         |> noreply()
 
       {:error, changeset} ->
@@ -51,11 +50,11 @@ defmodule TalltaleWeb.EditorLive.Deck.CardForm do
     end
   end
 
-  defp find_or_build_card(tale, %{"deck_id" => deck_id, "id" => id}),
-    do: tale |> Tale.get_deck(id: deck_id) |> Deck.get_card(id: id)
+  defp find_or_build_card(tale, %{"storylet_id" => storylet_id, "id" => id}),
+    do: tale |> Tale.get_storylet(id: storylet_id) |> Storylet.get_card(id: id)
 
-  defp find_or_build_card(tale, %{"deck_id" => deck_id}),
-    do: tale |> Tale.get_deck(id: deck_id) |> Deck.build_card()
+  defp find_or_build_card(tale, %{"storylet_id" => storylet_id}),
+    do: tale |> Tale.get_storylet(id: storylet_id) |> Storylet.build_card()
 
   defp effect_type_options do
     [

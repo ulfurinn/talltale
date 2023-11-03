@@ -33,10 +33,6 @@ defmodule Talltale.Repo do
     one(q)
   end
 
-  def refresh(tale) do
-    preload(tale, all_assocs(), force: true)
-  end
-
   defp all_assocs do
     [
       :qualities,

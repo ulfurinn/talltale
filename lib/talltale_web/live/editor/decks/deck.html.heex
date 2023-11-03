@@ -1,6 +1,6 @@
 <section class="border-b-2 pb-1 mb-2">
   <span><.link navigate={~p"/edit/#{@tale}/decks"}>Decks</.link></span>
-  <span><.link patch={~p"/edit/#{@tale}/deck/#{@deck}"}>›› <%= @deck.title %></.link></span>
+  <span>›› <.link patch={~p"/edit/#{@tale}/deck/#{@deck}"}><%= @deck.title %></.link></span>
   <span :if={@live_action == :new_card}>›› New card</span>
   <span :if={@live_action == :edit_card}>›› <%= @card.title %></span>
 </section>
