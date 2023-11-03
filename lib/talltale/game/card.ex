@@ -3,6 +3,7 @@ defmodule Talltale.Game.Card do
   use Talltale.Schema
 
   alias Talltale.Game.Deck
+  alias Talltale.Game.Storylet
 
   schema "cards" do
     field :title, :string
@@ -12,6 +13,7 @@ defmodule Talltale.Game.Card do
     field :effect, Talltale.JSONB
 
     belongs_to :deck, Deck
+    belongs_to :storylet, Storylet
 
     field :ref, :any, virtual: true
   end

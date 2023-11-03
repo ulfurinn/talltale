@@ -5,6 +5,7 @@ defmodule Talltale.Game.Tale do
   alias Talltale.Game.Area
   alias Talltale.Game.Deck
   alias Talltale.Game.Quality
+  alias Talltale.Game.Storylet
 
   schema "tales" do
     field :slug, :string
@@ -15,5 +16,6 @@ defmodule Talltale.Game.Tale do
     # has_many :locations, through: [:areas, :locations]
     has_many :decks, Deck
     has_many :qualities, Quality
+    has_many :storylets, Storylet
   end
 end
