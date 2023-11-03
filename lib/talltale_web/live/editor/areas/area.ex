@@ -35,12 +35,19 @@ defmodule TalltaleWeb.EditorLive.Area do
 
   def handle_info({:location_created, location}, socket) do
     socket
+    |> put_area(socket |> area() |> then(&%{&1 | locations: &1.locations ++ [location]}))
     |> stream_insert(:locations, location)
     |> noreply()
   end
 
-  def handle_info({:location_updated, location}, socket) do
+  def handle_info({:location_updated, location = %{id: id}}, socket) do
     socket
+    |> put_area(
+      socket
+      |> area()
+      |> then(&%{&1 | locations: EnumEx.replace(&1.locations, fn l -> l.id == id end, location)})
+    )
+    |> put_location(location)
     |> stream_insert(:locations, location)
     |> assign(:location, location)
     |> noreply()

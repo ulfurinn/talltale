@@ -51,12 +51,7 @@ defmodule TalltaleWeb.EditorLive.Storylet do
       |> storylet
       |> then(&%{&1 | cards: EnumEx.replace(&1.cards, fn c -> c.id == id end, card)})
     )
-    |> put_card(
-      case socket.assigns.card do
-        %{id: ^id} -> card
-        card -> card
-      end
-    )
+    |> put_card(card)
     |> stream_insert(:cards, card)
     |> noreply()
   end

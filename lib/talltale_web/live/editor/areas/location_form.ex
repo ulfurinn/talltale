@@ -35,7 +35,6 @@ defmodule TalltaleWeb.EditorLive.Area.LocationForm do
         notify_view({event, location})
 
         socket
-        |> put_form(Ecto.Changeset.change(location))
         |> noreply()
 
       {:error, changeset} ->

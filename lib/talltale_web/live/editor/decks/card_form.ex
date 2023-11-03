@@ -40,7 +40,6 @@ defmodule TalltaleWeb.EditorLive.Deck.CardForm do
 
         socket
         |> put_flash(:info, "Card saved")
-        |> put_form(Ecto.Changeset.change(card))
         |> noreply()
 
       {:error, changeset} ->
