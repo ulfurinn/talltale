@@ -1,0 +1,10 @@
+<div>
+  <.input
+    field={@effect[:storylet_id]}
+    type="select"
+    prompt="Storylet"
+    autocomplete="off"
+    phx-debounce="blur"
+    options={Enum.map(@tale.storylets, &{&1.title, &1.id})}
+  />
+</div>

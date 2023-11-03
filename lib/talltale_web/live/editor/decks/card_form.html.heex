@@ -37,6 +37,13 @@
                 <.effect_set_location effect={effect} tale={@tale} />
               </.inputs_for>
             </div>
+            <div class={
+              Talltale.Editor.Effect.type(effect.source) == "go_to_storylet" || "hidden"
+            }>
+              <.inputs_for :let={effect} field={effect[:go_to_storylet]}>
+                <.effect_go_to_storylet effect={effect} tale={@tale} />
+              </.inputs_for>
+            </div>
           </div>
           <.toggle field={effect[:delete]}>
             <:off><.icon name="hero-trash" /> delete</:off>

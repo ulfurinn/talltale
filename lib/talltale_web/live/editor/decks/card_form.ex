@@ -59,8 +59,8 @@ defmodule TalltaleWeb.EditorLive.Deck.CardForm do
   defp effect_type_options do
     [
       {"Set quality", "set_quality"},
-      {"Set area", "set_area"},
-      {"Set location", "set_location"}
+      {"Set location", "set_location"},
+      {"Go to storylet", "go_to_storylet"}
     ]
   end
 

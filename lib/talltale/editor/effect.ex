@@ -35,11 +35,27 @@ defmodule Talltale.Editor.Effect do
     end
   end
 
+  defmodule GoToStorylet do
+    @moduledoc false
+    use Talltale.Schema
+
+    embedded_schema do
+      belongs_to :storylet, Talltale.Editor.Storylet
+    end
+
+    def changeset(effect, params) do
+      effect
+      |> cast(params, [:storylet_id])
+      |> validate_required([:storylet_id])
+    end
+  end
+
   embedded_schema do
     field :type, :string, virtual: true
     field :delete, :boolean, virtual: true
     embeds_one :set_quality, SetQuality
     embeds_one :set_location, SetLocation
+    embeds_one :go_to_storylet, GoToStorylet
   end
 
   def changeset(effect, %{"delete" => _}) do
@@ -63,7 +79,7 @@ defmodule Talltale.Editor.Effect do
         type -> [String.to_existing_atom(type)]
       end
 
-    ([:set_quality, :set_location] -- exclude)
+    ([:set_quality, :set_location, :go_to_storylet] -- exclude)
     |> Enum.reduce(changeset, fn field, changeset ->
       value = get_field(changeset, field)
 
@@ -105,6 +121,11 @@ defmodule Talltale.Editor.Effect do
     |> cast_embed(:set_location, with: &SetLocation.changeset/2)
   end
 
+  defp cast_for_type(changeset, "go_to_storylet") do
+    changeset
+    |> cast_embed(:go_to_storylet, with: &GoToStorylet.changeset/2)
+  end
+
   defp cast_for_type(_, type), do: raise("unknown effect #{type}")
 
   def type(changeset = %Ecto.Changeset{}),
@@ -113,5 +134,6 @@ defmodule Talltale.Editor.Effect do
   def type(%__MODULE__{type: type}) when type != nil, do: type
   def type(%__MODULE__{set_quality: %{}}), do: "set_quality"
   def type(%__MODULE__{set_location: %{}}), do: "set_location"
+  def type(%__MODULE__{go_to_storylet: %{}}), do: "go_to_storylet"
   def type(%__MODULE__{}), do: nil
 end
