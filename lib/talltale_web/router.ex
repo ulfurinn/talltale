@@ -18,7 +18,7 @@ defmodule TalltaleWeb.Router do
   scope "/", TalltaleWeb do
     pipe_through :browser
 
-    live "/", GameLive
+    live "/play/:tale", GameLive
 
     live_session :editor do
       live "/edit/:tale", EditorLive.Tale

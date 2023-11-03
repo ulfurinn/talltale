@@ -6,8 +6,8 @@ defmodule TalltaleWeb.GameLive do
 
   embed_templates "*"
 
-  def mount(_params, _session, socket) do
-    game = Game.new(Repo.load_tale("talltale"))
+  def mount(params, _session, socket) do
+    game = Game.new(Repo.load_tale(params["tale"]))
 
     socket
     |> assign(:theme, "game")
