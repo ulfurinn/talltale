@@ -49,7 +49,7 @@ defmodule Talltale.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:bandit, "~> 1.0-pre"},
+      {:bandit, "~> 1.0"},
       {:uniq, "~> 0.1"},
       {:arrays, "~> 2.0"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
