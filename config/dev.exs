@@ -25,7 +25,13 @@ config :talltale, TalltaleWeb.Endpoint,
   secret_key_base: "bY/3j2d/fPzuGmjn/jk4GiIgTfmdPI/LGQn2yaVzEcmAWsB8TUc7k9aZDoYBW6Mp",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]},
+    node: [
+      "sass-watch.js",
+      cd: Path.expand("../assets", __DIR__),
+      into: IO.stream(:stdio, :line),
+      stderr_to_stdout: true
+    ]
   ]
 
 # ## SSL Support
