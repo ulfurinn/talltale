@@ -1,5 +1,4 @@
 <section>
-  <.flash_group flash={@flash} />
   <.simple_form :let={f} for={@form} phx-target={@myself} phx-change="validate" phx-submit="save">
     <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
     <input type="hidden" name={f[:deck_id].name} value={f[:deck_id].value} />
@@ -46,8 +45,8 @@
             </div>
           </div>
           <.toggle field={effect[:delete]}>
-            <:off><.icon name="hero-trash" /> delete</:off>
-            <:on><.icon name="hero-arrow-path" /> restore</:on>
+            <:off><.icon name="fa-trash" /> delete</:off>
+            <:on><.icon name="fa-arrows-rotate" /> restore</:on>
           </.toggle>
         </.inputs_for>
       </div>
@@ -58,7 +57,7 @@
         checked={false}
         class="mb-2"
       >
-        <:off><.icon name="hero-plus-circle" /> add effect</:off>
+        <:off><.icon name="fa-circle-plus" /> add effect</:off>
       </.toggle>
     </div>
     <.button>Save</.button>

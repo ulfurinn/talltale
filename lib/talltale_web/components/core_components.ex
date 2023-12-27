@@ -79,7 +79,7 @@ defmodule TalltaleWeb.CoreComponents do
                   class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
                   aria-label={gettext("close")}
                 >
-                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                  <.icon name="fa-circle-xmark" class="h-5 w-5" />
                 </button>
               </div>
               <div id={"#{@id}-content"}>
@@ -117,20 +117,19 @@ defmodule TalltaleWeb.CoreComponents do
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
+        "flash",
+        @kind
       ]}
       {@rest}
     >
-      <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
+      <p :if={@title} class="title">
+        <.icon :if={@kind == :info} name="fa-circle-icon" />
+        <.icon :if={@kind == :error} name="fa-circle-icon" />
         <%= @title %>
       </p>
-      <p class="mt-2 text-sm leading-5"><%= msg %></p>
-      <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
-        <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
+      <p class="message"><%= msg %></p>
+      <button type="button" class="close" aria-label={gettext("close")}>
+        <.icon name="fa-circle-info" />
       </button>
     </div>
     """
@@ -157,7 +156,7 @@ defmodule TalltaleWeb.CoreComponents do
       phx-connected={hide("#client-error")}
       hidden
     >
-      Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+      Attempting to reconnect <.icon name="fa-arrows-rotate" />
     </.flash>
 
     <.flash
@@ -168,8 +167,7 @@ defmodule TalltaleWeb.CoreComponents do
       phx-connected={hide("#server-error")}
       hidden
     >
-      Hang in there while we get back on track
-      <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+      Hang in there while we get back on track <.icon name="fa-arrows-rotate" />
     </.flash>
     """
   end
@@ -200,9 +198,9 @@ defmodule TalltaleWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="flex flex-col gap-4">
+      <div class="form">
         <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+        <div :for={action <- @actions} class="action">
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -226,15 +224,7 @@ defmodule TalltaleWeb.CoreComponents do
 
   def button(assigns) do
     ~H"""
-    <button
-      type={@type}
-      class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-primary-800 hover:bg-primary-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-primary-100 active:text-primary-100/80",
-        @class
-      ]}
-      {@rest}
-    >
+    <button type={@type} class={@class} {@rest}>
       <%= render_slot(@inner_block) %>
     </button>
     """
@@ -350,10 +340,7 @@ defmodule TalltaleWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-1 block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-          "min-h-[4rem] h-[6rem] phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
-          @errors == [] && "border-primary-300 focus:border-primary-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          @errors != [] && "error"
         ]}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
@@ -373,10 +360,7 @@ defmodule TalltaleWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-1 block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm",
-          "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
-          @errors == [] && "border-primary-300 focus:border-primary-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          @errors != [] && "error"
         ]}
         {@rest}
       />
@@ -404,8 +388,8 @@ defmodule TalltaleWeb.CoreComponents do
 
   def kv_input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class="space-y-2">
-      <div :for={{{key, value}, index} <- Enum.with_index(@value)} class="flex gap-2">
+    <div phx-feedback-for={@name} class="key-value-group">
+      <div :for={{{key, value}, index} <- Enum.with_index(@value)} class="key-value-pair">
         <.input :if={@sort_field} type="hidden" name={@sort_field.name <> "[]"} value={index} />
         <input
           type="text"
@@ -413,11 +397,7 @@ defmodule TalltaleWeb.CoreComponents do
           id={"#{@id}_key_#{index}"}
           value={key}
           autocomplete="off"
-          class={[
-            "block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-            "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
-            "border-primary-300 focus:border-primary-400"
-          ]}
+          class={[]}
           phx-debounce="blur"
         />
         <%= case @options do %>
@@ -428,11 +408,7 @@ defmodule TalltaleWeb.CoreComponents do
               id={"#{@id}_value_#{index}"}
               value={value}
               options={options}
-              class={[
-                "block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-                "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
-                "border-primary-300 focus:border-primary-400"
-              ]}
+              class={[]}
             />
           <% _ -> %>
             <input
@@ -441,11 +417,7 @@ defmodule TalltaleWeb.CoreComponents do
               id={"#{@id}_value_#{index}"}
               value={value}
               autocomplete="off"
-              class={[
-                "block w-full rounded-lg text-primary-200 bg-primary-950 focus:ring-0 sm:text-sm sm:leading-6",
-                "phx-no-feedback:border-primary-300 phx-no-feedback:focus:border-primary-400",
-                "border-primary-300 focus:border-primary-400"
-              ]}
+              class={[]}
               phx-debounce="blur"
             />
         <% end %>
@@ -458,7 +430,7 @@ defmodule TalltaleWeb.CoreComponents do
           checked={false}
           disabled={key in @required}
         >
-          <:off><.icon name="hero-minus-circle" /></:off>
+          <:off><.icon name="fa-circle-minus" /></:off>
         </.toggle>
       </div>
       <.error :for={msg <- @errors}><%= msg %></.error>
@@ -571,7 +543,7 @@ defmodule TalltaleWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-medium leading-6">
+    <label for={@for}>
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -584,111 +556,10 @@ defmodule TalltaleWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
-      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
+    <p class="error-box mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
+      <.icon name="fa-circle-info" class="icon" />
       <%= render_slot(@inner_block) %>
     </p>
-    """
-  end
-
-  @doc """
-  Renders a header with title.
-  """
-  attr :class, :string, default: nil
-
-  slot :inner_block, required: true
-  slot :subtitle
-  slot :actions
-
-  def header(assigns) do
-    ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
-        <h1 class="text-lg font-medium leading-8 text-primary-200">
-          <%= render_slot(@inner_block) %>
-        </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-primary-200">
-          <%= render_slot(@subtitle) %>
-        </p>
-      </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
-    </header>
-    """
-  end
-
-  @doc ~S"""
-  Renders a table with generic styling.
-
-  ## Examples
-
-      <.table id="users" rows={@users}>
-        <:col :let={user} label="id"><%= user.id %></:col>
-        <:col :let={user} label="username"><%= user.username %></:col>
-      </.table>
-  """
-  attr :id, :string, required: true
-  attr :rows, :list, required: true
-  attr :row_id, :any, default: nil, doc: "the function for generating the row id"
-  attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
-
-  attr :row_item, :any,
-    default: &Function.identity/1,
-    doc: "the function for mapping each row before calling the :col and :action slots"
-
-  slot :col, required: true do
-    attr :label, :string
-  end
-
-  slot :action, doc: "the slot for showing user actions in the last table column"
-
-  def table(assigns) do
-    assigns =
-      with %{rows: %Phoenix.LiveView.LiveStream{}} <- assigns do
-        assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
-      end
-
-    ~H"""
-    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-11 sm:w-full">
-        <thead class="text-sm text-left leading-6 text-primary-200">
-          <tr>
-            <th :for={col <- @col} class="p-0 pr-6 pb-4 font-normal"><%= col[:label] %></th>
-            <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
-          </tr>
-        </thead>
-        <tbody
-          id={@id}
-          phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-primary-100 border-t border-primary-200 text-sm leading-6 text-primary-200"
-        >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-primary-50">
-            <td
-              :for={{col, i} <- Enum.with_index(@col)}
-              phx-click={@row_click && @row_click.(row)}
-              class={["relative p-0", @row_click && "hover:cursor-pointer"]}
-            >
-              <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-primary-50 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-primary-200"]}>
-                  <%= render_slot(col, @row_item.(row)) %>
-                </span>
-              </div>
-            </td>
-            <td :if={@action != []} class="relative w-14 p-0">
-              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-primary-50 sm:rounded-r-xl" />
-                <span
-                  :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-primary-200 hover:text-primary-200"
-                >
-                  <%= render_slot(action, @row_item.(row)) %>
-                </span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
     """
   end
 
@@ -720,54 +591,16 @@ defmodule TalltaleWeb.CoreComponents do
   end
 
   @doc """
-  Renders a back navigation link.
-
-  ## Examples
-
-      <.back navigate={~p"/posts"}>Back to posts</.back>
-  """
-  attr :navigate, :any, required: true
-  slot :inner_block, required: true
-
-  def back(assigns) do
-    ~H"""
-    <div class="mt-16">
-      <.link
-        navigate={@navigate}
-        class="text-sm font-semibold leading-6 text-primary-200 hover:text-primary-200"
-      >
-        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
-        <%= render_slot(@inner_block) %>
-      </.link>
-    </div>
-    """
-  end
-
-  @doc """
-  Renders a [Heroicon](https://heroicons.com).
-
-  Heroicons come in three styles – outline, solid, and mini.
-  By default, the outline style is used, but solid and mini may
-  be applied by using the `-solid` and `-mini` suffix.
-
-  You can customize the size and colors of the icons by setting
-  width, height, and background color classes.
-
-  Icons are extracted from your `assets/vendor/heroicons` directory and bundled
-  within your compiled app.css by the plugin in your `assets/tailwind.config.js`.
-
-  ## Examples
-
-      <.icon name="hero-x-mark-solid" />
-      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+  Renders a FontAwesome icon.
   """
   attr :name, :string, required: true
+  attr :type, :atom, values: [:solid, :regular, :light, :duotone, :brands], default: :solid
   attr :class, :string, default: nil
   attr :rest, :global
 
-  def icon(assigns = %{name: "hero-" <> _}) do
+  def icon(assigns = %{name: "fa-" <> _}) do
     ~H"""
-    <span class={[@name, @class]} {@rest} />
+    <span class={["fa-#{@type}", @name, @class]} {@rest} />
     """
   end
 

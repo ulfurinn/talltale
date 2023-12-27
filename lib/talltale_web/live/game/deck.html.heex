@@ -1,8 +1,4 @@
-<section
-  id="deck"
-  class="mx-12 py-6 border border-primary-600 bg-primary-950 rounded-xl flex justify-center space-x-6"
-  style="transform: perspective(800px) rotateX(20deg)"
->
+<section id="deck" class="deck" style="">
   <div :for={{card, index} <- Enum.with_index(@cards)}>
     <.card :if={card} card={card} position={index} />
     <.empty_card :if={card == nil} />

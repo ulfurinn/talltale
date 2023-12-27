@@ -1,0 +1,41 @@
+@use "../config/spacing";
+@use "../config/theme";
+@use "../config/typography" as font;
+
+.flash {
+  position: fixed;
+  top: spacing.$xs;
+  right: spacing.$xs;
+  width: 20rem;
+  z-index: 50;
+  padding: spacing.$sm;
+  border-radius: spacing.$sm;
+
+  &.info {
+    background-color: theme.get("info", "100");
+    color: theme.get("info", "700");
+  }
+
+  &.error {
+    background-color: theme.get("error", "100");
+    color: theme.get("error", "700");
+  }
+
+  & .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: spacing.$xs;
+  }
+
+  & .message {
+    margin-top: spacing.$md;
+  }
+
+  & .close {
+    position: absolute;
+    top: spacing.$xs;
+    right: spacing.$xs;
+    padding: spacing.$xs;
+  }
+}

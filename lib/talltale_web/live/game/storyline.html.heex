@@ -1,10 +1,10 @@
-<div class="max-w-2xl mx-auto">
-  <div class="mt-8">
+<div class="storyline">
+  <div class="content">
     <%= Game.build_storyline(@game, @game.locations[@area][@location])
     |> Enum.map(fn para ->
       para.text
       |> String.split("\n\n")
-      |> Enum.map(&content_tag(:div, &1, class: "my-2"))
+      |> Enum.map(&content_tag(:div, &1, class: "paragraph"))
     end)
     |> List.flatten() %>
   </div>

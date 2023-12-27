@@ -1,0 +1,9 @@
+body,
+input,
+button,
+select,
+textarea {
+  font-feature-settings: "kern", "liga", "pnum", "onum";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

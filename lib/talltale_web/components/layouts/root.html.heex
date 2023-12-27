@@ -13,11 +13,11 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600;7..72,700;7..72,800&display=swap"
       rel="stylesheet"
     />
-    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/main.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class={[@theme, "bg-primary-900 text-primary-200 text-base antialiased"]}>
+  <body class={["root", @theme]}>
     <%= @inner_content %>
   </body>
 </html>

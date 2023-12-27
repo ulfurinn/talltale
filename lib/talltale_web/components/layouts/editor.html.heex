@@ -1,26 +1,24 @@
-<header class="px-4 sm:px-6 lg:px-8 border-b border-neutral-600">
-  <div class="flex items-center justify-between py-3 text-sm">
-    <div class="m-auto text-neutral-300 text-xl font-semibold">Tall Tale Editor</div>
+<header>
+  <div>
+    <div class="title">Tall Tale Editor</div>
   </div>
 </header>
-<main class="px-4 sm:px-6 lg:px-8">
-  <div class="w-full">
-    <.flash_group flash={@flash} />
-    <section class="mt-4">
-      <div class="px-6 flex space-x-1">
-        <div
-          :for={{id, {tab, url}} <- @tabs.tabs}
-          class={[
-            "border border-b-0 rounded-t-md px-4 py-1 cursor-pointer",
-            id == @tabs.current && "bg-primary-300 text-primary-950"
-          ]}
-        >
-          <.link navigate={url}><%= tab %></.link>
-        </div>
+<main>
+  <.flash_group flash={@flash} />
+  <section class="editor-box">
+    <div class="tabs">
+      <div
+        :for={{id, {tab, url}} <- @tabs.tabs}
+        class={[
+          "tab",
+          id == @tabs.current && "current"
+        ]}
+      >
+        <.link navigate={url}><%= tab %></.link>
       </div>
-      <section class="border rounded-xl p-8">
-        <%= @inner_content %>
-      </section>
+    </div>
+    <section class="tab-content">
+      <%= @inner_content %>
     </section>
-  </div>
+  </section>
 </main>

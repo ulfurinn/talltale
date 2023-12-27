@@ -1,5 +1,4 @@
 <section>
-  <.flash_group flash={@flash} />
   <.simple_form :let={f} for={@form} phx-target={@myself} phx-change="validate" phx-submit="save">
     <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
     <input type="hidden" name={f[:area_id].name} value={f[:area_id].value} />
@@ -18,7 +17,7 @@
         type="button"
         phx-click={JS.navigate(~p"/edit/#{@tale.slug}/deck/#{f[:deck_id].value}")}
       >
-        <.icon name="hero-arrow-right" />
+        <.icon name="fa-arrow-right" />
       </.button>
     </div>
     <.label>Storyline</.label>
@@ -26,11 +25,11 @@
       <.inputs_for :let={s} field={f[:storyline]}>
         <div class="drag-item">
           <div class="flex justify-between">
-            <.icon name="hero-bars-3" class="w-6 h-6" data-handle />
+            <.icon name="fa-bars" class="w-6 h-6" data-handle />
             <.input field={s[:condition]} phx-debounce="blur" />
             <.toggle field={s[:delete]}>
-              <:off><.icon name="hero-trash" /> delete</:off>
-              <:on><.icon name="hero-arrow-path" /> restore</:on>
+              <:off><.icon name="fa-trash" /> delete</:off>
+              <:on><.icon name="fa-arrows-rotate" /> restore</:on>
             </.toggle>
           </div>
           <.input
@@ -60,7 +59,7 @@
         value={Enum.count(f[:storyline_order].value || [])}
         checked={false}
       >
-        <:off><.icon name="hero-plus-circle" /> add paragraph</:off>
+        <:off><.icon name="fa-circle-plus" /> add paragraph</:off>
       </.toggle>
     </div>
     <.button>Save</.button>
