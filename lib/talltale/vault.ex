@@ -427,7 +427,7 @@ defmodule Talltale.Vault do
   end
 
   defp process_note(path, document, frontmatter = %{"type" => "card"}, vault) do
-    title = document |> find(&heading?(&1, 2))
+    title = document |> find(&heading?(&1, 1))
 
     title =
       case title do
