@@ -1,6 +1,6 @@
 <div :if={@loaded}>
   <.location game={@game} location={@game.qualities["location"]} />
-  <.deck cards={@game.cards} capacity={@game.qualities["hand_size"]} />
+  <.deck cards={@game.hand} capacity={@game.qualities["hand_size"]} />
   <.storyline game={@game} location={@game.qualities["location"]} />
 
   <pre>

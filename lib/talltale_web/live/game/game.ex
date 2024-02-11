@@ -1,4 +1,5 @@
 defmodule TalltaleWeb.Game do
+  @moduledoc false
   use TalltaleWeb, [:live_view, mode: :game]
 
   import TalltaleWeb.GameLive.HTML
@@ -28,8 +29,9 @@ defmodule TalltaleWeb.Game do
   end
 
   def handle_event("action", %{"position" => position}, socket = %{assigns: %{game: game}}) do
+    %Game{hand: hand} = game
     position = String.to_integer(position)
-    card = game.cards |> Enum.at(position)
+    card = hand |> Enum.at(position)
     game = Game.play_card(game, card)
 
     socket

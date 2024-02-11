@@ -1,6 +1,7 @@
 defmodule Talltale.Game do
   @moduledoc "Game state."
   alias Talltale.Expression
+  alias Talltale.Game.Area
   alias Talltale.Game.Card
   alias Talltale.Game.Deck
   alias Talltale.Game.Location
@@ -11,7 +12,7 @@ defmodule Talltale.Game do
   defstruct [
     :tale,
     :deck,
-    :cards,
+    :hand,
     :storylets,
     qualities: %{}
   ]
@@ -37,13 +38,13 @@ defmodule Talltale.Game do
     location =
       case area do
         nil -> nil
-        area -> locations[area.id][qualities["location"]]
+        %Area{} -> locations[qualities["location"]]
       end
 
     card_ids = deck_cards(area, decks) ++ deck_cards(location, decks)
-    cards = Map.take(cards, card_ids) |> Map.values()
+    deck = Map.take(cards, Enum.uniq(card_ids)) |> Map.values()
 
-    %__MODULE__{game | deck: cards}
+    %__MODULE__{game | deck: deck}
   end
 
   defp deck_cards(nil, _), do: []
@@ -53,14 +54,14 @@ defmodule Talltale.Game do
   defp deck_cards(%Deck{card_ids: ids}), do: ids
 
   def draw(game = %__MODULE__{deck: deck, qualities: qualities}) do
-    cards =
+    hand =
       deck
       |> Enum.filter(&eval_condition(game, &1.condition))
       |> Deck.draw(qualities["hand_size"])
       |> Enum.map(&Card.gen_ref/1)
       |> Enum.into(IntoArray.new(Arrays.empty(size: qualities["hand_size"])))
 
-    %__MODULE__{game | cards: cards}
+    %__MODULE__{game | hand: hand}
   end
 
   def play_card(game, card = %Card{effects: effects}) do
@@ -72,7 +73,7 @@ defmodule Talltale.Game do
     |> tap(&log_game_state/1)
   end
 
-  defp remove_card(game = %__MODULE__{cards: cards}, card) do
+  defp remove_card(game = %__MODULE__{hand: hand}, card) do
     replacement =
       if card.sticky do
         Card.gen_ref(card)
@@ -80,13 +81,13 @@ defmodule Talltale.Game do
         nil
       end
 
-    index = cards |> Enum.find_index(&(&1 && &1.id == card.id))
-    cards = cards |> Arrays.replace(index, replacement)
-    %__MODULE__{game | cards: cards}
+    index = hand |> Enum.find_index(&(&1 && &1.id == card.id))
+    hand = hand |> Arrays.replace(index, replacement)
+    %__MODULE__{game | hand: hand}
   end
 
-  defp check_card_conditions(game = %__MODULE__{cards: cards}) do
-    cards
+  defp check_card_conditions(game = %__MODULE__{hand: hand}) do
+    hand
     |> Arrays.map(fn card ->
       if eval_condition(game, card && card.condition) do
         card
@@ -94,7 +95,7 @@ defmodule Talltale.Game do
         nil
       end
     end)
-    |> then(&%__MODULE__{game | cards: &1})
+    |> then(&%__MODULE__{game | hand: &1})
   end
 
   def build_storyline(game, %Location{storylines: storylines}) do
@@ -124,7 +125,7 @@ defmodule Talltale.Game do
   defp apply_effect(game = %__MODULE__{}, {:location, location_id}) do
     %__MODULE__{
       qualities: qualities,
-      tale: %Tale{areas: areas, locations: locations}
+      tale: %Tale{locations: locations}
     } = game
 
     area_id = locations[qualities["location"]].area_id
@@ -149,7 +150,7 @@ defmodule Talltale.Game do
     end
   end
 
-  defp empty_hand?(%__MODULE__{cards: cards}), do: Enum.all?(cards, &is_nil/1)
+  defp empty_hand?(%__MODULE__{hand: hand}), do: Enum.all?(hand, &is_nil/1)
 
   defp changed_location?(
          %__MODULE__{qualities: updated_qualities},
@@ -159,8 +160,8 @@ defmodule Talltale.Game do
       updated_qualities["location"] != qualities["location"]
   end
 
-  defp log_game_state(game) do
-    Logger.debug("qualities: #{inspect(game.qualities)}")
-    Logger.debug("hand: #{inspect(Enum.map(game.cards, &(&1 && &1.title)))}")
+  defp log_game_state(%Game{qualities: qualities, hand: hand}) do
+    Logger.debug("qualities: #{inspect(qualities)}")
+    Logger.debug("hand: #{inspect(Enum.map(hand, &(&1 && &1.title)))}")
   end
 end
