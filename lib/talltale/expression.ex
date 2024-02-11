@@ -8,7 +8,7 @@ defmodule Talltale.Expression do
 
   defmacrop var(v) do
     quote do
-      {:var, [], unquote(v)}
+      {unquote(v), _, nil}
     end
   end
 
