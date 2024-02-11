@@ -1,6 +1,6 @@
 @use "../config/spacing";
 @use "../config/theme";
-@use "../config/typography" as font;
+@use "../config/font";
 @use "../utils";
 
 $border-regular: 1px solid theme.get("editor", "600");

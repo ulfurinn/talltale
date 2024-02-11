@@ -1,6 +1,6 @@
 @use "../config/spacing";
 @use "../config/theme";
-@use "../config/typography" as font;
+@use "../config/font";
 
 .flash {
   position: fixed;

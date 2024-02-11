@@ -67,11 +67,26 @@ hooks.SortableInputsFor = {
   }
 };
 
+hooks.Deck = {
+  mounted() {
+    this.el.addEventListener("transitionend", e => {
+      this.pushEvent("animation-end", { target: e.target.id });
+    })
+  }
+};
+
 hooks.Card = {
   mounted() {
-    this.el.addEventListener("click", e => {
-      this.pushEvent("action", { position: this.el.dataset.position });
-    }, { once: true });
+    const transition = this.el.dataset.transition;
+    if (transition) {
+      this.liveSocket.execJS(this.el, transition);
+    }
+  },
+  updated() {
+    const transition = this.el.dataset.transition;
+    if (transition) {
+      this.liveSocket.execJS(this.el, transition);
+    }
   }
 };
 

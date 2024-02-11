@@ -1,9 +1,17 @@
-<div :if={@loaded}>
+<div :if={@loaded} class="scene">
   <.location game={@game} location={@game.qualities["location"]} />
-  <.deck cards={@game.hand} capacity={@game.qualities["hand_size"]} />
+  <.deck
+    cards={@game.hand}
+    capacity={@game.qualities["hand_size"]}
+    flipping={@flipping}
+    flip_in={@flip_in}
+    flip_out={@flip_out}
+  />
   <.storyline game={@game} location={@game.qualities["location"]} />
 
-  <pre>
-    <%= Jason.encode!(@game.qualities, pretty: true) %>
-  </pre>
+  <div class="debug">
+    <pre class="qualities">
+      <%= Jason.encode!(@game.qualities, pretty: true) %>
+    </pre>
+  </div>
 </div>

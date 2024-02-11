@@ -1,6 +1,18 @@
-<section id="deck" class="deck" style="">
+<section id="deck" class="deck" phx-hook="Deck" style="">
   <div :for={{card, index} <- Enum.with_index(@cards)}>
-    <.card :if={card} card={card} position={index} />
-    <.empty_card :if={card == nil} />
+    <.card
+      :if={card}
+      card={card}
+      position={index}
+      enabled={not @flipping}
+      flip_in={index in @flip_in}
+      flip_out={index in @flip_out}
+    />
+    <.empty_card
+      :if={card == nil}
+      position={index}
+      flip_in={index in @flip_in}
+      flip_out={index in @flip_out}
+    />
   </div>
 </section>

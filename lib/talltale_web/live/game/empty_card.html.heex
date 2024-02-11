@@ -1,1 +1,12 @@
-<div class="card border-2 border-primary-600 bg-primary-900 hover:border-primary-400 rounded-xl cursor-pointer font-light text-primary-300 w-[135px] h-[225px]" />
+<div
+  class="card card--blank"
+  id={card_id(nil, @position)}
+  phx-hook="Card"
+  data-transition={
+    cond do
+      @flip_in -> JS.transition({"flipping", "flip-hide", "flip-show"})
+      @flip_out -> JS.transition({"flipping", "flip-show", "flip-hide"})
+      true -> nil
+    end
+  }
+/>

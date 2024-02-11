@@ -1,6 +1,6 @@
 @use "../config/spacing";
 @use "../config/theme";
-@use "../config/typography" as font;
+@use "../config/font";
 @use "../utils";
 
 $border-regular: 1px solid theme.get("game", "600");
@@ -42,52 +42,6 @@ $border-thicker: 1px solid theme.get("game", "600");
       margin-bottom: spacing.$lg;
       font-size: font.size("lg");
       font-weight: font.weight("extrabold");
-    }
-  }
-
-  .deck {
-    margin-right: spacing.$xl;
-    margin-left: spacing.$xl;
-    padding-top: spacing.$md;
-    padding-bottom: spacing.$md;
-    padding-left: spacing.$lg;
-    padding-right: spacing.$lg;
-
-    border: $border-regular;
-    border-radius: spacing.$md;
-
-    background-color: theme.get("game", "950");
-
-    display: flex;
-    justify-content: center;
-    @include utils.gap-x(spacing.$md);
-    transform: perspective(800px) rotateX(20deg);
-  }
-
-  .card {
-    border-radius: spacing.$md;
-    border: $border-thicker;
-    background-color: theme.get("game", "900");
-    color: theme.get("game", "300");
-    font-weight: font.weight("bold");
-    cursor: pointer;
-
-    width: 135px;
-    height: 225px;
-    @include spacing.px(spacing.$xs);
-
-    display: flex;
-    align-items: center;
-    text-align: center;
-
-    &:hover {
-      background-color: theme.get("game", "800");
-    }
-
-    .title {
-      display: block;
-      width: 100%;
-      text-align: center;
     }
   }
 

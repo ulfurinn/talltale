@@ -1,3 +1,16 @@
-<div id={"card_#{@card.ref}"} phx-hook="Card" data-position={@position} class="card">
+<div
+  id={card_id(@card, @position)}
+  phx-hook="Card"
+  phx-click={@enabled && "pick-card"}
+  phx-value-position={@position}
+  data-transition={
+    cond do
+      @flip_in -> JS.transition({"flipping", "flip-hide", "flip-show"})
+      @flip_out -> JS.transition({"flipping", "flip-show", "flip-hide"})
+      true -> nil
+    end
+  }
+  class={["card", @enabled && "enabled"]}
+>
   <span class="title"><%= @card.title %></span>
 </div>
