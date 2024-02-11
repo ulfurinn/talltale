@@ -63,9 +63,9 @@ defmodule Talltale.Game do
     %__MODULE__{game | cards: cards}
   end
 
-  def play_card(game, card) do
+  def play_card(game, card = %Card{effects: effects}) do
     game
-    |> apply_effect(card.effect)
+    |> apply_effect(effects)
     |> remove_card(card)
     |> check_card_conditions()
     |> maybe_update_deck(game)
@@ -113,16 +113,26 @@ defmodule Talltale.Game do
     |> Enum.reduce(game, &apply_effect(&2, &1))
   end
 
-  defp apply_effect(game = %__MODULE__{qualities: qualities}, %{
-         "set_quality" => %{"expression" => expression}
-       }) do
+  defp apply_effect(game = %__MODULE__{}, {:quality, expression}) do
+    %__MODULE__{
+      qualities: qualities
+    } = game
+
     %__MODULE__{game | qualities: Expression.eval_assign(expression, qualities)}
   end
 
-  defp apply_effect(game = %__MODULE__{qualities: qualities}, %{
-         "set_location" => %{"area_id" => area_id, "location_id" => location_id}
-       }) do
-    %__MODULE__{game | qualities: %{qualities | area: area_id, location: location_id}}
+  defp apply_effect(game = %__MODULE__{}, {:location, location_id}) do
+    %__MODULE__{
+      qualities: qualities,
+      tale: %Tale{areas: areas, locations: locations}
+    } = game
+
+    area_id = locations[qualities["location"]].area_id
+
+    %__MODULE__{
+      game
+      | qualities: qualities |> Map.put("area", area_id) |> Map.put("location", location_id)
+    }
   end
 
   defp apply_effect(game = %__MODULE__{}, nil) do
@@ -145,7 +155,8 @@ defmodule Talltale.Game do
          %__MODULE__{qualities: updated_qualities},
          %__MODULE__{qualities: qualities}
        ) do
-    updated_qualities.area != qualities.area || updated_qualities.location != qualities.location
+    updated_qualities["area"] != qualities["area"] ||
+      updated_qualities["location"] != qualities["location"]
   end
 
   defp log_game_state(game) do

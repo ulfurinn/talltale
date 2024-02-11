@@ -6,10 +6,25 @@ defmodule Talltale.Expression do
     |> evalp(binding)
   end
 
+  defmacrop var(v) do
+    quote do
+      {:var, [], unquote(v)}
+    end
+  end
+
+  defmacrop namespaced_var(p, v) do
+    quote do
+      {{:., _, [{:__aliases__, _, unquote(p)}, unquote(v)]}, _, []}
+    end
+  end
+
+  defp ident_to_string(var(var)), do: Atom.to_string(var)
+
+  defp ident_to_string(namespaced_var(module_path, var)),
+    do: Enum.join(module_path ++ [var], ".")
+
   def eval_assign(expression, binding) when is_binary(expression) do
-    {:=, _, [{var, _, nil}, value]} =
-      expression
-      |> Code.string_to_quoted!()
+    {:=, _, [ident, value]} = expression |> Code.string_to_quoted!()
 
     value =
       case evalp(value, binding) do
@@ -17,7 +32,7 @@ defmodule Talltale.Expression do
         f when is_float(f) -> max(0, round(f))
       end
 
-    Map.put(binding, var, value)
+    Map.put(binding, ident_to_string(ident), value)
   end
 
   def eval_boolean(expression, binding) when is_binary(expression) do
@@ -63,11 +78,11 @@ defmodule Talltale.Expression do
   defp evalp({:.., _, [x, y]}, binding), do: evalp(x, binding)..evalp(y, binding)
 
   # simple var name
-  defp evalp({var, _, nil}, binding) when is_atom(var),
+  defp evalp(var(var), binding) when is_atom(var),
     do: Map.get(binding, Atom.to_string(var), 0)
 
   # namespaced var name
-  defp evalp({{:., _, [{:__aliases__, _, module_path}, var]}, _, []}, binding),
+  defp evalp(namespaced_var(module_path, var), binding),
     do: Map.get(binding, Enum.join(module_path ++ [var], "."), 0)
 
   defp evalp(literal, _) when is_number(literal), do: literal
