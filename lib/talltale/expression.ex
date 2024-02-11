@@ -1,4 +1,5 @@
 defmodule Talltale.Expression do
+  @moduledoc "Elixir AST interpreter."
   def eval(expression, binding) when is_binary(expression) do
     expression
     |> Code.string_to_quoted!()
