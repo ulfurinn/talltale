@@ -21,16 +21,16 @@ defmodule TalltaleWeb.GameLive.HTML do
     """
   end
 
-  def storyline(%{storyline: %Talltale.Game.Storyline{text: text}} = assigns) do
+  def storyline(%{storyline: %Talltale.Game.Storyline{}} = assigns) do
     ~H"""
-    <.storyline storyline={text} />
+    <.storyline storyline={@storyline.text} />
     """
   end
 
-  def storyline(%{storyline: %Paragraph{children: children}} = assigns) do
+  def storyline(%{storyline: %Paragraph{}} = assigns) do
     ~H"""
     <div class="paragraph">
-      <.storyline storyline={children} />
+      <.storyline storyline={@storyline.children} />
     </div>
     """
   end
