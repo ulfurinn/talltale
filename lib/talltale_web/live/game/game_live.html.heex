@@ -1,3 +1,7 @@
-<.location game={@game} area={@game.qualities.area} location={@game.qualities.location} />
-<.deck cards={@game.cards} capacity={@game.qualities.hand_size} />
-<.storyline game={@game} area={@game.qualities.area} location={@game.qualities.location} />
+<.location game={@game} location={@game.qualities["location"]} />
+<.deck cards={@game.cards} capacity={@game.qualities["hand_size"]} />
+<.storyline game={@game} location={@game.qualities["location"]} />
+
+<pre>
+<%= Jason.encode!(@game.qualities, pretty: true) %>
+</pre>

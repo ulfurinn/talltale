@@ -3,58 +3,62 @@ defmodule Talltale.Game do
   alias Talltale.Expression
   alias Talltale.Game.Card
   alias Talltale.Game.Deck
+  alias Talltale.Game.Location
+  alias Talltale.Game.Tale
 
   require Logger
 
   defstruct [
     :tale,
-    :areas,
-    :locations,
-    :qualities,
     :deck,
-    :cards
+    :cards,
+    :storylets,
+    qualities: %{}
   ]
 
   def new(tale) do
     %__MODULE__{
       tale: tale,
-      areas: Enum.into(tale.areas, %{}, fn area -> {area.id, area} end),
-      locations:
-        Enum.into(tale.areas, %{}, fn area ->
-          {area.id, Enum.into(area.locations, %{}, fn location -> {location.id, location} end)}
-        end),
-      qualities: tale.start |> Enum.into(%{}, fn {k, v} -> {String.to_atom(k), v} end)
+      qualities: tale.start
     }
     |> form_deck()
     |> draw()
   end
 
-  defp form_deck(game = %__MODULE__{tale: tale, qualities: qualities}) do
+  defp form_deck(
+         game = %__MODULE__{
+           tale: %Tale{areas: areas, locations: locations, decks: decks, cards: cards},
+           qualities: qualities
+         }
+       ) do
     Logger.info("forming deck")
-    area = tale.areas |> Enum.find(&(&1.id == qualities.area))
+    area = areas[qualities["area"]]
 
     location =
       case area do
         nil -> nil
-        area -> area.locations |> Enum.find(&(&1.id == qualities.location))
+        area -> locations[area.id][qualities["location"]]
       end
 
-    deck = deck_cards(area) ++ deck_cards(location)
+    card_ids = deck_cards(area, decks) ++ deck_cards(location, decks)
+    cards = Map.take(cards, card_ids) |> Map.values()
 
-    %__MODULE__{game | deck: deck}
+    %__MODULE__{game | deck: cards}
   end
 
-  defp deck_cards(%{deck: deck}), do: deck_cards(deck)
+  defp deck_cards(nil, _), do: []
+  defp deck_cards(%{deck_id: id}, decks), do: deck_cards(decks[id])
+
   defp deck_cards(nil), do: []
-  defp deck_cards(%Deck{cards: cards}), do: cards
+  defp deck_cards(%Deck{card_ids: ids}), do: ids
 
   def draw(game = %__MODULE__{deck: deck, qualities: qualities}) do
     cards =
       deck
       |> Enum.filter(&eval_condition(game, &1.condition))
-      |> Deck.draw(qualities.hand_size)
+      |> Deck.draw(qualities["hand_size"])
       |> Enum.map(&Card.gen_ref/1)
-      |> Enum.into(IntoArray.new(Arrays.empty(size: qualities.hand_size)))
+      |> Enum.into(IntoArray.new(Arrays.empty(size: qualities["hand_size"])))
 
     %__MODULE__{game | cards: cards}
   end
@@ -93,8 +97,8 @@ defmodule Talltale.Game do
     |> then(&%__MODULE__{game | cards: &1})
   end
 
-  def build_storyline(game, location) do
-    location.storyline
+  def build_storyline(game, %Location{storylines: storylines}) do
+    storylines
     |> Enum.filter(&eval_condition(game, &1.condition))
   end
 

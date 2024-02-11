@@ -1,9 +1,0 @@
-<section>
-  <.simple_form :let={f} for={@form} phx-target={@myself} phx-change="validate" phx-submit="save">
-    <%= Phoenix.HTML.Form.hidden_inputs_for(f) %>
-    <input type="hidden" name={f[:tale_id].name} value={f[:tale_id].value} />
-    <.input field={f[:title]} label="Title" autocomplete="off" phx-debounce="blur" />
-    <.input field={f[:description]} label="Description" autocomplete="off" phx-debounce="blur" />
-    <.button>Save</.button>
-  </.simple_form>
-</section>

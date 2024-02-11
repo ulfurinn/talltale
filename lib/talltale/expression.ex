@@ -61,7 +61,14 @@ defmodule Talltale.Expression do
   defp evalp({:rem, _, [x, y]}, binding), do: rem(evalp(x, binding), evalp(y, binding))
   defp evalp({:.., _, [x, y]}, binding), do: evalp(x, binding)..evalp(y, binding)
 
-  defp evalp({var, _, nil}, binding) when is_atom(var), do: Map.get(binding, var, 0)
+  # simple var name
+  defp evalp({var, _, nil}, binding) when is_atom(var),
+    do: Map.get(binding, Atom.to_string(var), 0)
+
+  # namespaced var name
+  defp evalp({{:., _, [{:__aliases__, _, module_path}, var]}, _, []}, binding),
+    do: Map.get(binding, Enum.join(module_path ++ [var], "."), 0)
+
   defp evalp(literal, _) when is_number(literal), do: literal
 
   defp evalp({:if, _, [x, a, b]}, binding) do

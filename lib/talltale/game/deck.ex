@@ -1,16 +1,7 @@
 defmodule Talltale.Game.Deck do
   @moduledoc "A deck of cards for a particular location."
-  use Talltale.Schema
 
-  alias Talltale.Game.Card
-  alias Talltale.Game.Tale
-
-  schema "decks" do
-    field :title, :string
-
-    belongs_to :tale, Tale
-    has_many :cards, Card
-  end
+  defstruct [:id, :title, :card_ids]
 
   def draw(cards, n) when is_list(cards) do
     max_endpoint = Enum.reduce(cards, 0, &(&1.frequency + &2))

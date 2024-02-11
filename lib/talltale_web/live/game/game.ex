@@ -1,13 +1,17 @@
 defmodule TalltaleWeb.GameLive do
   use TalltaleWeb, [:live_view, mode: :game]
 
+  import TalltaleWeb.GameLive.HTML
+
   alias Talltale.Game
-  alias Talltale.Repo
+  # alias Talltale.Repo
+  alias Talltale.Vault
 
   embed_templates "*"
 
-  def mount(params, _session, socket) do
-    game = Game.new(Repo.load_tale(params["tale"]))
+  def mount(_params, _session, socket) do
+    tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
+    game = Game.new(tale)
 
     socket
     |> assign(:theme, "game")

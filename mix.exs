@@ -40,7 +40,8 @@ defmodule Talltale.MixProject do
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.20"},
-      {:jason, "~> 1.2"},
+      {:html_entities, "~> 0.5"},
+      {:jason, "~> 1.4"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_dashboard, "~> 0.8.0"},
@@ -52,7 +53,8 @@ defmodule Talltale.MixProject do
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:uniq, "~> 0.1"}
+      {:uniq, "~> 0.1"},
+      {:yaml_elixir, "~> 2.9"}
     ]
   end
 
