@@ -1,0 +1,9 @@
+<div :if={@loaded}>
+  <.location game={@game} location={@game.qualities["location"]} />
+  <.deck cards={@game.cards} capacity={@game.qualities["hand_size"]} />
+  <.storyline game={@game} location={@game.qualities["location"]} />
+
+  <pre>
+    <%= Jason.encode!(@game.qualities, pretty: true) %>
+  </pre>
+</div>

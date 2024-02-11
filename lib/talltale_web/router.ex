@@ -18,33 +18,7 @@ defmodule TalltaleWeb.Router do
   scope "/", TalltaleWeb do
     pipe_through :browser
 
-    live "/play/:tale", GameLive
-
-    live_session :editor do
-      live "/edit/:tale", EditorLive.Tale
-
-      live "/edit/:tale/qualities", EditorLive.Qualities, :index
-      live "/edit/:tale/qualities/new", EditorLive.Qualities, :new
-      live "/edit/:tale/quality/:slug", EditorLive.Quality, :edit
-
-      live "/edit/:tale/areas", EditorLive.Areas, :index
-      live "/edit/:tale/areas/new", EditorLive.Areas, :new
-      live "/edit/:tale/area/:id", EditorLive.Area, :edit
-      live "/edit/:tale/area/:id/location/new", EditorLive.Area, :new_location
-      live "/edit/:tale/area/:id/location/:location_id", EditorLive.Area, :edit_location
-
-      live "/edit/:tale/decks", EditorLive.Decks, :index
-      live "/edit/:tale/decks/new", EditorLive.Decks, :new
-      live "/edit/:tale/deck/:id", EditorLive.Deck, :edit
-      live "/edit/:tale/deck/:id/card/new", EditorLive.Deck, :new_card
-      live "/edit/:tale/deck/:id/card/:card_id", EditorLive.Deck, :edit_card
-
-      live "/edit/:tale/storylets", EditorLive.Storylets, :index
-      live "/edit/:tale/storylets/new", EditorLive.Storylets, :new
-      live "/edit/:tale/storylet/:id", EditorLive.Storylet, :edit
-      live "/edit/:tale/storylet/:id/card/new", EditorLive.Storylet, :new_card
-      live "/edit/:tale/storylet/:id/card/:card_id", EditorLive.Storylet, :edit_card
-    end
+    live "/play/:tale", Game
   end
 
   # Other scopes may use custom stacks.
