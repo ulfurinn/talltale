@@ -160,7 +160,7 @@ defmodule Talltale.Game do
       updated_qualities["location"] != qualities["location"]
   end
 
-  defp log_game_state(%Game{qualities: qualities, hand: hand}) do
+  defp log_game_state(%__MODULE__{qualities: qualities, hand: hand}) do
     Logger.debug("qualities: #{inspect(qualities)}")
     Logger.debug("hand: #{inspect(Enum.map(hand, &(&1 && &1.title)))}")
   end
