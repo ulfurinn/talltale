@@ -34,6 +34,7 @@ defmodule TalltaleWeb.Game do
   @defaults %{
     loaded: true,
     flipping: false,
+    picked_card_position: nil,
     flip_in: [],
     flip_out: []
   }
@@ -54,9 +55,11 @@ defmodule TalltaleWeb.Game do
 
     socket
     |> assign(flipping: true, flip_out: [position])
+    |> put_picked_card_position(position)
     |> put_animation_end(card_id(card, position), fn socket ->
       socket
       |> assign(flipping: false, flip_out: [])
+      |> put_picked_card_position(nil)
       |> activate_card(position)
     end)
     |> noreply()
@@ -73,10 +76,12 @@ defmodule TalltaleWeb.Game do
 
     socket
     |> put_game(game)
+    |> put_picked_card_position(position)
     |> assign(flipping: true, flip_in: flip_in)
     |> put_animation_end(card_id(new_card, position), fn socket ->
       socket
       |> assign(flipping: false, flip_in: [])
+      |> put_picked_card_position(nil)
     end)
   end
 
@@ -108,6 +113,11 @@ defmodule TalltaleWeb.Game do
   defp put_game(socket, game) do
     socket
     |> assign(:game, game)
+  end
+
+  defp put_picked_card_position(socket, position) do
+    socket
+    |> assign(:picked_card_position, position)
   end
 
   defp put_animation_end(socket = %{private: %{on_animation_end: on_animation_end}}, target, fun) do

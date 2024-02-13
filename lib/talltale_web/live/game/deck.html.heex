@@ -7,12 +7,14 @@
       enabled={not @flipping}
       flip_in={index in @flip_in}
       flip_out={index in @flip_out}
+      picked={index == @picked_card_position}
     />
     <.empty_card
       :if={card == nil}
       position={index}
       flip_in={index in @flip_in}
       flip_out={index in @flip_out}
+      picked={index == @picked_card_position}
     />
   </div>
 </section>

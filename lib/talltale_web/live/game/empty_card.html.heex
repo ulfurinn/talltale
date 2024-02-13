@@ -4,9 +4,15 @@
   phx-hook="Card"
   data-transition={
     cond do
-      @flip_in -> JS.transition({"flipping", "flip-hide", "flip-show"})
-      @flip_out -> JS.transition({"flipping", "flip-show", "flip-hide"})
-      true -> nil
+      @flip_in ->
+        if @picked do
+          JS.transition({"flipping", "flip-hide", "flip-show"})
+        else
+          JS.transition({"burning", "burn-hot", "burn-cold"})
+        end
+
+      true ->
+        nil
     end
   }
 />

@@ -76,13 +76,9 @@ hooks.Deck = {
 };
 
 hooks.Card = {
-  mounted() {
-    const transition = this.el.dataset.transition;
-    if (transition) {
-      this.liveSocket.execJS(this.el, transition);
-    }
-  },
-  updated() {
+  mounted() { this.play(); },
+  updated() { this.play(); },
+  play() {
     const transition = this.el.dataset.transition;
     if (transition) {
       this.liveSocket.execJS(this.el, transition);
