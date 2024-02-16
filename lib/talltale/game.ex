@@ -5,6 +5,7 @@ defmodule Talltale.Game do
   alias Talltale.Game.Card
   alias Talltale.Game.Deck
   alias Talltale.Game.Location
+  alias Talltale.Game.Outcome
   alias Talltale.Game.Tale
 
   require Logger
@@ -64,7 +65,7 @@ defmodule Talltale.Game do
     %__MODULE__{game | hand: hand}
   end
 
-  def play_card(game, card = %Card{effects: effects}) do
+  def play_card(game, card = %Card{pass: %Outcome{effects: effects}}) do
     game
     |> apply_effect(effects)
     |> remove_card(card)

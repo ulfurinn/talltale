@@ -2,7 +2,7 @@ defmodule Talltale.Vault do
   @moduledoc "Parses an Obsidian vault containing a game definition."
   alias Tailmark.Document
   alias Tailmark.Node.{Blockquote, Break, Heading, Link, Paragraph, Text}
-  alias Talltale.Game.{Area, Card, Deck, Location, Quality, Storylet, Storyline, Tale}
+  alias Talltale.Game.{Area, Card, Deck, Location, Outcome, Quality, Storylet, Storyline, Tale}
 
   require Logger
 
@@ -197,7 +197,7 @@ defmodule Talltale.Vault do
     card = %Card{
       card
       | condition: resolve_condition(card.condition, vault),
-        effects: resolve_effects(card.effects, vault)
+        pass: resolve_outcome(card.pass, vault)
     }
 
     %__MODULE__{
@@ -229,7 +229,9 @@ defmodule Talltale.Vault do
     %Card{
       choice
       | condition: resolve_condition(choice.condition, vault),
-        effects: resolve_effects(choice.effects, vault)
+        challenges: resolve_challenges(choice.challenges, vault),
+        pass: resolve_outcome(choice.pass, vault),
+        fail: resolve_outcome(choice.fail, vault)
     }
   end
 
@@ -248,6 +250,20 @@ defmodule Talltale.Vault do
       _, acc ->
         {:cont, acc}
     end)
+  end
+
+  defp resolve_challenges(challenges, vault) do
+    challenges
+    |> Enum.map(&resolve_challenge(&1, vault))
+  end
+
+  defp resolve_challenge(challenge, _vault), do: challenge
+
+  defp resolve_outcome(outcome, vault) do
+    %Outcome{
+      outcome
+      | effects: resolve_effects(outcome.effects, vault)
+    }
   end
 
   defp resolve_effects(nodes, vault) do
@@ -450,7 +466,7 @@ defmodule Talltale.Vault do
         frequency: frontmatter["frequency"],
         sticky: Map.get(frontmatter, "sticky", false),
         condition: condition,
-        effects: effects
+        pass: %Outcome{effects: effects}
       }
 
     %__MODULE__{
@@ -463,8 +479,7 @@ defmodule Talltale.Vault do
     choices =
       document
       |> section("Choices")
-      |> Enum.chunk_by(&match?(%Break{}, &1))
-      |> Enum.reject(&match?([%Break{}], &1))
+      |> sections(2)
       |> Enum.map(&process_storylet_choice/1)
 
     storylet = %Storylet{
@@ -505,21 +520,50 @@ defmodule Talltale.Vault do
   end
 
   def process_storylet_choice(nodes) do
+    Tailmark.Document.print(nodes)
     title = nodes |> find(&heading?(&1, 2))
 
     condition = nodes |> find(&callout?(&1, "when"))
 
-    effects =
-      nodes
-      |> select(fn node ->
-        callout?(node, "quality") or callout?(node, "location") or callout?(node, "storylet")
-      end)
+    challenges = nodes |> select(&callout?(&1, "challenge"))
+
+    {pass, fail} =
+      if Enum.any?(challenges) do
+        nodes |> process_choice_with_challenge()
+      else
+        nodes |> process_choice_without_challenge()
+      end
 
     %Card{
       id: Uniq.UUID.uuid7(),
       title: Tailmark.Writer.to_text(title),
       text: nodes |> Enum.filter(&paragraph?/1),
       condition: condition,
+      challenges: challenges,
+      pass: pass,
+      fail: fail
+    }
+  end
+
+  defp process_choice_with_challenge(nodes) do
+    {nodes |> section("Pass") |> process_choice(), nodes |> section("Fail") |> process_choice()}
+  end
+
+  defp process_choice_without_challenge(nodes) do
+    {nodes |> section("Pass") |> process_choice(), %Outcome{}}
+  end
+
+  defp process_choice(nodes) do
+    effects =
+      nodes
+      |> select(fn node ->
+        callout?(node, "quality") or callout?(node, "location") or callout?(node, "storylet")
+      end)
+
+    text = nodes |> Enum.filter(&paragraph?/1)
+
+    %Outcome{
+      storyline: text |> process_storyline(),
       effects: effects
     }
   end
@@ -567,6 +611,19 @@ defmodule Talltale.Vault do
   end
 
   defp section([_ | tail], content), do: section(tail, content)
+
+  defp sections(nodes, level), do: sections(nodes, level, [])
+
+  defp sections([heading | rest], level, acc) do
+    if heading?(heading, ^level) do
+      {children, rest} = rest |> Enum.split_while(&(not heading?(&1, ^level)))
+      sections(rest, level, [[heading | children] | acc])
+    else
+      sections(rest, level, acc)
+    end
+  end
+
+  defp sections([], _, acc), do: Enum.reverse(acc)
 
   defp reduce(nodes, acc, fun) do
     reduce_while(nodes, acc, fn node, acc -> {:cont, fun.(node, acc)} end)
