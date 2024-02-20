@@ -111,15 +111,16 @@ defmodule Talltale.Vault do
   end
 
   defp resolve_location(path, location, vault) do
-    location = %Location{
-      location
-      | storylines: resolve_storylines(location.storylines, vault),
-        deck_id:
-          case location.deck_id do
-            nil -> nil
-            {:link, path} -> Map.fetch!(vault.decks, path).id
-          end
-    }
+    location =
+      %Location{
+        location
+        | storylines: resolve_storylines(location.storylines, vault),
+          deck_id:
+            case location.deck_id do
+              nil -> nil
+              {:link, path} -> Map.fetch!(vault.decks, path).id
+            end
+      }
 
     %__MODULE__{
       vault
@@ -408,12 +409,13 @@ defmodule Talltale.Vault do
       |> Enum.reject(&match?([%Break{}], &1))
       |> Enum.map(&process_storyline/1)
 
-    location = %Location{
-      id: Uniq.UUID.uuid7(),
-      title: basename(path),
-      storylines: storylines,
-      deck_id: frontmatter["deck"]
-    }
+    location =
+      %Location{
+        id: Uniq.UUID.uuid7(),
+        title: basename(path),
+        storylines: storylines,
+        deck_id: frontmatter["deck"]
+      }
 
     %__MODULE__{
       vault
