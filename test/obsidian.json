@@ -16,5 +16,11 @@
     "html": "<blockquote class=\"callout-info\">\n<p>Info box</p>\n</blockquote>\n",
     "example": "ext3",
     "section": "Callouts"
+  },
+  {
+    "markdown": "> [!info|meta] Title\n> Info box\n",
+    "html": "<blockquote class=\"callout-info\" data-callout-meta=\"meta\">\n<p>Info box</p>\n</blockquote>\n",
+    "example": "ext4",
+    "section": "Callouts"
   }
 ]

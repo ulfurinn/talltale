@@ -5,7 +5,7 @@
 | Backslash escapes | 13 | 13 (**100.0 %**) |
 | Blank lines | 1 | 1 (**100.0 %**) |
 | Block quotes | 25 | 25 (**100.0 %**) |
-| Callouts | 1 | 1 (**100.0 %**) |
+| Callouts | 2 | 2 (**100.0 %**) |
 | Code spans | 22 | 22 (**100.0 %**) |
 | Emphasis and strong emphasis | 131 | 131 (**100.0 %**) |
 | Entity and numeric character references | 17 | 17 (**100.0 %**) |
@@ -28,4 +28,4 @@
 | Textual content | 3 | 3 (**100.0 %**) |
 | Thematic breaks | 19 | 19 (**100.0 %**) |
 | Wikilinks | 2 | 2 (**100.0 %**) |
-| **TOTAL** | 655 | 655 (**100.0 %**) |
+| **TOTAL** | 656 | 656 (**100.0 %**) |

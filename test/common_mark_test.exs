@@ -31,7 +31,12 @@ defmodule Tailmark.CommonMarkTest do
         @tag example: example["example"]
         @tag data: example
         # @tag skip: true
-        test example["example"], %{data: example, collector: pid, section: section} do
+        test example["example"], %{
+          data: data,
+          collector: pid,
+          section: section,
+          example: example
+        } do
           trace? = System.get_env("TRACE") == "1"
 
           if trace? do
@@ -43,11 +48,12 @@ defmodule Tailmark.CommonMarkTest do
           end
 
           output =
-            [example["markdown"] |> document(frontmatter: false) |> to_html()]
+            [data["markdown"] |> document(frontmatter: false) |> to_html()]
             |> IO.iodata_to_binary()
 
-          unless System.get_env("ASSERT") == "0" do
-            assert example["html"] == output
+          if System.get_env("ASSERT", "1") != "0" ||
+               String.starts_with?(to_string(example), "ext") do
+            assert data["html"] == output
           end
 
           register_success(pid, section)

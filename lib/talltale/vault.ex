@@ -29,7 +29,7 @@ defmodule Talltale.Vault do
 
   defmacrop callout?(node, callout) when is_binary(callout) do
     quote do
-      match?(%Blockquote{callout: unquote(callout)}, unquote(node))
+      match?(%Blockquote{callout: %{type: unquote(callout)}}, unquote(node))
     end
   end
 
@@ -238,7 +238,7 @@ defmodule Talltale.Vault do
 
   defp resolve_condition(nil, _), do: nil
 
-  defp resolve_condition(storyline = %Blockquote{callout: "when"}, vault) do
+  defp resolve_condition(storyline = %Blockquote{callout: %{type: "when"}}, vault) do
     storyline
     |> reduce_walk("", fn
       %Link{destination: destination}, acc ->
@@ -271,7 +271,7 @@ defmodule Talltale.Vault do
     Enum.map(nodes, &resolve_effect(&1, vault))
   end
 
-  defp resolve_effect(quality = %Blockquote{callout: "quality"}, vault) do
+  defp resolve_effect(quality = %Blockquote{callout: %{type: "quality"}}, vault) do
     expression =
       quality
       |> reduce_walk("", fn
@@ -289,13 +289,13 @@ defmodule Talltale.Vault do
     {:quality, expression}
   end
 
-  defp resolve_effect(location = %Blockquote{callout: "location"}, vault) do
+  defp resolve_effect(location = %Blockquote{callout: %{type: "location"}}, vault) do
     link = location |> find(&link?/1)
 
     {:location, vault.locations[URI.decode(link.destination)].id}
   end
 
-  defp resolve_effect(storylet = %Blockquote{callout: "storylet"}, vault) do
+  defp resolve_effect(storylet = %Blockquote{callout: %{type: "storylet"}}, vault) do
     link = storylet |> find(&link?/1)
 
     {:storylet, vault.storylets[URI.decode(link.destination)].id}
@@ -503,7 +503,7 @@ defmodule Talltale.Vault do
       nodes
       |> Enum.reduce(%Storyline{text: []}, fn node, storyline ->
         case node do
-          %Blockquote{callout: "when"} ->
+          %Blockquote{callout: %{type: "when"}} ->
             %Storyline{storyline | condition: node}
 
           %Paragraph{} ->
@@ -522,7 +522,6 @@ defmodule Talltale.Vault do
   end
 
   def process_storylet_choice(nodes) do
-    Tailmark.Document.print(nodes)
     title = nodes |> find(&heading?(&1, 2))
 
     condition = nodes |> find(&callout?(&1, "when"))

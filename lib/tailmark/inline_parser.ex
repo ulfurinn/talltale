@@ -27,7 +27,7 @@ defmodule Tailmark.InlineParser do
   @punctuation ~r/^\p{P}/u
   @backslashOrAmp ~r/[\\&]/
   @entityOrEscaped ~r/\\#{@escapable_def}|#{@entity_def}/
-  @callout ~r/^\[!(?<goal>[a-z]+)\] *\n/
+  @callout ~r/^\[!(?<type>[a-z0-9-]+)(\|(?<meta>[a-z0-9-]+))?\]\s*?(?<title>[^\n]+)?\n/ui
 
   def parse(text) when is_binary(text) do
     node = Paragraph.new(text)
@@ -182,11 +182,10 @@ defmodule Tailmark.InlineParser do
              %Blockquote{} <- parent,
              [_] <- parent.children,
              [] <- node.children,
-             {state, callout} <- parse_callout(state),
-             true <- is_binary(callout) do
+             {state, {type, meta, title}} <- parse_callout(state) do
           state
           |> update_node(parent.ref, fn blockquote ->
-            %Blockquote{blockquote | callout: callout}
+            %Blockquote{blockquote | callout: %{type: type, meta: meta, title: title}}
           end)
           |> result(true)
         else
@@ -284,8 +283,18 @@ defmodule Tailmark.InlineParser do
   end
 
   defp parse_callout(state) do
-    extract(state, @callout)
+    case extract(state, @callout) do
+      {state, str} when is_binary(str) ->
+        [info, meta, title] = Regex.run(@callout, str, capture: ["type", "meta", "title"])
+        {state, {info, empty_to_nil(meta), empty_to_nil(title)}}
+
+      result ->
+        result
+    end
   end
+
+  defp empty_to_nil(""), do: nil
+  defp empty_to_nil(string), do: string
 
   defp scan_delims(state, c) do
     delim = consume_delim(state, c, "")

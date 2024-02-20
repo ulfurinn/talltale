@@ -114,11 +114,27 @@ defmodule Tailmark.Writer do
     ["<li>", to_html(children), "</li>", "\n"]
   end
 
-  def to_html(%Node.Blockquote{children: children, callout: callout}) when is_binary(callout) do
+  def to_html(%Node.Blockquote{children: children, callout: %{type: type, meta: nil}}) do
     [
       "\n",
       "<blockquote class=\"callout-",
-      callout,
+      type,
+      "\">",
+      "\n",
+      to_html(children),
+      "\n",
+      "</blockquote>",
+      "\n"
+    ]
+  end
+
+  def to_html(%Node.Blockquote{children: children, callout: %{type: type, meta: meta}}) do
+    [
+      "\n",
+      "<blockquote class=\"callout-",
+      type,
+      "\" data-callout-meta=\"",
+      meta,
       "\">",
       "\n",
       to_html(children),
