@@ -29,30 +29,6 @@ $border-thicker: 1px solid theme.get("game", "600");
     background-color: theme.get("game", "800");
   }
 
-  &.flipping {
-    transition: transform 300ms ease-in-out;
-  }
-
-  &.flip-hide {
-    transform: rotateY(90deg);
-  }
-
-  &.flip-show {
-    transform: rotateY(0deg);
-  }
-
-  &.burning {
-    transition: background-color 300ms ease-in-out;
-  }
-
-  &.burn-hot {
-    background-color: theme.get("error", "600");
-  }
-
-  &.burn-cold {
-    background-color: theme.get("game", "950");
-  }
-
   .title {
     display: block;
     width: 100%;

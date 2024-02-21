@@ -1,3 +1,5 @@
+@use "config/theme";
+
 .hidden {
   display: none;
 }
@@ -18,3 +20,25 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+.flipping {
+  transition: transform 300ms ease-in-out;
+}
+
+.flip-hide {
+  transform: rotateY(90deg);
+}
+
+.flip-show {
+  transform: rotateY(0deg);
+}
+
+.burning {
+  transition: background-color 1000ms ease-in;
+}
+
+.burn-hot {
+  background-color: theme.get("error", "900") !important;
+}
+
+.burn-cold {}

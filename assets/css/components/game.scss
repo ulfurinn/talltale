@@ -65,12 +65,12 @@ $border-thicker: 1px solid theme.get("game", "600");
     right: 0;
     bottom: 0;
     z-index: 100;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(4px) brightness(0.5);
     text-align: center;
 
     & .storylet-content {
+      margin-top: spacing.$xxl;
       display: inline-block;
-      vertical-align: middle;
       max-width: 90%;
       text-align: left;
 
@@ -92,14 +92,6 @@ $border-thicker: 1px solid theme.get("game", "600");
           margin-top: 0;
         }
       }
-    }
-
-    &:before {
-      content: "";
-      display: inline-block;
-      width: 0;
-      height: 100%;
-      vertical-align: middle;
     }
   }
 }
