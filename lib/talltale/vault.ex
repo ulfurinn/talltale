@@ -536,10 +536,12 @@ defmodule Talltale.Vault do
         nodes |> process_choice_without_challenge()
       end
 
+    own_nodes = nodes |> Enum.take_while(&(not heading?(&1, 3)))
+
     %Card{
       id: Uniq.UUID.uuid7(),
       title: Tailmark.Writer.to_text(title),
-      text: nodes |> Enum.filter(&paragraph?/1),
+      text: own_nodes |> Enum.filter(&paragraph?/1),
       condition: condition,
       challenges: challenges,
       pass: pass,
