@@ -9,6 +9,7 @@
     picked_card_position={@picked_card_position}
   />
   <.storyline game={@game} location={@game.qualities["location"]} />
+  <.storylet :if={@game.storylet} storylet={@game.storylet} />
 
   <div class="debug">
     <pre class="qualities">

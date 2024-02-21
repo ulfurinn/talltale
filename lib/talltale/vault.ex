@@ -60,6 +60,7 @@ defmodule Talltale.Vault do
       decks: vault.decks,
       cards: vault.cards,
       qualities: vault.qualities,
+      storylets: vault.storylets,
       start: vault.starting_qualities |> Map.put("area", starting_location.area_id)
     }
   end

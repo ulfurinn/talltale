@@ -57,4 +57,48 @@ $border-thicker: 1px solid theme.get("game", "600");
       }
     }
   }
+
+  .storylet {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    text-align: center;
+
+    & .storylet-content {
+      display: inline-block;
+      vertical-align: middle;
+      max-width: 90%;
+      text-align: left;
+
+      border: $border-regular;
+      background-color: theme.get("game", "950");
+      padding: spacing.$lg;
+
+      & .choice {
+        // border: $border-regular;
+        background-color: theme.get("game", "400");
+        color: theme.get("game", "900");
+        padding: spacing.$md;
+
+        &:not(:last-child) {
+          margin-bottom: spacing.$lg;
+        }
+
+        & .choice-title {
+          margin-top: 0;
+        }
+      }
+    }
+
+    &:before {
+      content: "";
+      display: inline-block;
+      width: 0;
+      height: 100%;
+      vertical-align: middle;
+    }
+  }
 }

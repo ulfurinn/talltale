@@ -1,0 +1,9 @@
+<section class="storylet">
+  <section class="storylet-content">
+    <div :for={choice <- @storylet.choices} class="choice">
+      <h2 class="choice-title"><%= choice.title %></h2>
+      <section class="choice-content"><.rich_text content={choice.text} /></section>
+      <button phx-click="make-storylet-choice" phx-value-choice-id={choice.id}>Go</button>
+    </div>
+  </section>
+</section>

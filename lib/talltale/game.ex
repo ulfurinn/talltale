@@ -14,8 +14,8 @@ defmodule Talltale.Game do
     :tale,
     :deck,
     :hand,
-    :storylets,
-    qualities: %{}
+    qualities: %{},
+    storylet: nil
   ]
 
   def new(tale) do
@@ -135,6 +135,14 @@ defmodule Talltale.Game do
       game
       | qualities: qualities |> Map.put("area", area_id) |> Map.put("location", location_id)
     }
+  end
+
+  defp apply_effect(
+         game = %__MODULE__{tale: %Tale{storylets: storylets}},
+         {:storylet, storylet_id}
+       ) do
+    storylet = storylets[storylet_id]
+    %__MODULE__{game | storylet: storylet}
   end
 
   defp apply_effect(game = %__MODULE__{}, nil) do
