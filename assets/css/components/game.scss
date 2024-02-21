@@ -65,6 +65,7 @@ $border-thicker: 1px solid theme.get("game", "600");
     right: 0;
     bottom: 0;
     z-index: 100;
+    backdrop-filter: blur(3px);
     text-align: center;
 
     & .storylet-content {
