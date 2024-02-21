@@ -1,8 +1,9 @@
 <div
   id={card_id(@card, @position)}
-  phx-hook="Card"
+  phx-hook="Animated"
   phx-click={@enabled && "pick-card"}
   phx-value-position={@position}
+  data-transition-sync
   data-transition={
     cond do
       @flip_in -> JS.transition({"flipping", "flip-hide", "flip-show"})

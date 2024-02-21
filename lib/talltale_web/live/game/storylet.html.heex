@@ -1,4 +1,14 @@
-<section class="storylet">
+<section
+  class="storylet"
+  id="storylet"
+  phx-hook="Animated"
+  data-transition={
+    cond do
+      @entered? -> JS.transition({"fading", "fade-hide", "fade-show"})
+      true -> nil
+    end
+  }
+>
   <section class="storylet-content">
     <div :for={choice <- @storylet.choices} class="choice">
       <h2 class="choice-title"><%= choice.title %></h2>

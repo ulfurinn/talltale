@@ -67,15 +67,18 @@ hooks.SortableInputsFor = {
   }
 };
 
-hooks.Deck = {
+hooks.Scene = {
   mounted() {
     this.el.addEventListener("transitionend", e => {
+      if (!("transitionSync" in e.target.dataset)) {
+        return;
+      }
       this.pushEvent("animation-end", { target: e.target.id });
     })
   }
 };
 
-hooks.Card = {
+hooks.Animated = {
   mounted() { this.play(); },
   updated() { this.play(); },
   play() {

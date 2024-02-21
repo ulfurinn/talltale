@@ -1,7 +1,8 @@
 <div
   class="card card--blank"
   id={card_id(nil, @position)}
-  phx-hook="Card"
+  phx-hook="Animated"
+  data-transition-sync
   data-transition={
     cond do
       @flip_in ->

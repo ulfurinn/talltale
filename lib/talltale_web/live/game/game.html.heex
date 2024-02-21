@@ -1,4 +1,4 @@
-<div :if={@loaded} class="scene">
+<div :if={@loaded} class="scene" id="scene" phx-hook="Scene">
   <.location game={@game} location={@game.qualities["location"]} />
   <.deck
     cards={@game.hand}
@@ -9,7 +9,7 @@
     picked_card_position={@picked_card_position}
   />
   <.storyline game={@game} location={@game.qualities["location"]} />
-  <.storylet :if={@game.storylet} storylet={@game.storylet} />
+  <.storylet :if={@game.storylet} storylet={@game.storylet} entered?={@entered_storylet?} />
 
   <div class="debug">
     <pre class="qualities">

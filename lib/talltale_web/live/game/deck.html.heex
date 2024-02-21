@@ -1,4 +1,4 @@
-<section id="deck" class="deck" phx-hook="Deck" style="">
+<section id="deck" class="deck">
   <div :for={{card, index} <- Enum.with_index(@cards)}>
     <.card
       :if={card}

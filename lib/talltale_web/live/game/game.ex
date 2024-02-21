@@ -6,6 +6,7 @@ defmodule TalltaleWeb.Game do
 
   alias Talltale.Game
   alias Talltale.Game.Card
+  alias Talltale.Game.Storylet
   # alias Talltale.Repo
   alias Talltale.Vault
 
@@ -34,6 +35,7 @@ defmodule TalltaleWeb.Game do
   @defaults %{
     loaded: true,
     flipping: false,
+    entered_storylet?: false,
     picked_card_position: nil,
     flip_in: [],
     flip_out: []
@@ -78,6 +80,7 @@ defmodule TalltaleWeb.Game do
     |> put_game(game)
     |> put_picked_card_position(position)
     |> assign(flipping: true, flip_in: flip_in)
+    |> assign(entered_storylet?: entered_storylet?(initial_game, game))
     |> put_animation_end(card_id(new_card, position), fn socket ->
       socket
       |> assign(flipping: false, flip_in: [])
@@ -109,6 +112,9 @@ defmodule TalltaleWeb.Game do
       card -> card.ref
     end)
   end
+
+  defp entered_storylet?(%Game{storylet: nil}, %Game{storylet: %Storylet{}}), do: true
+  defp entered_storylet?(_, _), do: false
 
   defp put_game(socket, game) do
     socket
