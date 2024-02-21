@@ -14,19 +14,19 @@ defmodule Tailmark.InlineParser do
   @entity_def "&(?:#x[a-f0-9]{1,6}|#[0-9]{1,7}|[a-z][a-z0-9]{1,31});"
   @main ~r/^[^\n`\[\]\\!<&*_]+/
   @escapable ~r/^#{@escapable_def}/
-  @initialSpace ~r/^ */
-  @finalSpace ~r/ *$/
-  @ticksHere ~r/^`+/
+  @initial_space ~r/^ */
+  @final_space ~r/ *$/
+  @ticks_here ~r/^`+/
   @ticks ~r/^[^`]*(?<goal>`+)/
   @spnl ~r/^ *(?:\n *)?/
-  @linkDestinationBraces ~r/^<(?<goal>(?:[^<>\n\\\x00]|\\.)*)>/
-  @linkTitle ~r/^(?:"(?<goal1>(\\#{@escapable_def}|\\[^\\]|[^\\"\x00])*)"|'(?<goal2>(\\#{@escapable_def}|\\[^\\]|[^\\'\x00])*)'|\((?<goal3>(\\#{@escapable_def}|\\[^\\]|[^\\()\x00])*)\))/
+  @link_destination_braces ~r/^<(?<goal>(?:[^<>\n\\\x00]|\\.)*)>/
+  @link_title ~r/^(?:"(?<goal1>(\\#{@escapable_def}|\\[^\\]|[^\\"\x00])*)"|'(?<goal2>(\\#{@escapable_def}|\\[^\\]|[^\\'\x00])*)'|\((?<goal3>(\\#{@escapable_def}|\\[^\\]|[^\\()\x00])*)\))/
   @entity ~r/^#{@entity_def}/i
-  @whitespaceChar ~r/^[ \t\n\x0b\x0c\x0d]/
-  @unicodeWhitespaceChar ~r/^\s/u
+  @whitespace_char ~r/^[ \t\n\x0b\x0c\x0d]/
+  @unicode_whitespace_char ~r/^\s/u
   @punctuation ~r/^\p{P}/u
-  @backslashOrAmp ~r/[\\&]/
-  @entityOrEscaped ~r/\\#{@escapable_def}|#{@entity_def}/
+  @backslash_or_amp ~r/[\\&]/
+  @entity_or_escaped ~r/\\#{@escapable_def}|#{@entity_def}/
   @callout ~r/^\[!(?<type>[a-z0-9-]+)(\|(?<meta>[a-z0-9-]+))?\]\s*?(?<title>[^\n]+)?\n/ui
 
   def parse(text) when is_binary(text) do
@@ -88,14 +88,14 @@ defmodule Tailmark.InlineParser do
 
       state
       |> update_node(last_child.ref, fn node ->
-        %{node | content: Regex.replace(@finalSpace, node.content, "")}
+        %{node | content: Regex.replace(@final_space, node.content, "")}
       end)
       |> append_child(Tailmark.Node.Linebreak.new(hard_break))
     else
       _ ->
         state |> append_child(Tailmark.Node.Linebreak.new(false))
     end
-    |> consume(@initialSpace)
+    |> consume(@initial_space)
     |> result(true)
   end
 
@@ -121,7 +121,7 @@ defmodule Tailmark.InlineParser do
   end
 
   defp parse_inline(state, "`") do
-    {state, match} = extract(state, @ticksHere)
+    {state, match} = extract(state, @ticks_here)
 
     if match do
       {state1, result} = match_closing_backtick(state, match, state.pos)
@@ -305,9 +305,9 @@ defmodule Tailmark.InlineParser do
       char_before = if state.pos == 0, do: "\n", else: peek(state, -1)
       char_after = peek(state, String.length(delim)) || "\n"
 
-      after_is_whitespace = Regex.match?(@unicodeWhitespaceChar, char_after)
+      after_is_whitespace = Regex.match?(@unicode_whitespace_char, char_after)
       after_is_punctuation = Regex.match?(@punctuation, char_after)
-      before_is_whitespace = Regex.match?(@unicodeWhitespaceChar, char_before)
+      before_is_whitespace = Regex.match?(@unicode_whitespace_char, char_before)
       before_is_punctuation = Regex.match?(@punctuation, char_before)
 
       left_flanking =
@@ -451,7 +451,7 @@ defmodule Tailmark.InlineParser do
   end
 
   defp parse_link_destination(state) do
-    case state |> extract(@linkDestinationBraces) do
+    case state |> extract(@link_destination_braces) do
       {state, nil} ->
         state |> parse_link_destination_manual()
 
@@ -498,7 +498,7 @@ defmodule Tailmark.InlineParser do
           parse_link_destination_manual(state, open_parens - 1)
         end
 
-      c |> match_str?(@whitespaceChar) ->
+      c |> match_str?(@whitespace_char) ->
         {state, c, open_parens}
 
       true ->
@@ -508,7 +508,7 @@ defmodule Tailmark.InlineParser do
   end
 
   defp parse_link_title(state) do
-    {state, result} = state |> extract(@linkTitle)
+    {state, result} = state |> extract(@link_title)
     {:ok, state, result}
   end
 
@@ -715,8 +715,8 @@ defmodule Tailmark.InlineParser do
   end
 
   defp unescape(str) do
-    if Regex.match?(@backslashOrAmp, str) do
-      Regex.replace(@entityOrEscaped, str, &unescape1/1)
+    if Regex.match?(@backslash_or_amp, str) do
+      Regex.replace(@entity_or_escaped, str, &unescape1/1)
     else
       str
     end
