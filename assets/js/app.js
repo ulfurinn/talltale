@@ -74,7 +74,19 @@ hooks.Scene = {
         return;
       }
       this.pushEvent("animation-end", { target: e.target.id });
-    })
+    });
+
+    this.handleEvent("snapshot", e => {
+      console.log(e);
+      localStorage.setItem("snapshot", JSON.stringify(e));
+    });
+
+    let snapshot = localStorage.getItem("snapshot");
+    if (snapshot) {
+      this.pushEvent("restore", JSON.parse(snapshot));
+    } else {
+      this.pushEvent("start", JSON.parse(snapshot));
+    }
   }
 };
 
@@ -89,9 +101,7 @@ hooks.Animated = {
   }
 };
 
-
-
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks })
 
 // Show progress bar on live navigation and form submits

@@ -32,6 +32,13 @@ $border-thicker: 1px solid theme.get("game", "600");
     padding-right: spacing.$md;
   }
 
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: font.size("lg");
+  }
+
   .location {
     text-align: center;
     margin-left: auto;

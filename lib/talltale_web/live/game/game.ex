@@ -13,23 +13,10 @@ defmodule TalltaleWeb.Game do
   embed_templates "*"
 
   def mount(_params, _session, socket) do
-    if connected?(socket) do
-      tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
-      game = Game.new(tale)
-
-      socket
-      |> assign(:theme, "game")
-      |> assign(:loaded, true)
-      |> put_game(game)
-      |> assign_defaults()
-      |> put_private(:on_animation_end, %{})
-      |> ok()
-    else
-      socket
-      |> assign(:theme, "game")
-      |> assign(:loaded, false)
-      |> ok()
-    end
+    socket
+    |> assign(:theme, "game")
+    |> assign(:loaded, false)
+    |> ok()
   end
 
   @defaults %{
@@ -42,6 +29,24 @@ defmodule TalltaleWeb.Game do
   }
   defp assign_defaults(socket) do
     socket |> assign(@defaults)
+  end
+
+  def handle_event("start", _, socket) do
+    tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
+    game = Game.new(tale)
+
+    socket
+    |> start(game)
+    |> noreply()
+  end
+
+  def handle_event("restore", snapshot, socket) do
+    tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
+    game = Game.new(tale) |> Game.restore(snapshot)
+
+    socket
+    |> start(game)
+    |> noreply()
   end
 
   def handle_event("animation-end", %{"target" => target}, socket) do
@@ -65,6 +70,15 @@ defmodule TalltaleWeb.Game do
       |> activate_card(position)
     end)
     |> noreply()
+  end
+
+  defp start(socket, game) do
+    socket
+    |> assign(:theme, "game")
+    |> assign(:loaded, true)
+    |> put_game(game)
+    |> assign_defaults()
+    |> put_private(:on_animation_end, %{})
   end
 
   defp activate_card(socket, position) do
@@ -119,6 +133,7 @@ defmodule TalltaleWeb.Game do
   defp put_game(socket, game) do
     socket
     |> assign(:game, game)
+    |> push_event("snapshot", Game.snapshot(game))
   end
 
   defp put_picked_card_position(socket, position) do

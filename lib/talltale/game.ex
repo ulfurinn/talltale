@@ -28,6 +28,19 @@ defmodule Talltale.Game do
     |> draw()
   end
 
+  def snapshot(game) do
+    %{
+      qualities: game.qualities,
+      storylet: if(game.storylet, do: game.storylet.id, else: nil),
+      deck: Enum.map(game.deck, & &1.id),
+      hand: Enum.map(game.hand, & &1.id)
+    }
+  end
+
+  def restore(game, snapshot) do
+    game
+  end
+
   defp form_deck(
          game = %__MODULE__{
            tale: %Tale{areas: areas, locations: locations, decks: decks, cards: cards},
