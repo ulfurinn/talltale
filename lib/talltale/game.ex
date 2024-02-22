@@ -32,13 +32,30 @@ defmodule Talltale.Game do
     %{
       qualities: game.qualities,
       storylet: if(game.storylet, do: game.storylet.id, else: nil),
-      deck: Enum.map(game.deck, & &1.id),
-      hand: Enum.map(game.hand, & &1.id)
+      deck: Enum.map(game.deck, fn card -> card.id end),
+      hand:
+        Enum.map(game.hand, fn
+          nil -> nil
+          card -> card.id
+        end)
     }
   end
 
   def restore(game, snapshot) do
-    game
+    %__MODULE__{
+      game
+      | qualities: snapshot["qualities"],
+        storylet:
+          if(snapshot["storylet"], do: game.tale.storylets[snapshot["storylet"]], else: nil),
+        deck: snapshot["deck"] |> Enum.map(&game.tale.cards[&1]),
+        hand:
+          snapshot["hand"]
+          |> Enum.map(fn
+            nil -> nil
+            id -> Card.gen_ref(game.tale.cards[id])
+          end)
+          |> Arrays.new()
+    }
   end
 
   defp form_deck(
