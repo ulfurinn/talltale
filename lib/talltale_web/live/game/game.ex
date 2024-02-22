@@ -12,13 +12,13 @@ defmodule TalltaleWeb.Game do
 
   embed_templates "*"
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     socket
     |> assign(:theme, "game")
     |> assign(:loaded, false)
     |> then(fn socket ->
       if connected?(socket) do
-        tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
+        tale = Vault.load(List.to_string(:code.priv_dir(:talltale)) <> "/tales/" <> params["tale"])
         socket |> assign(tale: tale)
       else
         socket
