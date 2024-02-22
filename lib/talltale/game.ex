@@ -6,6 +6,7 @@ defmodule Talltale.Game do
   alias Talltale.Game.Deck
   alias Talltale.Game.Location
   alias Talltale.Game.Outcome
+  alias Talltale.Game.Storylet
   alias Talltale.Game.Tale
 
   require Logger
@@ -142,6 +143,12 @@ defmodule Talltale.Game do
          {:storylet, storylet_id}
        ) do
     storylet = storylets[storylet_id]
+
+    storylet = %Storylet{
+      storylet
+      | choices: Enum.filter(storylet.choices, &eval_condition(game, &1.condition))
+    }
+
     %__MODULE__{game | storylet: storylet}
   end
 
