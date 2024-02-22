@@ -8,18 +8,9 @@ defmodule Talltale.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       TalltaleWeb.Telemetry,
-      # Start the Ecto repository
-      Talltale.Repo,
-      # Start the PubSub system
       {Phoenix.PubSub, name: Talltale.PubSub},
-      # Start Finch
-      {Finch, name: Talltale.Finch},
-      # Start the Endpoint (http/https)
       TalltaleWeb.Endpoint
-      # Start a worker by calling: Talltale.Worker.start_link(arg)
-      # {Talltale.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
