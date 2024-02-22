@@ -28,20 +28,36 @@ $border-thicker: 1px solid theme.get("game", "600");
       // border: $border-regular;
       background-color: theme.get("game", "400");
       color: theme.get("game", "900");
-      padding: spacing.$md;
+      padding: spacing.$sm;
 
       &:not(:last-child) {
         margin-bottom: spacing.$lg;
       }
 
-      & .choice-title {
+      & .choice-title,
+      & .choice-content {
         margin-top: 0;
+        margin-bottom: 0;
+        padding: 0 spacing.$sm;
+      }
+
+      & .choice-content .paragraph {
+        margin-top: spacing.$sm;
+        margin-bottom: spacing.$sm;
+      }
+
+      & .actions {
+        text-align: right;
+
+        & button {
+          text-transform: uppercase;
+        }
       }
     }
   }
 
   &.fading .storylet-content {
-    transition-duration: 500ms;
+    transition-duration: 300ms;
     transition-property: transform;
     transition-timing-function: ease-in-out;
   }
