@@ -14,8 +14,9 @@
 
     <div class="debug">
       <pre class="qualities">
-      <%= Jason.encode!(@game.qualities, pretty: true) %>
-    </pre>
+        <%= Jason.encode!(@game.qualities, pretty: true) %>
+      </pre>
+      <button class="reset" phx-click="reset">Reset</button>
     </div>
   </div>
   <div :if={not @loaded} class="loading">

@@ -1,9 +1,18 @@
 .root.game .debug {
-  display: none;
+  // display: none;
   margin-top: 4em;
   border-top: 1px solid white;
 
   .qualities {
     font-size: 70%;
+  }
+
+  .reset {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    border: 1px solid white;
+    background-color: crimson;
   }
 }

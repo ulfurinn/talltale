@@ -16,6 +16,14 @@ defmodule TalltaleWeb.Game do
     socket
     |> assign(:theme, "game")
     |> assign(:loaded, false)
+    |> then(fn socket ->
+      if connected?(socket) do
+        tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
+        socket |> assign(tale: tale)
+      else
+        socket
+      end
+    end)
     |> ok()
   end
 
@@ -32,8 +40,7 @@ defmodule TalltaleWeb.Game do
   end
 
   def handle_event("start", _, socket) do
-    tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
-    game = Game.new(tale)
+    game = Game.new(socket.assigns.tale)
 
     socket
     |> start(game)
@@ -41,8 +48,15 @@ defmodule TalltaleWeb.Game do
   end
 
   def handle_event("restore", snapshot, socket) do
-    tale = Vault.load("/Users/ulfurinn/Library/CloudStorage/Dropbox/obsidian/endless-town")
-    game = Game.new(tale) |> Game.restore(snapshot)
+    game = Game.new(socket.assigns.tale) |> Game.restore(snapshot)
+
+    socket
+    |> start(game)
+    |> noreply()
+  end
+
+  def handle_event("reset", _, socket) do
+    game = Game.new(socket.assigns.tale)
 
     socket
     |> start(game)
