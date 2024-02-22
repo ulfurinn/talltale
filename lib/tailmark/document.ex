@@ -3,6 +3,7 @@ defmodule Tailmark.Document do
 
   defstruct [
     :frontmatter,
+    :source,
     :sourcepos,
     :ref,
     :parent,

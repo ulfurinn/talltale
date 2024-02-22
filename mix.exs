@@ -54,7 +54,8 @@ defmodule Talltale.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:uniq, "~> 0.1"},
-      {:yaml_elixir, "~> 2.9"}
+      {:yaml_elixir, "~> 2.9"},
+      {:ymlr, "~> 5.0"}
     ]
   end
 

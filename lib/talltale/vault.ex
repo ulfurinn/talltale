@@ -331,6 +331,7 @@ defmodule Talltale.Vault do
           absolute
           |> File.read!()
           |> Tailmark.Parser.document()
+          |> ensure_has_id(absolute)
           |> Tailmark.Document.compress_text()
 
         {path, document}
@@ -338,6 +339,20 @@ defmodule Talltale.Vault do
 
     %__MODULE__{vault | notes: notes}
   end
+
+  defp ensure_has_id(document = %{frontmatter: %{"type" => _, "id" => id}}, _)
+       when is_binary(id),
+       do: document
+
+  defp ensure_has_id(document = %{frontmatter: %{"type" => _}}, path) do
+    id = Uniq.UUID.uuid7()
+    frontmatter = Map.put(document.frontmatter, "id", id)
+    content = [Ymlr.document!(frontmatter, sort_maps: true), "---\n", document.source]
+    File.write!(path, content)
+    %Document{document | frontmatter: frontmatter}
+  end
+
+  defp ensure_has_id(document, _), do: document
 
   defp process_notes(vault) do
     vault.notes
@@ -363,7 +378,7 @@ defmodule Talltale.Vault do
 
   defp process_note(path, _document, frontmatter = %{"type" => "quality"}, vault) do
     quality = %Quality{
-      id: Uniq.UUID.uuid7(),
+      id: frontmatter["id"],
       variable: frontmatter["variable"],
       type: frontmatter["datatype"],
       category: frontmatter["category"],
@@ -390,7 +405,7 @@ defmodule Talltale.Vault do
       |> Enum.reverse()
 
     area = %Area{
-      id: Uniq.UUID.uuid7(),
+      id: frontmatter["id"],
       title: basename(path),
       location_ids: locations,
       deck_id: frontmatter["deck"]
@@ -412,7 +427,7 @@ defmodule Talltale.Vault do
 
     location =
       %Location{
-        id: Uniq.UUID.uuid7(),
+        id: frontmatter["id"],
         title: basename(path),
         storylines: storylines,
         deck_id: frontmatter["deck"]
@@ -424,7 +439,7 @@ defmodule Talltale.Vault do
     }
   end
 
-  defp process_note(path, document, %{"type" => "deck"}, vault) do
+  defp process_note(path, document, frontmatter = %{"type" => "deck"}, vault) do
     cards =
       document
       |> section("Cards")
@@ -434,7 +449,7 @@ defmodule Talltale.Vault do
       end)
 
     deck = %Deck{
-      id: Uniq.UUID.uuid7(),
+      id: frontmatter["id"],
       title: basename(path),
       card_ids: cards
     }
@@ -464,7 +479,7 @@ defmodule Talltale.Vault do
 
     card =
       %Card{
-        id: Uniq.UUID.uuid7(),
+        id: frontmatter["id"],
         title: title,
         frequency: frontmatter["frequency"],
         sticky: Map.get(frontmatter, "sticky", false),
@@ -478,7 +493,7 @@ defmodule Talltale.Vault do
     }
   end
 
-  defp process_note(path, document, _frontmatter = %{"type" => "storylet"}, vault) do
+  defp process_note(path, document, frontmatter = %{"type" => "storylet"}, vault) do
     choices =
       document
       |> section("Choices")
@@ -486,7 +501,7 @@ defmodule Talltale.Vault do
       |> Enum.map(&process_storylet_choice/1)
 
     storylet = %Storylet{
-      id: Uniq.UUID.uuid7(),
+      id: frontmatter["id"],
       title: basename(path),
       choices: choices
     }
@@ -539,7 +554,6 @@ defmodule Talltale.Vault do
     own_nodes = nodes |> Enum.take_while(&(not heading?(&1, 3)))
 
     %Card{
-      id: Uniq.UUID.uuid7(),
       title: Tailmark.Writer.to_text(title),
       text: own_nodes |> Enum.filter(&paragraph?/1),
       condition: condition,

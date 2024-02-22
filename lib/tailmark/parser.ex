@@ -47,6 +47,7 @@ defmodule Tailmark.Parser do
       end
 
     document = %Document{
+      source: Enum.join(lines, "\n"),
       sourcepos: %{from: %{line: 1, col: 1}, to: %{line: 0, col: 0}},
       ref: make_ref(),
       frontmatter: frontmatter
