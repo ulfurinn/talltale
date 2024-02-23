@@ -71,7 +71,7 @@ $border-thicker: 1px solid theme.get("game", "600");
   }
 }
 
-.storylet-outcome {
+.outcome {
   position: fixed;
   top: 0;
   left: 0;
@@ -81,8 +81,8 @@ $border-thicker: 1px solid theme.get("game", "600");
   backdrop-filter: blur(4px) brightness(0.5);
   text-align: center;
 
-  &.storylet-outcome-pass {
-    & .storylet-outcome-content {
+  &.outcome-pass {
+    & .outcome-content {
       border: 1px solid theme.get("pass", "700");
       background-color: theme.get("pass", "900");
 
@@ -92,8 +92,8 @@ $border-thicker: 1px solid theme.get("game", "600");
     }
   }
 
-  &.storylet-outcome-fail {
-    & .storylet-outcome-content {
+  &.outcome-fail {
+    & .outcome-content {
       border: 1px solid theme.get("fail", "700");
       background-color: theme.get("fail", "900");
 
@@ -103,7 +103,7 @@ $border-thicker: 1px solid theme.get("game", "600");
     }
   }
 
-  & .storylet-outcome-content {
+  & .outcome-content {
     margin-top: spacing.$xxl;
     display: inline-block;
     max-width: 90%;
@@ -120,17 +120,17 @@ $border-thicker: 1px solid theme.get("game", "600");
 
   }
 
-  &.fading .storylet-outcome-content {
+  &.fading .outcome-content {
     transition-duration: 300ms;
     transition-property: transform;
     transition-timing-function: ease-in-out;
   }
 
-  &.fade-hide .storylet-outcome-content {
+  &.fade-hide .outcome-content {
     transform: perspective(1000px) scale(0.2) rotate3d(1, 0, 0, -45deg);
   }
 
-  &.fade-show .storylet-outcome-content {
+  &.fade-show .outcome-content {
     transform: perspective(1000px) scale(1) rotate3d(0, 0, 0, 0);
   }
 }

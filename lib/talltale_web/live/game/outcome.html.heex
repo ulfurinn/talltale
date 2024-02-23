@@ -1,5 +1,5 @@
 <section
-  class={["storylet-outcome", "storylet-outcome-#{@outcome.kind}"]}
+  class={["outcome", "outcome-#{@outcome.kind}"]}
   id="storylet_outcome"
   phx-hook="Animated"
   data-transition={
@@ -9,7 +9,7 @@
     end
   }
 >
-  <section class="storylet-outcome-content">
+  <section class="outcome-content">
     <.storyline storyline={@outcome.storyline} />
     <section class="actions">
       <button phx-click="dismiss-outcome">Dismiss</button>
