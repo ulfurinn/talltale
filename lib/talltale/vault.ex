@@ -244,7 +244,7 @@ defmodule Talltale.Vault do
     storyline
     |> reduce_walk("", fn
       %Link{destination: destination}, acc ->
-        %Quality{variable: variable} = Map.fetch!(vault.qualities, URI.decode(destination))
+        %Quality{variable: variable} = Map.fetch!(vault.qualities, normalize_uri(destination))
         {:return, acc <> variable}
 
       %Text{content: content}, acc ->
@@ -266,7 +266,7 @@ defmodule Talltale.Vault do
     case paragraph.children do
       [%Link{destination: quality}, %Linebreak{}, %Text{content: expression}] ->
         %Challenge{
-          quality: Map.fetch!(vault.qualities, URI.decode(quality)),
+          quality: Map.fetch!(vault.qualities, normalize_uri(quality)),
           generator_expression: expression
         }
     end
@@ -288,7 +288,7 @@ defmodule Talltale.Vault do
       quality
       |> reduce_walk("", fn
         %Link{destination: destination}, acc ->
-          %Quality{variable: variable} = Map.fetch!(vault.qualities, URI.decode(destination))
+          %Quality{variable: variable} = Map.fetch!(vault.qualities, normalize_uri(destination))
           {:return, acc <> variable}
 
         %Text{content: content}, acc ->
@@ -303,14 +303,13 @@ defmodule Talltale.Vault do
 
   defp resolve_effect(location = %Blockquote{callout: %{type: "location"}}, vault) do
     link = location |> find(&link?/1)
-
-    {:location, vault.locations[URI.decode(link.destination)].id}
+    {:location, vault.locations[normalize_uri(link.destination)].id}
   end
 
   defp resolve_effect(storylet = %Blockquote{callout: %{type: "storylet"}}, vault) do
     link = storylet |> find(&link?/1)
 
-    {:storylet, vault.storylets[URI.decode(link.destination)].id}
+    {:storylet, vault.storylets[normalize_uri(link.destination)].id}
   end
 
   defp collect_notes(root) do
@@ -410,7 +409,7 @@ defmodule Talltale.Vault do
       document
       |> section("Locations")
       |> reduce([], fn
-        %Link{destination: destination}, acc -> [URI.decode(destination) | acc]
+        %Link{destination: destination}, acc -> [normalize_uri(destination) | acc]
         _, acc -> acc
       end)
       |> Enum.reverse()
@@ -429,6 +428,15 @@ defmodule Talltale.Vault do
   end
 
   defp process_note(path, document, frontmatter = %{"type" => "location"}, vault) do
+    title = document |> find(&heading?(&1, 1))
+
+    title =
+      cond do
+        title != nil -> Tailmark.Writer.to_text(title)
+        frontmatter["title"] != nil -> frontmatter["title"]
+        true -> basename(path)
+      end
+
     storylines =
       document
       |> section("Storyline")
@@ -439,7 +447,7 @@ defmodule Talltale.Vault do
     location =
       %Location{
         id: frontmatter["id"],
-        title: basename(path),
+        title: title,
         storylines: storylines,
         deck_id: frontmatter["deck"]
       }
@@ -455,7 +463,7 @@ defmodule Talltale.Vault do
       document
       |> section("Cards")
       |> reduce([], fn
-        %Link{destination: destination}, acc -> [URI.decode(destination) | acc]
+        %Link{destination: destination}, acc -> [normalize_uri(destination) | acc]
         _, acc -> acc
       end)
 
@@ -612,7 +620,7 @@ defmodule Talltale.Vault do
           %Paragraph{
             children: [link = %Link{}]
           } ->
-            {k, {:link, URI.decode(link.destination)}}
+            {k, {:link, normalize_uri(link.destination)}}
 
           _ ->
             pair
@@ -741,5 +749,11 @@ defmodule Talltale.Vault do
       end
     end)
     |> Enum.reverse()
+  end
+
+  defp normalize_uri(uri) do
+    uri
+    |> URI.decode()
+    |> String.trim_trailing(".md")
   end
 end
