@@ -1,6 +1,6 @@
 defmodule Talltale.Chance do
   def logistic(x_range, y_start, y_end) do
-    k = 1.5 * (x_range.last - x_range.first)
+    k = 1.1 * (x_range.last - x_range.first)
     x0 = (x_range.last - x_range.first) / 2
 
     fn x ->
