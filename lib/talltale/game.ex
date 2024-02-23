@@ -16,7 +16,8 @@ defmodule Talltale.Game do
     :deck,
     :hand,
     qualities: %{},
-    storylet: nil
+    storylet: nil,
+    outcome: nil
   ]
 
   def new(tale) do
@@ -142,6 +143,42 @@ defmodule Talltale.Game do
     |> then(&%__MODULE__{game | hand: &1})
   end
 
+  def play_storylet_choice(game, choice_id) do
+    initial_game = game
+    choice = game.storylet.choices |> Enum.find(&(&1.id == choice_id))
+
+    pass =
+      choice.challenges
+      |> Enum.all?(fn challenge ->
+        prob = challenge_chance(game, challenge)
+        :rand.uniform() < prob
+      end)
+
+    game =
+      if pass do
+        apply_outcome(game, choice.pass)
+      else
+        apply_outcome(game, choice.fail)
+      end
+
+    game
+    |> check_card_conditions()
+    |> maybe_update_deck(initial_game)
+    |> tap(&log_game_state/1)
+  end
+
+  defp apply_outcome(game, outcome = %Outcome{effects: effects}) do
+    game
+    |> apply_effect(effects)
+    |> clear_storylet()
+    |> put_outcome(outcome)
+  end
+
+  def challenge_chance(game, challenge) do
+    generator = Expression.eval(challenge.generator_expression, game.qualities)
+    generator.(game.qualities[challenge.quality.variable] || 0)
+  end
+
   def build_storyline(game, %Location{storylines: storylines}) do
     storylines
     |> Enum.filter(&eval_condition(game, &1.condition))
@@ -196,6 +233,11 @@ defmodule Talltale.Game do
   defp apply_effect(game = %__MODULE__{}, nil) do
     game
   end
+
+  defp clear_storylet(game), do: %__MODULE__{game | storylet: nil}
+
+  defp put_outcome(game, outcome), do: %__MODULE__{game | outcome: outcome}
+  def clear_outcome(game), do: %__MODULE__{game | outcome: nil}
 
   defp filter_storylet_choices(storylet, game_or_qualities) do
     %Storylet{

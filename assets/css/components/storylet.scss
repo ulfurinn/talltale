@@ -70,3 +70,67 @@ $border-thicker: 1px solid theme.get("game", "600");
     transform: perspective(1000px) scale(1) rotate3d(0, 0, 0, 0);
   }
 }
+
+.storylet-outcome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  backdrop-filter: blur(4px) brightness(0.5);
+  text-align: center;
+
+  &.storylet-outcome-pass {
+    & .storylet-outcome-content {
+      border: 1px solid theme.get("pass", "700");
+      background-color: theme.get("pass", "900");
+
+      & .actions button {
+        background-color: theme.get("pass", "700");
+      }
+    }
+  }
+
+  &.storylet-outcome-fail {
+    & .storylet-outcome-content {
+      border: 1px solid theme.get("fail", "700");
+      background-color: theme.get("fail", "900");
+
+      & .actions button {
+        background-color: theme.get("fail", "700");
+      }
+    }
+  }
+
+  & .storylet-outcome-content {
+    margin-top: spacing.$xxl;
+    display: inline-block;
+    max-width: 90%;
+    text-align: left;
+    padding: spacing.$lg;
+
+    & .actions {
+      text-align: right;
+
+      & button {
+        text-transform: uppercase;
+      }
+    }
+
+  }
+
+  &.fading .storylet-outcome-content {
+    transition-duration: 300ms;
+    transition-property: transform;
+    transition-timing-function: ease-in-out;
+  }
+
+  &.fade-hide .storylet-outcome-content {
+    transform: perspective(1000px) scale(0.2) rotate3d(1, 0, 0, -45deg);
+  }
+
+  &.fade-show .storylet-outcome-content {
+    transform: perspective(1000px) scale(1) rotate3d(0, 0, 0, 0);
+  }
+}

@@ -1,7 +1,8 @@
 defmodule Talltale.Vault do
   @moduledoc "Parses an Obsidian vault containing a game definition."
+  alias Talltale.Game.Challenge
   alias Tailmark.Document
-  alias Tailmark.Node.{Blockquote, Break, Heading, Link, Paragraph, Text}
+  alias Tailmark.Node.{Blockquote, Break, Heading, Linebreak, Link, Paragraph, Text}
   alias Talltale.Game.{Area, Card, Deck, Location, Outcome, Quality, Storylet, Storyline, Tale}
 
   require Logger
@@ -259,7 +260,17 @@ defmodule Talltale.Vault do
     |> Enum.map(&resolve_challenge(&1, vault))
   end
 
-  defp resolve_challenge(challenge, _vault), do: challenge
+  defp resolve_challenge(challenge, vault) do
+    %Blockquote{children: [paragraph = %Paragraph{}]} = challenge
+
+    case paragraph.children do
+      [%Link{destination: quality}, %Linebreak{}, %Text{content: expression}] ->
+        %Challenge{
+          quality: Map.fetch!(vault.qualities, URI.decode(quality)),
+          generator_expression: expression
+        }
+    end
+  end
 
   defp resolve_outcome(outcome, vault) do
     %Outcome{
@@ -379,12 +390,12 @@ defmodule Talltale.Vault do
   defp process_note(path, _document, frontmatter = %{"type" => "quality"}, vault) do
     quality = %Quality{
       id: frontmatter["id"],
+      title: frontmatter["title"] || basename(path),
       variable: frontmatter["variable"],
       type: frontmatter["datatype"],
       category: frontmatter["category"],
       slot: frontmatter["slot"],
       group: frontmatter["group"],
-      title: frontmatter["title"],
       description: frontmatter["description"]
     }
 
@@ -484,7 +495,7 @@ defmodule Talltale.Vault do
         frequency: frontmatter["frequency"],
         sticky: Map.get(frontmatter, "sticky", false),
         condition: condition,
-        pass: %Outcome{effects: effects}
+        pass: %Outcome{kind: :pass, effects: effects}
       }
 
     %__MODULE__{
@@ -554,6 +565,7 @@ defmodule Talltale.Vault do
     own_nodes = nodes |> Enum.take_while(&(not heading?(&1, 3)))
 
     %Card{
+      id: Uniq.UUID.uuid7(),
       title: Tailmark.Writer.to_text(title),
       text: own_nodes |> Enum.filter(&paragraph?/1),
       condition: condition,
@@ -564,14 +576,15 @@ defmodule Talltale.Vault do
   end
 
   defp process_choice_with_challenge(nodes) do
-    {nodes |> section("Pass") |> process_choice(), nodes |> section("Fail") |> process_choice()}
+    {nodes |> section("Pass") |> process_choice(:pass),
+     nodes |> section("Fail") |> process_choice(:fail)}
   end
 
   defp process_choice_without_challenge(nodes) do
-    {nodes |> section("Pass") |> process_choice(), %Outcome{}}
+    {nodes |> section("Pass") |> process_choice(:pass), %Outcome{}}
   end
 
-  defp process_choice(nodes) do
+  defp process_choice(nodes, kind) do
     effects =
       nodes
       |> select(fn node ->
@@ -581,6 +594,7 @@ defmodule Talltale.Vault do
     text = nodes |> Enum.filter(&paragraph?/1)
 
     %Outcome{
+      kind: kind,
       storyline: text |> process_storyline(),
       effects: effects
     }
@@ -610,9 +624,7 @@ defmodule Talltale.Vault do
   end
 
   defp basename(string) do
-    string
-    |> Path.split()
-    |> List.last()
+    string |> Path.basename(".md")
   end
 
   defp section(children, content)

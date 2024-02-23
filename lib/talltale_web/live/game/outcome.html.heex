@@ -1,0 +1,18 @@
+<section
+  class={["storylet-outcome", "storylet-outcome-#{@outcome.kind}"]}
+  id="storylet_outcome"
+  phx-hook="Animated"
+  data-transition={
+    cond do
+      @entered? -> JS.transition({"fading", "fade-hide", "fade-show"})
+      true -> nil
+    end
+  }
+>
+  <section class="storylet-outcome-content">
+    <.storyline storyline={@outcome.storyline} />
+    <section class="actions">
+      <button phx-click="dismiss-outcome">Dismiss</button>
+    </section>
+  </section>
+</section>

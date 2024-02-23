@@ -1,5 +1,7 @@
 defmodule Talltale.Expression do
   @moduledoc "Elixir AST interpreter."
+  alias Talltale.Chance
+
   def eval(expression, binding) when is_binary(expression) do
     expression
     |> Code.string_to_quoted!()
@@ -120,4 +122,8 @@ defmodule Talltale.Expression do
 
   defp evalp({:rand, _, [{:normal, _, nil}, mean, stddev]}, binding),
     do: :rand.normal(evalp(mean, binding), evalp(stddev, binding))
+
+  defp evalp({:logistic, _, [x_range, y_start, y_end]}, binding) do
+    Chance.logistic(evalp(x_range, binding), evalp(y_start, binding), evalp(y_end, binding))
+  end
 end

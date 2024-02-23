@@ -86,6 +86,26 @@ defmodule TalltaleWeb.Game do
     |> noreply()
   end
 
+  def handle_event("make-storylet-choice", %{"choice-id" => id}, socket) do
+    %{game: game} = socket.assigns
+    game = Game.play_storylet_choice(game, id)
+
+    socket
+    |> put_game(game)
+    |> assign(:entered_outcome?, true)
+    |> noreply()
+  end
+
+  def handle_event("dismiss-outcome", _, socket) do
+    %{game: game} = socket.assigns
+    game = Game.clear_outcome(game)
+
+    socket
+    |> put_game(game)
+    |> assign(:entered_outcome?, false)
+    |> noreply()
+  end
+
   defp start(socket, game) do
     socket
     |> assign(:theme, "game")
