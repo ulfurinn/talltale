@@ -61,6 +61,7 @@ $border-thicker: 1px solid theme.get("game", "600");
 
       .paragraph {
         margin-top: spacing.$sm;
+        font-size: font.size("sm");
       }
     }
   }
