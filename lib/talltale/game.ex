@@ -42,19 +42,31 @@ defmodule Talltale.Game do
   end
 
   def restore(game, snapshot) do
+    qualities = snapshot["qualities"]
+
+    storylet =
+      if snapshot["storylet"] do
+        game.tale.storylets[snapshot["storylet"]] |> filter_storylet_choices(qualities)
+      else
+        nil
+      end
+
+    deck = snapshot["deck"] |> Enum.map(&game.tale.cards[&1])
+
+    hand =
+      snapshot["hand"]
+      |> Enum.map(fn
+        nil -> nil
+        id -> Card.gen_ref(game.tale.cards[id])
+      end)
+      |> Arrays.new()
+
     %__MODULE__{
       game
-      | qualities: snapshot["qualities"],
-        storylet:
-          if(snapshot["storylet"], do: game.tale.storylets[snapshot["storylet"]], else: nil),
-        deck: snapshot["deck"] |> Enum.map(&game.tale.cards[&1]),
-        hand:
-          snapshot["hand"]
-          |> Enum.map(fn
-            nil -> nil
-            id -> Card.gen_ref(game.tale.cards[id])
-          end)
-          |> Arrays.new()
+      | qualities: qualities,
+        storylet: storylet,
+        deck: deck,
+        hand: hand
     }
   end
 
@@ -138,6 +150,10 @@ defmodule Talltale.Game do
   defp eval_condition(_, nil), do: true
 
   defp eval_condition(%__MODULE__{qualities: qualities}, expression) do
+    eval_condition(qualities, expression)
+  end
+
+  defp eval_condition(qualities, expression) do
     Expression.eval_boolean(expression, qualities)
   end
 
@@ -172,18 +188,20 @@ defmodule Talltale.Game do
          game = %__MODULE__{tale: %Tale{storylets: storylets}},
          {:storylet, storylet_id}
        ) do
-    storylet = storylets[storylet_id]
-
-    storylet = %Storylet{
-      storylet
-      | choices: Enum.filter(storylet.choices, &eval_condition(game, &1.condition))
-    }
+    storylet = storylets[storylet_id] |> filter_storylet_choices(game)
 
     %__MODULE__{game | storylet: storylet}
   end
 
   defp apply_effect(game = %__MODULE__{}, nil) do
     game
+  end
+
+  defp filter_storylet_choices(storylet, game_or_qualities) do
+    %Storylet{
+      storylet
+      | choices: Enum.filter(storylet.choices, &eval_condition(game_or_qualities, &1.condition))
+    }
   end
 
   defp maybe_update_deck(updated_game, game) do

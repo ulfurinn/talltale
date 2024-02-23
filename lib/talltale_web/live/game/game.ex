@@ -18,8 +18,8 @@ defmodule TalltaleWeb.Game do
     |> assign(:loaded, false)
     |> then(fn socket ->
       if connected?(socket) do
-        tale = Vault.load(List.to_string(:code.priv_dir(:talltale)) <> "/tales/" <> params["tale"])
-        socket |> assign(tale: tale)
+        vault_root = List.to_string(:code.priv_dir(:talltale)) <> "/tales/" <> params["tale"]
+        socket |> assign(tale: Vault.load(vault_root))
       else
         socket
       end
