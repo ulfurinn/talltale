@@ -20,7 +20,7 @@ config :talltale, TalltaleWeb.Endpoint,
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.17.11",
+  version: "0.20.2",
   default: [
     args:
       ~w(js/app.js --bundle --asset-names=[name] --loader:.woff2=file --loader:.ttf=file --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
