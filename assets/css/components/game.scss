@@ -23,6 +23,11 @@ $border-thicker: 1px solid theme.get("game", "600");
         margin: auto;
         font-size: font.size("xl");
         font-weight: font.weight("bold");
+        text-align: center;
+      }
+
+      .subtitle {
+        font-size: font.size("lg");
       }
     }
   }

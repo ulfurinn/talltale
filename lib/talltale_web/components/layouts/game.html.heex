@@ -1,6 +1,9 @@
 <header>
   <div class="title-wrapper">
-    <div class="title"><.icon name="fa-chess" /> Tall Tale</div>
+    <div class="title">
+      <div><.icon name="fa-chess" /> Tall Tale</div>
+      <div :if={assigns[:tale]} class="subtitle"><%= @tale.title %></div>
+    </div>
   </div>
 </header>
 <main>

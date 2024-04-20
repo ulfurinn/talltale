@@ -56,6 +56,7 @@ defmodule Talltale.Vault do
     starting_location = vault.locations[vault.starting_qualities["location"]]
 
     %Tale{
+      title: vault.title,
       areas: vault.areas,
       locations: vault.locations,
       decks: vault.decks,

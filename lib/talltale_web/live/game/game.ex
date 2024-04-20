@@ -56,10 +56,20 @@ defmodule TalltaleWeb.Game do
   end
 
   def handle_event("reset", _, socket) do
-    game = Game.new(socket.assigns.tale)
+    %{tale: tale} = socket.assigns
+    game = Game.new(tale)
 
     socket
     |> start(game)
+    |> noreply()
+  end
+
+  def handle_event("reshuffle", _, socket) do
+    %{game: game} = socket.assigns
+    game = Game.reshuffle(game)
+
+    socket
+    |> put_game(game)
     |> noreply()
   end
 
@@ -103,6 +113,16 @@ defmodule TalltaleWeb.Game do
     socket
     |> put_game(game)
     |> assign(:entered_outcome?, false)
+    |> noreply()
+  end
+
+  def handle_event("set-quality", params = %{"_target" => [id]}, socket) do
+    value = params[id]
+    %{game: game} = socket.assigns
+    game = game |> Game.put_quality(id, value)
+
+    socket
+    |> put_game(game)
     |> noreply()
   end
 

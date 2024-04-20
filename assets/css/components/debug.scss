@@ -7,11 +7,14 @@
     font-size: 70%;
   }
 
-  .reset {
+  .dev-buttons {
     position: fixed;
     top: 1rem;
     right: 1rem;
     z-index: 1000;
+  }
+
+  .reset {
     border: 1px solid white;
     background-color: crimson;
   }

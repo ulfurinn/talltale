@@ -24,10 +24,28 @@
     />
 
     <div class="debug">
-      <pre class="qualities">
-        <%= Jason.encode!(@game.qualities, pretty: true) %>
-      </pre>
-      <button class="reset" phx-click="reset">Reset</button>
+      <div class="qualities">
+        <form>
+          <table>
+            <tr :for={{id, value} <- Enum.sort_by(@game.qualities, &elem(&1, 0))}>
+              <td><%= id %></td>
+              <td>
+                <input
+                  phx-change="set-quality"
+                  name={id}
+                  size="4"
+                  value={value}
+                  phx-debounce="blur"
+                />
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      <section class="dev-buttons">
+        <button class="reset" phx-click="reshuffle">Reshuffle</button>
+        <button class="reset" phx-click="reset">Reset</button>
+      </section>
     </div>
   </div>
   <div :if={not @loaded} class="loading">

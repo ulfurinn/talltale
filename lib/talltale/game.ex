@@ -71,6 +71,17 @@ defmodule Talltale.Game do
     }
   end
 
+  def reshuffle(game) do
+    game
+    |> form_deck()
+    |> draw()
+  end
+
+  def put_quality(game, id, value) do
+    %__MODULE__{game | qualities: Map.put(game.qualities, id, String.to_integer(value))}
+    |> check_card_conditions()
+  end
+
   defp form_deck(
          game = %__MODULE__{
            tale: %Tale{areas: areas, locations: locations, decks: decks, cards: cards},
