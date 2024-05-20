@@ -15,18 +15,6 @@
 //     import "some-package"
 //
 
-import faRegularWoff2 from "@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2" assert { type: "woff2" };
-import faSolidWoff2 from "@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2" assert { type: "woff2" };
-import faRegularTtf from "@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf" assert { type: "ttf" };
-import faSolidTtf from "@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf" assert { type: "ttf" };
-(function () {
-  [
-    faRegularWoff2,
-    faSolidWoff2,
-    faRegularTtf,
-    faSolidTtf
-  ];
-})();
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"

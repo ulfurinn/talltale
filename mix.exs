@@ -64,7 +64,7 @@ defmodule Talltale.MixProject do
         "esbuild.install --if-missing",
         "cmd npm install --prefix assets"
       ],
-      "assets.build": ["tailwind default", "esbuild default"],
+      "assets.build": ["esbuild default"],
       "assets.deploy": [
         "esbuild default --minify",
         "cmd npx sass ./assets/css/main.scss ./priv/static/assets/main.css --load-path ./assets/css --load-path ./assets/node_modules",
