@@ -497,6 +497,8 @@ defmodule Talltale.Vault do
         callout?(node, "quality") or callout?(node, "location") or callout?(node, "storylet")
       end)
 
+    storyline = document.children |> Enum.filter(&paragraph?/1)
+
     card =
       %Card{
         id: frontmatter["id"],
@@ -504,7 +506,7 @@ defmodule Talltale.Vault do
         frequency: frontmatter["frequency"],
         sticky: Map.get(frontmatter, "sticky", false),
         condition: condition,
-        pass: %Outcome{kind: :pass, effects: effects}
+        pass: %Outcome{kind: :pass, storyline: storyline, effects: effects}
       }
 
     %__MODULE__{

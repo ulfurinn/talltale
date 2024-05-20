@@ -120,9 +120,10 @@ defmodule Talltale.Game do
     %__MODULE__{game | hand: hand}
   end
 
-  def play_card(game, card = %Card{pass: %Outcome{effects: effects}}) do
+  def play_card(game, card = %Card{pass: outcome = %Outcome{effects: effects}}) do
     game
     |> apply_effect(effects)
+    |> maybe_put_outcome(outcome)
     |> remove_card(card)
     |> check_card_conditions()
     |> maybe_update_deck(game)
@@ -246,6 +247,9 @@ defmodule Talltale.Game do
   end
 
   defp clear_storylet(game), do: %__MODULE__{game | storylet: nil}
+
+  defp maybe_put_outcome(game, %Outcome{storyline: []}), do: game
+  defp maybe_put_outcome(game, outcome), do: put_outcome(game, outcome)
 
   defp put_outcome(game, outcome), do: %__MODULE__{game | outcome: outcome}
   def clear_outcome(game), do: %__MODULE__{game | outcome: nil}

@@ -149,6 +149,7 @@ defmodule TalltaleWeb.Game do
     |> put_picked_card_position(position)
     |> assign(flipping: true, flip_in: flip_in)
     |> assign(entered_storylet?: entered_storylet?(initial_game, game))
+    |> assign(entered_outcome?: game.outcome != nil)
     |> put_animation_end(card_id(new_card, position), fn socket ->
       socket
       |> assign(flipping: false, flip_in: [])
