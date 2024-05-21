@@ -12,7 +12,7 @@
   }
 >
   <.rich_text content={Game.screen_text(@game)} />
-  <button phx-click="screen-proceed">
+  <button class={@animating and "invisible"} phx-click={not @animating and "screen-proceed"}>
     Continue
   </button>
 </section>

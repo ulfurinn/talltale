@@ -3,6 +3,7 @@
     <.screen
       :if={in_screen?(@game)}
       game={@game}
+      animating={@animating}
       fade_in={@screen_fade_in}
       fade_out={@screen_fade_out}
     />
@@ -11,7 +12,7 @@
       <.deck
         cards={@game.hand}
         capacity={@game.qualities["hand_size"]}
-        flipping={@flipping}
+        animating={@animating}
         flip_in={@flip_in}
         flip_out={@flip_out}
         picked_card_position={@picked_card_position}

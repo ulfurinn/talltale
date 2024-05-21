@@ -25,8 +25,6 @@ defmodule Talltale.Game do
       tale: tale,
       qualities: tale.start
     }
-    |> form_deck()
-    |> draw()
   end
 
   def snapshot(game) do

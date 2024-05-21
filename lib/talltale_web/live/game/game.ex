@@ -29,7 +29,7 @@ defmodule TalltaleWeb.Game do
 
   @defaults %{
     loaded: true,
-    flipping: false,
+    animating: false,
     entered_storylet?: false,
     picked_card_position: nil,
     screen_fade_in: false,
@@ -42,7 +42,7 @@ defmodule TalltaleWeb.Game do
   end
 
   def handle_event("start", _, socket) do
-    game = Game.new(socket.assigns.tale)
+    game = Game.new(socket.assigns.tale) |> Game.reshuffle()
 
     socket
     |> start(game)
@@ -59,7 +59,7 @@ defmodule TalltaleWeb.Game do
 
   def handle_event("reset", _, socket) do
     %{tale: tale} = socket.assigns
-    game = Game.new(tale)
+    game = Game.new(tale) |> Game.reshuffle()
 
     socket
     |> start(game)
@@ -87,11 +87,11 @@ defmodule TalltaleWeb.Game do
     card = hand |> Enum.at(position)
 
     socket
-    |> assign(flipping: true, flip_out: [position])
+    |> assign(flip_out: [position])
     |> put_picked_card_position(position)
     |> put_animation_end(card_id(card, position), fn socket ->
       socket
-      |> assign(flipping: false, flip_out: [])
+      |> assign(flip_out: [])
       |> put_picked_card_position(nil)
       |> activate_card(position)
     end)
@@ -164,12 +164,12 @@ defmodule TalltaleWeb.Game do
     socket
     |> put_game(game)
     |> put_picked_card_position(position)
-    |> assign(flipping: true, flip_in: flip_in)
+    |> assign(flip_in: flip_in)
     |> assign(entered_storylet?: entered_storylet?(initial_game, game))
     |> assign(entered_outcome?: game.outcome != nil)
     |> put_animation_end(card_id(new_card, position), fn socket ->
       socket
-      |> assign(flipping: false, flip_in: [])
+      |> assign(flip_in: [])
       |> put_picked_card_position(nil)
     end)
   end
@@ -220,11 +220,15 @@ defmodule TalltaleWeb.Game do
   defp put_animation_end(socket = %{private: %{on_animation_end: on_animation_end}}, target, fun) do
     socket
     |> put_private(:on_animation_end, Map.put(on_animation_end, target, fun))
+    |> assign(animating: true)
   end
 
   defp delete_animation_end(socket = %{private: %{on_animation_end: on_animation_end}}, target) do
+    on_animation_end = Map.delete(on_animation_end, target)
+
     socket
-    |> put_private(:on_animation_end, Map.delete(on_animation_end, target))
+    |> put_private(:on_animation_end, on_animation_end)
+    |> assign(animating: not Enum.empty?(on_animation_end))
   end
 
   defp exec_animation_end(socket, target) do
@@ -241,8 +245,6 @@ defmodule TalltaleWeb.Game do
 
     cond do
       entered_screen?(game, previous_game) ->
-        dbg(:new_screen)
-
         socket
         |> assign(screen_fade_in: true)
         |> put_animation_end("screen", fn socket ->
@@ -251,7 +253,6 @@ defmodule TalltaleWeb.Game do
         end)
 
       true ->
-        dbg(:no_new_scene)
         socket
     end
   end
@@ -265,9 +266,7 @@ defmodule TalltaleWeb.Game do
 
   defp dynamic_style(game = %Game{}) do
     area = game.qualities["area"]
-    dbg(area)
     file = List.to_string(:code.priv_dir(:talltale)) <> "/static/images/#{area}.jpg"
-    dbg(file)
 
     if File.exists?(file) do
       "background-image: url('/images/#{area}.jpg')"

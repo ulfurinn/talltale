@@ -4,7 +4,7 @@
       :if={card}
       card={card}
       position={index}
-      enabled={not @flipping}
+      enabled={not @animating}
       flip_in={index in @flip_in}
       flip_out={index in @flip_out}
       picked={index == @picked_card_position}
