@@ -32,6 +32,8 @@ defmodule TalltaleWeb.Game do
     flipping: false,
     entered_storylet?: false,
     picked_card_position: nil,
+    screen_fade_in: false,
+    screen_fade_out: false,
     flip_in: [],
     flip_out: []
   }
@@ -116,6 +118,21 @@ defmodule TalltaleWeb.Game do
     |> noreply()
   end
 
+  def handle_event("screen-proceed", _, socket) do
+    %{game: game} = socket.assigns
+    updated_game = Game.screen_proceed(game)
+
+    socket
+    |> assign(screen_fade_out: true)
+    |> put_animation_end("screen", fn socket ->
+      socket
+      |> assign(screen_fade_out: false)
+      |> put_game(updated_game)
+      |> maybe_fade_in_scene(game)
+    end)
+    |> noreply()
+  end
+
   def handle_event("set-quality", params = %{"_target" => [id]}, socket) do
     value = params[id]
     %{game: game} = socket.assigns
@@ -185,6 +202,10 @@ defmodule TalltaleWeb.Game do
   defp entered_storylet?(%Game{storylet: nil}, %Game{storylet: %Storylet{}}), do: true
   defp entered_storylet?(_, _), do: false
 
+  defp entered_screen?(%Game{qualities: qualities}, %Game{qualities: previous_qualities}) do
+    qualities["screen"] && qualities["screen"] != previous_qualities["screen"]
+  end
+
   defp put_game(socket, game) do
     socket
     |> assign(:game, game)
@@ -215,6 +236,45 @@ defmodule TalltaleWeb.Game do
     end
   end
 
+  defp maybe_fade_in_scene(socket, previous_game) do
+    %{game: game} = socket.assigns
+
+    cond do
+      entered_screen?(game, previous_game) ->
+        dbg(:new_screen)
+
+        socket
+        |> assign(screen_fade_in: true)
+        |> put_animation_end("screen", fn socket ->
+          socket
+          |> assign(screen_fade_in: false)
+        end)
+
+      true ->
+        dbg(:no_new_scene)
+        socket
+    end
+  end
+
+  defp in_screen?(game) do
+    game.qualities["screen"] != nil
+  end
+
   defp card_id(%Card{ref: ref}, _), do: "card_" <> ref
   defp card_id(nil, position), do: "card_empty_" <> Integer.to_string(position)
+
+  defp dynamic_style(game = %Game{}) do
+    area = game.qualities["area"]
+    dbg(area)
+    file = List.to_string(:code.priv_dir(:talltale)) <> "/static/images/#{area}.jpg"
+    dbg(file)
+
+    if File.exists?(file) do
+      "background-image: url('/images/#{area}.jpg')"
+    else
+      ""
+    end
+  end
+
+  defp dynamic_style(_), do: ""
 end

@@ -1,0 +1,18 @@
+<section
+  id="screen"
+  class="screen"
+  phx-hook="Animated"
+  data-transition-sync
+  data-transition={
+    cond do
+      @fade_in -> JS.transition({"fading", "fade-hide", "fade-show"})
+      @fade_out -> JS.transition({"fading", "fade-show", "fade-hide"})
+      true -> nil
+    end
+  }
+>
+  <.rich_text content={Game.screen_text(@game)} />
+  <button phx-click="screen-proceed">
+    Continue
+  </button>
+</section>

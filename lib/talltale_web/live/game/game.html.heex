@@ -1,54 +1,38 @@
-<div class="scene" id="scene" phx-hook="Scene">
+<div class="scene" id="scene" phx-hook="Scene" style={dynamic_style(@loaded && @game)}>
   <div :if={@loaded}>
-    <.location game={@game} location={@game.qualities["location"]} />
-    <.deck
-      cards={@game.hand}
-      capacity={@game.qualities["hand_size"]}
-      flipping={@flipping}
-      flip_in={@flip_in}
-      flip_out={@flip_out}
-      picked_card_position={@picked_card_position}
-    />
-    <.storyline game={@game} location={@game.qualities["location"]} />
-    <.storylet
-      :if={@game.storylet}
+    <.screen
+      :if={in_screen?(@game)}
       game={@game}
-      storylet={@game.storylet}
-      entered?={@entered_storylet?}
+      fade_in={@screen_fade_in}
+      fade_out={@screen_fade_out}
     />
-    <.outcome
-      :if={@game.outcome}
-      game={@game}
-      outcome={@game.outcome}
-      entered?={@entered_outcome?}
-    />
-
-    <div class="debug">
-      <div class="qualities">
-        <form>
-          <table>
-            <tr :for={{id, value} <- Enum.sort_by(@game.qualities, &elem(&1, 0))}>
-              <td><%= id %></td>
-              <td>
-                <input
-                  phx-change="set-quality"
-                  name={id}
-                  size="4"
-                  value={value}
-                  phx-debounce="blur"
-                />
-              </td>
-            </tr>
-          </table>
-        </form>
-      </div>
-      <section class="dev-buttons">
-        <button class="reset" phx-click="reshuffle">Reshuffle</button>
-        <button class="reset" phx-click="reset">Reset</button>
-      </section>
+    <div :if={@game.qualities["location"]}>
+      <.location game={@game} location={@game.qualities["location"]} />
+      <.deck
+        cards={@game.hand}
+        capacity={@game.qualities["hand_size"]}
+        flipping={@flipping}
+        flip_in={@flip_in}
+        flip_out={@flip_out}
+        picked_card_position={@picked_card_position}
+      />
+      <.storyline game={@game} location={@game.qualities["location"]} />
+      <.storylet
+        :if={@game.storylet}
+        game={@game}
+        storylet={@game.storylet}
+        entered?={@entered_storylet?}
+      />
+      <.outcome
+        :if={@game.outcome}
+        game={@game}
+        outcome={@game.outcome}
+        entered?={@entered_outcome?}
+      />
     </div>
+    <.debug game={@game} />
   </div>
   <div :if={not @loaded} class="loading">
-    … loading …
+    <.icon name="ma-hourglass" />
   </div>
 </div>

@@ -186,9 +186,26 @@ defmodule Talltale.Game do
     |> put_outcome(outcome)
   end
 
+  def screen_proceed(game) do
+    screen = screen(game)
+
+    game
+    |> clear_screen()
+    |> apply_effect(screen.pass.effects)
+    |> maybe_update_deck(game)
+  end
+
   def challenge_chance(game, challenge) do
     generator = Expression.eval(challenge.generator_expression, game.qualities)
     generator.(game.qualities[challenge.quality.variable] || 0)
+  end
+
+  def screen(%__MODULE__{qualities: qualities, tale: tale}) do
+    tale.screens[qualities["screen"]]
+  end
+
+  def screen_text(game) do
+    screen(game).text
   end
 
   def build_storyline(game, %Location{storylines: storylines}) do
@@ -225,12 +242,21 @@ defmodule Talltale.Game do
       tale: %Tale{locations: locations}
     } = game
 
-    area_id = locations[qualities["location"]].area_id
+    area_id = locations[location_id].area_id
 
     %__MODULE__{
       game
       | qualities: qualities |> Map.put("area", area_id) |> Map.put("location", location_id)
     }
+  end
+
+  defp apply_effect(game = %__MODULE__{}, {:screen, screen_id}) do
+    %__MODULE__{qualities: qualities} = game
+    %__MODULE__{game | qualities: Map.put(qualities, "screen", screen_id)}
+  end
+
+  defp apply_effect(_game, effect) do
+    raise "Unknown effect: #{inspect(effect)}"
   end
 
   defp apply_effect(
@@ -247,6 +273,9 @@ defmodule Talltale.Game do
   end
 
   defp clear_storylet(game), do: %__MODULE__{game | storylet: nil}
+
+  defp clear_screen(game = %__MODULE__{qualities: qualities}),
+    do: %__MODULE__{game | qualities: Map.put(qualities, "screen", nil)}
 
   defp maybe_put_outcome(game, %Outcome{storyline: []}), do: game
   defp maybe_put_outcome(game, outcome), do: put_outcome(game, outcome)

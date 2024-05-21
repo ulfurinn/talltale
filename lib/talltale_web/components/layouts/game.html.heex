@@ -1,11 +1,3 @@
-<header>
-  <div class="title-wrapper">
-    <div class="title">
-      <div><span class="material-symbols-outlined">chess</span> Tall Tale</div>
-      <div :if={assigns[:tale]} class="subtitle"><%= @tale.title %></div>
-    </div>
-  </div>
-</header>
 <main>
   <.flash_group flash={@flash} />
   <%= @inner_content %>

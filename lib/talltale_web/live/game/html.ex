@@ -1,6 +1,7 @@
 defmodule TalltaleWeb.GameLive.HTML do
   use TalltaleWeb, :html
   alias Tailmark.Node.Emph
+  alias Tailmark.Node.Heading.ATX
   alias Tailmark.Node.Linebreak
   alias Tailmark.Node.Paragraph
   alias Tailmark.Node.Strong
@@ -48,6 +49,42 @@ defmodule TalltaleWeb.GameLive.HTML do
   def rich_text(%{content: %Paragraph{}} = assigns) do
     ~H"""
     <p class="paragraph"><.rich_text :for={element <- @content.children} content={element} /></p>
+    """
+  end
+
+  def rich_text(%{content: %ATX{level: 1}} = assigns) do
+    ~H"""
+    <h1><.rich_text :for={element <- @content.children} content={element} /></h1>
+    """
+  end
+
+  def rich_text(%{content: %ATX{level: 2}} = assigns) do
+    ~H"""
+    <h2><.rich_text :for={element <- @content.children} content={element} /></h2>
+    """
+  end
+
+  def rich_text(%{content: %ATX{level: 3}} = assigns) do
+    ~H"""
+    <h3><.rich_text :for={element <- @content.children} content={element} /></h3>
+    """
+  end
+
+  def rich_text(%{content: %ATX{level: 4}} = assigns) do
+    ~H"""
+    <h4><.rich_text :for={element <- @content.children} content={element} /></h4>
+    """
+  end
+
+  def rich_text(%{content: %ATX{level: 5}} = assigns) do
+    ~H"""
+    <h5><.rich_text :for={element <- @content.children} content={element} /></h5>
+    """
+  end
+
+  def rich_text(%{content: %ATX{level: 6}} = assigns) do
+    ~H"""
+    <h6><.rich_text :for={element <- @content.children} content={element} /></h6>
     """
   end
 

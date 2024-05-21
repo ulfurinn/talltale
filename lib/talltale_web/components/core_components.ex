@@ -604,6 +604,12 @@ defmodule TalltaleWeb.CoreComponents do
     """
   end
 
+  def icon(assigns = %{name: "ma-" <> icon}) do
+    ~H"""
+    <span class="material-symbols-outlined"><%= icon %></span>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do

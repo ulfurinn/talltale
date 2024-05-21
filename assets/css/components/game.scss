@@ -6,8 +6,10 @@
 $border-regular: 1px solid theme.get("game", "600");
 $border-thicker: 1px solid theme.get("game", "600");
 
+$game-bg: theme.get("game", "950");
+
 .root.game {
-  background-color: theme.get("game", "900");
+  background-color: $game-bg;
   color: theme.get("game", "200");
 
   header {
@@ -41,7 +43,11 @@ $border-thicker: 1px solid theme.get("game", "600");
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: font.size("lg");
+    font-size: font.size("xl");
+
+    .material-symbols.outlines {
+      font-size: font.size("xl");
+    }
   }
 
   .location {
@@ -68,6 +74,29 @@ $border-thicker: 1px solid theme.get("game", "600");
         margin-top: spacing.$sm;
         font-size: font.size("sm");
       }
+    }
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    background-color: $game-bg;
+    z-index: 100;
+
+    font-family: "Cinzel", serif;
+    font-size: 48pt;
+    letter-spacing: 0.2em;
+
+    padding-top: 8rem;
+    text-align: center;
+
+    button {
+      padding: spacing.$lg;
+      font-size: font.size(md);
+    }
+
+    &.fading {
+      transition-duration: 1000ms;
     }
   }
 

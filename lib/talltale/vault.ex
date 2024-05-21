@@ -3,7 +3,19 @@ defmodule Talltale.Vault do
   alias Talltale.Game.Challenge
   alias Tailmark.Document
   alias Tailmark.Node.{Blockquote, Break, Heading, Linebreak, Link, Paragraph, Text}
-  alias Talltale.Game.{Area, Card, Deck, Location, Outcome, Quality, Storylet, Storyline, Tale}
+
+  alias Talltale.Game.{
+    Area,
+    Card,
+    Deck,
+    Location,
+    Outcome,
+    Quality,
+    Screen,
+    Storylet,
+    Storyline,
+    Tale
+  }
 
   require Logger
 
@@ -16,6 +28,7 @@ defmodule Talltale.Vault do
     qualities: %{},
     areas: %{},
     locations: %{},
+    screens: %{},
     decks: %{},
     cards: %{},
     storylets: %{}
@@ -25,6 +38,12 @@ defmodule Talltale.Vault do
     quote do
       match?(%Heading.ATX{level: unquote(level)}, unquote(node)) or
         match?(%Heading.Setext{level: unquote(level)}, unquote(node))
+    end
+  end
+
+  defmacrop callout?(node) do
+    quote do
+      match?(%Blockquote{callout: %{type: _}}, unquote(node))
     end
   end
 
@@ -53,18 +72,28 @@ defmodule Talltale.Vault do
       |> resolve()
       |> convert_to_ids()
 
-    starting_location = vault.locations[vault.starting_qualities["location"]]
-
     %Tale{
       title: vault.title,
       areas: vault.areas,
       locations: vault.locations,
+      screens: vault.screens,
       decks: vault.decks,
       cards: vault.cards,
       qualities: vault.qualities,
       storylets: vault.storylets,
-      start: vault.starting_qualities |> Map.put("area", starting_location.area_id)
+      start: starting_qualities(vault.starting_qualities, vault)
     }
+  end
+
+  defp starting_qualities(qualities, vault) do
+    location_id = vault.starting_qualities["location"]
+
+    if location_id do
+      location = vault.locations[location_id]
+      Map.put(qualities, "area", location.area_id)
+    else
+      qualities
+    end
   end
 
   defp parse(vault = %__MODULE__{root: root}) do
@@ -80,26 +109,31 @@ defmodule Talltale.Vault do
     |> resolve_areas()
     |> resolve_decks()
     |> resolve_cards()
+    |> resolve_screens()
     |> resolve_storylets()
   end
 
   defp convert_to_ids(vault) do
     %__MODULE__{
       vault
-      | qualities: Map.new(vault.qualities, fn {_, quality} -> {quality.id, quality} end),
-        areas: Map.new(vault.areas, fn {_, area} -> {area.id, area} end),
-        locations: Map.new(vault.locations, fn {_, location} -> {location.id, location} end),
-        decks: Map.new(vault.decks, fn {_, deck} -> {deck.id, deck} end),
-        cards: Map.new(vault.cards, fn {_, card} -> {card.id, card} end),
-        storylets: Map.new(vault.storylets, fn {_, storylet} -> {storylet.id, storylet} end)
+      | qualities: Map.new(vault.qualities, &key_by_id/1),
+        areas: Map.new(vault.areas, &key_by_id/1),
+        locations: Map.new(vault.locations, &key_by_id/1),
+        screens: Map.new(vault.screens, &key_by_id/1),
+        decks: Map.new(vault.decks, &key_by_id/1),
+        cards: Map.new(vault.cards, &key_by_id/1),
+        storylets: Map.new(vault.storylets, &key_by_id/1)
     }
   end
+
+  defp key_by_id({_, object}), do: {object.id, object}
 
   defp resolve_starting_qualities(vault) do
     qualities =
       vault.starting_qualities
       |> Enum.into(%{}, fn
         {"location", {:link, path}} -> {"location", Map.fetch!(vault.locations, path).id}
+        {"screen", {:link, path}} -> {"screen", Map.fetch!(vault.screens, path).id}
         pair -> pair
       end)
 
@@ -210,6 +244,22 @@ defmodule Talltale.Vault do
     }
   end
 
+  defp resolve_screens(vault) do
+    vault.screens
+    |> Enum.reduce(vault, fn {path, screen}, vault ->
+      resolve_screen(path, screen, vault)
+    end)
+  end
+
+  defp resolve_screen(path, screen, vault) do
+    screen = %Screen{screen | pass: resolve_outcome(screen.pass, vault)}
+
+    %__MODULE__{
+      vault
+      | screens: Map.put(vault.screens, path, screen)
+    }
+  end
+
   defp resolve_storylets(vault) do
     vault.storylets
     |> Enum.reduce(vault, fn {path, storylet}, vault ->
@@ -307,6 +357,11 @@ defmodule Talltale.Vault do
     {:location, vault.locations[normalize_uri(link.destination)].id}
   end
 
+  defp resolve_effect(screen = %Blockquote{callout: %{type: "screen"}}, vault) do
+    link = screen |> find(&link?/1)
+    {:screen, vault.screens[normalize_uri(link.destination)].id}
+  end
+
   defp resolve_effect(storylet = %Blockquote{callout: %{type: "storylet"}}, vault) do
     link = storylet |> find(&link?/1)
 
@@ -384,6 +439,31 @@ defmodule Talltale.Vault do
       | slug: document.frontmatter["slug"],
         title: document.frontmatter["title"],
         starting_qualities: Map.drop(frontmatter, ["type", "slug", "title"])
+    }
+  end
+
+  defp process_note(path, document, frontmatter = %{"type" => "screen"}, vault) do
+    text = document.children |> Enum.reject(&callout?/1)
+
+    effects =
+      document
+      |> select(fn node ->
+        callout?(node, "quality") or
+          callout?(node, "location") or
+          callout?(node, "storylet") or
+          callout?(node, "screen")
+      end)
+
+    screen =
+      %Screen{
+        id: frontmatter["id"],
+        text: text,
+        pass: %Outcome{effects: effects}
+      }
+
+    %__MODULE__{
+      vault
+      | screens: Map.put(vault.screens, path, screen)
     }
   end
 
@@ -494,7 +574,10 @@ defmodule Talltale.Vault do
     effects =
       document
       |> select(fn node ->
-        callout?(node, "quality") or callout?(node, "location") or callout?(node, "storylet")
+        callout?(node, "quality") or
+          callout?(node, "location") or
+          callout?(node, "storylet") or
+          callout?(node, "screen")
       end)
 
     storyline = document.children |> Enum.filter(&paragraph?/1)
