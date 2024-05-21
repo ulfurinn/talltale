@@ -255,10 +255,6 @@ defmodule Talltale.Game do
     %__MODULE__{game | qualities: Map.put(qualities, "screen", screen_id)}
   end
 
-  defp apply_effect(_game, effect) do
-    raise "Unknown effect: #{inspect(effect)}"
-  end
-
   defp apply_effect(
          game = %__MODULE__{tale: %Tale{storylets: storylets}},
          {:storylet, storylet_id}
@@ -270,6 +266,10 @@ defmodule Talltale.Game do
 
   defp apply_effect(game = %__MODULE__{}, nil) do
     game
+  end
+
+  defp apply_effect(_game, effect) do
+    raise "Unknown effect: #{inspect(effect)}"
   end
 
   defp clear_storylet(game), do: %__MODULE__{game | storylet: nil}
