@@ -35,4 +35,3 @@ talltale-*.tar
 npm-debug.log
 /assets/node_modules/
 
-priv/tales/apocrypha
