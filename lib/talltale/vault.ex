@@ -131,10 +131,19 @@ defmodule Talltale.Vault do
   defp resolve_starting_qualities(vault) do
     qualities =
       vault.starting_qualities
+      |> Enum.reject(fn {k, _} -> k == "id" end)
       |> Enum.into(%{}, fn
-        {"location", {:link, path}} -> {"location", Map.fetch!(vault.locations, path).id}
-        {"screen", {:link, path}} -> {"screen", Map.fetch!(vault.screens, path).id}
-        pair -> pair
+        {"scene", {:link, path}} ->
+          id =
+            cond do
+              Map.has_key?(vault.locations, path) -> vault.locations[path].id
+              Map.has_key?(vault.screens, path) -> vault.screens[path].id
+            end
+
+          {"scene", id}
+
+        pair ->
+          pair
       end)
 
     %__MODULE__{vault | starting_qualities: qualities}
@@ -352,20 +361,11 @@ defmodule Talltale.Vault do
     {:quality, expression}
   end
 
-  defp resolve_effect(location = %Blockquote{callout: %{type: "location"}}, vault) do
+  defp resolve_effect(location = %Blockquote{callout: %{type: "scene"}}, vault) do
     link = location |> find(&link?/1)
-    {:location, vault.locations[normalize_uri(link.destination)].id}
-  end
-
-  defp resolve_effect(screen = %Blockquote{callout: %{type: "screen"}}, vault) do
-    link = screen |> find(&link?/1)
-    {:screen, vault.screens[normalize_uri(link.destination)].id}
-  end
-
-  defp resolve_effect(storylet = %Blockquote{callout: %{type: "storylet"}}, vault) do
-    link = storylet |> find(&link?/1)
-
-    {:storylet, vault.storylets[normalize_uri(link.destination)].id}
+    uri = normalize_uri(link.destination)
+    node = vault.locations[uri] || vault.screens[uri]
+    {:scene, node && node.id}
   end
 
   defp collect_notes(root) do
@@ -449,9 +449,8 @@ defmodule Talltale.Vault do
       document
       |> select(fn node ->
         callout?(node, "quality") or
-          callout?(node, "location") or
-          callout?(node, "storylet") or
-          callout?(node, "screen")
+          callout?(node, "scene") or
+          callout?(node, "storylet")
       end)
 
     screen =
@@ -575,9 +574,8 @@ defmodule Talltale.Vault do
       document
       |> select(fn node ->
         callout?(node, "quality") or
-          callout?(node, "location") or
-          callout?(node, "storylet") or
-          callout?(node, "screen")
+          callout?(node, "scene") or
+          callout?(node, "storylet")
       end)
 
     storyline = document.children |> Enum.filter(&paragraph?/1)
@@ -682,7 +680,7 @@ defmodule Talltale.Vault do
     effects =
       nodes
       |> select(fn node ->
-        callout?(node, "quality") or callout?(node, "location") or callout?(node, "storylet")
+        callout?(node, "quality") or callout?(node, "scene") or callout?(node, "storylet")
       end)
 
     text = nodes |> Enum.filter(&paragraph?/1)

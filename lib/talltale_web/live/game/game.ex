@@ -6,6 +6,7 @@ defmodule TalltaleWeb.Game do
 
   alias Talltale.Game
   alias Talltale.Game.Card
+  alias Talltale.Game.Screen
   alias Talltale.Game.Storylet
   # alias Talltale.Repo
   alias Talltale.Vault
@@ -16,15 +17,17 @@ defmodule TalltaleWeb.Game do
     socket
     |> assign(:theme, "game")
     |> assign(:loaded, false)
-    |> then(fn socket ->
-      if connected?(socket) do
-        vault_root = List.to_string(:code.priv_dir(:talltale)) <> "/tales/" <> params["tale"]
-        socket |> assign(tale: Vault.load(vault_root))
-      else
-        socket
-      end
-    end)
+    |> load_if_connected(params)
     |> ok()
+  end
+
+  def load_if_connected(socket, params) do
+    if connected?(socket) do
+      vault_root = List.to_string(:code.priv_dir(:talltale)) <> "/tales/" <> params["tale"]
+      socket |> assign(tale: Vault.load(vault_root))
+    else
+      socket
+    end
   end
 
   @defaults %{
@@ -37,6 +40,7 @@ defmodule TalltaleWeb.Game do
     flip_in: [],
     flip_out: []
   }
+
   defp assign_defaults(socket) do
     socket |> assign(@defaults)
   end
@@ -202,8 +206,8 @@ defmodule TalltaleWeb.Game do
   defp entered_storylet?(%Game{storylet: nil}, %Game{storylet: %Storylet{}}), do: true
   defp entered_storylet?(_, _), do: false
 
-  defp entered_screen?(%Game{qualities: qualities}, %Game{qualities: previous_qualities}) do
-    qualities["screen"] && qualities["screen"] != previous_qualities["screen"]
+  defp entered_screen?(game = %Game{}, previous = %Game{}) do
+    in_screen?(game) && game.scene != previous.scene
   end
 
   defp put_game(socket, game) do
@@ -258,7 +262,7 @@ defmodule TalltaleWeb.Game do
   end
 
   defp in_screen?(game) do
-    game.qualities["screen"] != nil
+    match?(%Game{scene: %Screen{}}, game)
   end
 
   defp card_id(%Card{ref: ref}, _), do: "card_" <> ref

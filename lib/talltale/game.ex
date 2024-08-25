@@ -1,11 +1,13 @@
 defmodule Talltale.Game do
   @moduledoc "Game state."
+  alias __MODULE__
   alias Talltale.Expression
   alias Talltale.Game.Area
   alias Talltale.Game.Card
   alias Talltale.Game.Deck
   alias Talltale.Game.Location
   alias Talltale.Game.Outcome
+  alias Talltale.Game.Screen
   alias Talltale.Game.Storylet
   alias Talltale.Game.Tale
 
@@ -16,6 +18,7 @@ defmodule Talltale.Game do
     :deck,
     :hand,
     qualities: %{},
+    scene: nil,
     storylet: nil,
     outcome: nil
   ]
@@ -25,6 +28,7 @@ defmodule Talltale.Game do
       tale: tale,
       qualities: tale.start
     }
+    |> set_scene()
   end
 
   def snapshot(game) do
@@ -67,12 +71,19 @@ defmodule Talltale.Game do
         deck: deck,
         hand: hand
     }
+    |> set_scene()
   end
 
   def reshuffle(game) do
     game
     |> form_deck()
     |> draw()
+  end
+
+  defp set_scene(game) do
+    %Game{qualities: %{"scene" => scene_id}} = game
+    scene = game.tale.screens[scene_id] || game.tale.locations[scene_id] |> dbg
+    %Game{game | scene: scene}
   end
 
   def put_quality(game, id, value) do
@@ -188,7 +199,6 @@ defmodule Talltale.Game do
     screen = screen(game)
 
     game
-    |> clear_screen()
     |> apply_effect(screen.pass.effects)
     |> maybe_update_deck(game)
   end
@@ -198,8 +208,10 @@ defmodule Talltale.Game do
     generator.(game.qualities[challenge.quality.variable] || 0)
   end
 
-  def screen(%__MODULE__{qualities: qualities, tale: tale}) do
-    tale.screens[qualities["screen"]]
+  def screen(%Game{scene: scene}) do
+    if match?(%Screen{}, scene) do
+      scene
+    end
   end
 
   def screen_text(game) do
@@ -234,23 +246,10 @@ defmodule Talltale.Game do
     %__MODULE__{game | qualities: Expression.eval_assign(expression, qualities)}
   end
 
-  defp apply_effect(game = %__MODULE__{}, {:location, location_id}) do
-    %__MODULE__{
-      qualities: qualities,
-      tale: %Tale{locations: locations}
-    } = game
-
-    area_id = locations[location_id].area_id
-
-    %__MODULE__{
-      game
-      | qualities: qualities |> Map.put("area", area_id) |> Map.put("location", location_id)
-    }
-  end
-
-  defp apply_effect(game = %__MODULE__{}, {:screen, screen_id}) do
-    %__MODULE__{qualities: qualities} = game
-    %__MODULE__{game | qualities: Map.put(qualities, "screen", screen_id)}
+  defp apply_effect(game = %Game{}, {:scene, scene_id}) do
+    %Game{qualities: qualities} = game
+    qualities = Map.put(qualities, "scene", scene_id)
+    %Game{game | qualities: qualities} |> set_scene()
   end
 
   defp apply_effect(
@@ -271,9 +270,6 @@ defmodule Talltale.Game do
   end
 
   defp clear_storylet(game), do: %__MODULE__{game | storylet: nil}
-
-  defp clear_screen(game = %__MODULE__{qualities: qualities}),
-    do: %__MODULE__{game | qualities: Map.put(qualities, "screen", nil)}
 
   defp maybe_put_outcome(game, %Outcome{storyline: []}), do: game
   defp maybe_put_outcome(game, outcome), do: put_outcome(game, outcome)
