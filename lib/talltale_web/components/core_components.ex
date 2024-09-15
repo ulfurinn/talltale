@@ -605,8 +605,10 @@ defmodule TalltaleWeb.CoreComponents do
   end
 
   def icon(assigns = %{name: "ma-" <> icon}) do
+    assigns = assigns |> assign(icon: icon)
+
     ~H"""
-    <span class="material-symbols-outlined"><%= icon %></span>
+    <span class="material-symbols-outlined"><%= @icon %></span>
     """
   end
 
