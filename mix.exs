@@ -47,7 +47,9 @@ defmodule Talltale.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:uniq, "~> 0.1"},
       {:yaml_elixir, "~> 2.9"},
-      {:ymlr, "~> 5.0"}
+      {:ymlr, "~> 5.0"},
+      ### patch
+      {:type_check, github: "ulfurinn/elixir-type_check", override: true}
     ]
   end
 
