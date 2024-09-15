@@ -38,7 +38,7 @@ defmodule Tailmark.Node.Blockquote do
   end
 
   defimpl Inspect do
-    def inspect(%@for{callout: callout}, _) when is_binary(callout), do: "#{callout}>"
+    def inspect(%@for{callout: callout}, _) when callout != nil, do: "#{callout.type}>"
     def inspect(_, _), do: ">"
   end
 end

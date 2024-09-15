@@ -27,7 +27,7 @@ defmodule Tailmark.InlineParser do
   @punctuation ~r/^\p{P}/u
   @backslash_or_amp ~r/[\\&]/
   @entity_or_escaped ~r/\\#{@escapable_def}|#{@entity_def}/
-  @callout ~r/^\[!(?<type>[a-z0-9-]+)(\|(?<meta>[a-z0-9-]+))?\]\s*?(?<title>[^\n]+)?\n/ui
+  @callout ~r/^\[!(?<type>[a-z0-9-]+)(\|(?<meta>[a-z0-9-]+))?\]\s*?(?<title>[^\n]+)?(\n|$)/ui
 
   def parse(text) when is_binary(text) do
     node = Paragraph.new(text)
@@ -180,12 +180,19 @@ defmodule Tailmark.InlineParser do
              true <- is_reference(node.parent),
              parent <- Doctree.get_node(state.tree, node.parent),
              %Blockquote{} <- parent,
-             [_] <- parent.children,
              [] <- node.children,
              {state, {type, meta, title}} <- parse_callout(state) do
           state
           |> update_node(parent.ref, fn blockquote ->
             %Blockquote{blockquote | callout: %{type: type, meta: meta, title: title}}
+          end)
+          |> then(fn state ->
+            if rest(state) == "" do
+              # the paragraph only contained callout markers, remove it
+              remove_node(state, node)
+            else
+              state
+            end
           end)
           |> result(true)
         else
