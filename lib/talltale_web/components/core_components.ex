@@ -17,7 +17,7 @@ defmodule TalltaleWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import TalltaleWeb.Gettext
+  use Gettext, backend: TalltaleWeb.Gettext
 
   @doc """
   Renders a modal.

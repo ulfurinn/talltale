@@ -43,7 +43,7 @@ defmodule TalltaleWeb do
         layouts: [html: TalltaleWeb.Layouts]
 
       import Plug.Conn
-      import TalltaleWeb.Gettext
+      use Gettext, backend: TalltaleWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -88,7 +88,7 @@ defmodule TalltaleWeb do
       import Phoenix.HTML.Tag
       # Core UI components and translation
       import TalltaleWeb.CoreComponents
-      import TalltaleWeb.Gettext
+      use Gettext, backend: TalltaleWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
