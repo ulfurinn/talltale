@@ -37,7 +37,6 @@ defmodule Talltale.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:gettext, "~> 0.20"},
-      {:html_entities, "~> 0.5"},
       {:jason, "~> 1.4"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -48,6 +47,7 @@ defmodule Talltale.MixProject do
       {:uniq, "~> 0.1"},
       {:yaml_elixir, "~> 2.9"},
       {:ymlr, "~> 5.0"},
+      {:tailmark, github: "ulfurinn/tailmark"},
       ### patch
       {:type_check, github: "ulfurinn/elixir-type_check", override: true}
     ]
