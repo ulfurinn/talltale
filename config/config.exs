@@ -12,6 +12,8 @@ config :tall_tale,
   ecto_repos: [TallTale.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
+config :tall_tale, TallTale.Repo, migration_primary_key: [name: :id, type: :uuid]
+
 # Configures the endpoint
 config :tall_tale, TallTaleWeb.Endpoint,
   url: [host: "localhost"],
