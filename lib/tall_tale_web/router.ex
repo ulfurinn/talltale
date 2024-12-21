@@ -1,0 +1,29 @@
+defmodule TallTaleWeb.Router do
+  use TallTaleWeb, :router
+
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {TallTaleWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
+  scope "/", TallTaleWeb do
+    pipe_through :browser
+
+    live_session :admin, layout: {TallTaleWeb.Layouts, :admin} do
+      live "/admin", AdminLive.Index, :index
+    end
+  end
+
+  # Other scopes may use custom stacks.
+  # scope "/api", TallTaleWeb do
+  #   pipe_through :api
+  # end
+end
