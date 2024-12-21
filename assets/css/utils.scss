@@ -1,0 +1,15 @@
+.hidden {
+  display: none;
+}
+
+@mixin gap-x($gap) {
+  &>*+* {
+    margin-left: $gap;
+  }
+}
+
+@mixin gap-y($gap) {
+  &>*+* {
+    margin-top: $gap;
+  }
+}

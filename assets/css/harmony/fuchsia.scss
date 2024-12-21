@@ -1,0 +1,31 @@
+:root {
+  --fuchsia-50:#fdfafd;
+  --fuchsia-100:#f9f1fb;
+  --fuchsia-200:#f2ddf7;
+  --fuchsia-300:#e9c1f2;
+  --fuchsia-400:#dfa6ec;
+  --fuchsia-500:#d58ae6;
+  --fuchsia-600:#ac6bbb;
+  --fuchsia-700:#8a5597;
+  --fuchsia-800:#633b6c;
+  --fuchsia-900:#3e2444;
+  --fuchsia-950:#1d0e20;
+}
+
+@supports (color: oklch(0% 0 0)) {
+  @media (color-gamut: p3) {
+    :root {
+      --fuchsia-50:oklch(0.988281 0.0046875 320);
+      --fuchsia-100:oklch(0.966797 0.0171875 320);
+      --fuchsia-200:oklch(0.921875 0.0421875 320);
+      --fuchsia-300:oklch(0.861328 0.078125 320);
+      --fuchsia-400:oklch(0.800781 0.114063 320);
+      --fuchsia-500:oklch(0.742188 0.151562 320);
+      --fuchsia-600:oklch(0.626953 0.135937 320);
+      --fuchsia-700:oklch(0.535156 0.115625 320);
+      --fuchsia-800:oklch(0.419922 0.090625 320);
+      --fuchsia-900:oklch(0.308594 0.065625 320);
+      --fuchsia-950:oklch(0.195313 0.040625 320);
+    }
+  }
+}

@@ -1,4 +1,5 @@
-const esbuild = require("esbuild");
+import esbuild from 'esbuild';
+import { sassPlugin } from 'esbuild-sass-plugin'
 
 const args = process.argv.slice(2);
 const watch = args.includes('--watch');
@@ -9,12 +10,12 @@ const loader = {
 };
 
 const plugins = [
-  // Add and configure plugins here
+  sassPlugin()
 ];
 
 // Define esbuild options
 let opts = {
-  entryPoints: ["js/app.js"],
+  entryPoints: ["js/app.js", "css/app.scss"],
   bundle: true,
   logLevel: "info",
   target: "es2017",
@@ -42,8 +43,8 @@ if (watch) {
     .then((ctx) => {
       ctx.watch();
     })
-    .catch((_error) => {
-      process.exit(1);
+    .catch((error) => {
+      console.error(error)
     });
 } else {
   esbuild.build(opts);

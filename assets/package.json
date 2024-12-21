@@ -1,6 +1,9 @@
 {
   "devDependencies": {
-    "esbuild": "^0.24.2"
+    "esbuild": "^0.24.2",
+    "esbuild-sass-plugin": "^3.3.1",
+    "@evilmartians/harmony": "^1.4.0",
+    "sass": "^1.83.0"
   },
   "dependencies": {
     "phoenix": "file:../deps/phoenix",

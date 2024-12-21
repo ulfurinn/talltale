@@ -1,0 +1,31 @@
+:root {
+  --rose-50:#fefafb;
+  --rose-100:#fff0f3;
+  --rose-200:#ffdbe5;
+  --rose-300:#febdd0;
+  --rose-400:#fb9fbb;
+  --rose-500:#f780a8;
+  --rose-600:#c86185;
+  --rose-700:#a24d6a;
+  --rose-800:#74364b;
+  --rose-900:#49202e;
+  --rose-950:#230c14;
+}
+
+@supports (color: oklch(0% 0 0)) {
+  @media (color-gamut: p3) {
+    :root {
+      --rose-50:oklch(0.988281 0.0046875 0);
+      --rose-100:oklch(0.966797 0.0171875 0);
+      --rose-200:oklch(0.923828 0.0421875 0);
+      --rose-300:oklch(0.863281 0.078125 0);
+      --rose-400:oklch(0.802734 0.114063 0);
+      --rose-500:oklch(0.744141 0.151562 0);
+      --rose-600:oklch(0.626953 0.135937 0);
+      --rose-700:oklch(0.535156 0.115625 0);
+      --rose-800:oklch(0.419922 0.090625 0);
+      --rose-900:oklch(0.306641 0.065625 0);
+      --rose-950:oklch(0.193359 0.040625 0);
+    }
+  }
+}
