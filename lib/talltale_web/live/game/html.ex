@@ -36,7 +36,7 @@ defmodule TalltaleWeb.GameLive.HTML do
 
   def storyline(%{storyline: %Text{content: _}} = assigns) do
     ~H"""
-    <%= @storyline.content %>
+    {@storyline.content}
     """
   end
 
@@ -90,7 +90,7 @@ defmodule TalltaleWeb.GameLive.HTML do
 
   def rich_text(%{content: %Text{}} = assigns) do
     ~H"""
-    <%= @content.content %>
+    {@content.content}
     """
   end
 

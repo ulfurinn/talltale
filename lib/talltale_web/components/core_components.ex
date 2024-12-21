@@ -83,7 +83,7 @@ defmodule TalltaleWeb.CoreComponents do
                 </button>
               </div>
               <div id={"#{@id}-content"}>
-                <%= render_slot(@inner_block) %>
+                {render_slot(@inner_block)}
               </div>
             </.focus_wrap>
           </div>
@@ -125,9 +125,9 @@ defmodule TalltaleWeb.CoreComponents do
       <p :if={@title} class="title">
         <.icon :if={@kind == :info} name="fa-circle-icon" />
         <.icon :if={@kind == :error} name="fa-circle-icon" />
-        <%= @title %>
+        {@title}
       </p>
-      <p class="message"><%= msg %></p>
+      <p class="message">{msg}</p>
       <button type="button" class="close" aria-label={gettext("close")}>
         <.icon name="fa-circle-info" />
       </button>
@@ -199,9 +199,9 @@ defmodule TalltaleWeb.CoreComponents do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="form">
-        <%= render_slot(@inner_block, f) %>
+        {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="action">
-          <%= render_slot(action, f) %>
+          {render_slot(action, f)}
         </div>
       </div>
     </.form>
@@ -225,7 +225,7 @@ defmodule TalltaleWeb.CoreComponents do
   def button(assigns) do
     ~H"""
     <button type={@type} class={@class} {@rest}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -306,9 +306,9 @@ defmodule TalltaleWeb.CoreComponents do
           class="rounded border-primary-300 text-primary-200 focus:ring-0"
           {@rest}
         />
-        <%= @label %>
+        {@label}
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -316,7 +316,7 @@ defmodule TalltaleWeb.CoreComponents do
   def input(assigns = %{type: "select"}) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label :if={@label} for={@id}><%= @label %></.label>
+      <.label :if={@label} for={@id}>{@label}</.label>
       <select
         id={@id}
         name={@name}
@@ -324,10 +324,10 @@ defmodule TalltaleWeb.CoreComponents do
         multiple={@multiple}
         {@rest}
       >
-        <option :if={@prompt} value=""><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+        <option :if={@prompt} value="">{@prompt}</option>
+        {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -335,7 +335,7 @@ defmodule TalltaleWeb.CoreComponents do
   def input(assigns = %{type: "textarea"}) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label :if={@label} for={@id}><%= @label %></.label>
+      <.label :if={@label} for={@id}>{@label}</.label>
       <textarea
         id={@id}
         name={@name}
@@ -344,7 +344,7 @@ defmodule TalltaleWeb.CoreComponents do
         ]}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -353,7 +353,7 @@ defmodule TalltaleWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label :if={@label} for={@id}><%= @label %></.label>
+      <.label :if={@label} for={@id}>{@label}</.label>
       <input
         type={@type}
         name={@name}
@@ -364,7 +364,7 @@ defmodule TalltaleWeb.CoreComponents do
         ]}
         {@rest}
       />
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -433,7 +433,7 @@ defmodule TalltaleWeb.CoreComponents do
           <:off><.icon name="fa-circle-minus" /></:off>
         </.toggle>
       </div>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -465,8 +465,8 @@ defmodule TalltaleWeb.CoreComponents do
       multiple={@multiple}
     />
     <.toggle_button field={@field} id={@id} checked={@checked} disabled={@disabled} class={@class}>
-      <:off><%= render_slot(@off) %></:off>
-      <:on><%= render_slot(@on) %></:on>
+      <:off>{render_slot(@off)}</:off>
+      <:on>{render_slot(@on)}</:on>
     </.toggle_button>
     """
   end
@@ -529,8 +529,8 @@ defmodule TalltaleWeb.CoreComponents do
       disabled={@disabled}
       class={@class}
     >
-      <%= if !@checked && @off, do: render_slot(@off) %>
-      <%= if @checked && @on, do: render_slot(@on) %>
+      {if !@checked && @off, do: render_slot(@off)}
+      {if @checked && @on, do: render_slot(@on)}
     </.button>
     """
   end
@@ -544,7 +544,7 @@ defmodule TalltaleWeb.CoreComponents do
   def label(assigns) do
     ~H"""
     <label for={@for}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </label>
     """
   end
@@ -558,7 +558,7 @@ defmodule TalltaleWeb.CoreComponents do
     ~H"""
     <p class="error-box mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
       <.icon name="fa-circle-info" class="icon" />
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -582,8 +582,8 @@ defmodule TalltaleWeb.CoreComponents do
     <div class="mt-14">
       <dl class="-my-4 divide-y divide-primary-100">
         <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
-          <dt class="w-1/4 flex-none text-primary-200"><%= item.title %></dt>
-          <dd class="text-primary-200"><%= render_slot(item) %></dd>
+          <dt class="w-1/4 flex-none text-primary-200">{item.title}</dt>
+          <dd class="text-primary-200">{render_slot(item)}</dd>
         </div>
       </dl>
     </div>
@@ -608,7 +608,7 @@ defmodule TalltaleWeb.CoreComponents do
     assigns = assigns |> assign(icon: icon)
 
     ~H"""
-    <span class="material-symbols-outlined"><%= @icon %></span>
+    <span class="material-symbols-outlined">{@icon}</span>
     """
   end
 

@@ -85,7 +85,6 @@ defmodule TalltaleWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
-      import Phoenix.HTML.Tag
       # Core UI components and translation
       import TalltaleWeb.CoreComponents
       use Gettext, backend: TalltaleWeb.Gettext

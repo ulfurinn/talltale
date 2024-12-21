@@ -11,7 +11,7 @@
 >
   <section class="storylet-content">
     <div :for={choice <- @storylet.choices} class="choice">
-      <h2 class="choice-title"><%= choice.title %></h2>
+      <h2 class="choice-title">{choice.title}</h2>
       <section class="choice-content"><.rich_text content={choice.text} /></section>
       <section class="choice-challenges">
         <div :for={challenge <- choice.challenges} phx-no-format>

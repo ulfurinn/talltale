@@ -3,7 +3,7 @@
     <form>
       <table>
         <tr :for={{id, value} <- Enum.sort_by(@game.qualities, &elem(&1, 0))}>
-          <td><%= id %></td>
+          <td>{id}</td>
           <td>
             <input phx-change="set-quality" name={id} size="36" value={value} phx-debounce="blur" />
           </td>
