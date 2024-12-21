@@ -22,7 +22,7 @@ config :tall_tale, TallTaleWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "0pz1Kt+5Bfj9Ssftq/QqPneo6yQ7QtESjs5XSTp+TWacjunIm63nJlolM9U92YRt",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:tall_tale, ~w(--sourcemap=inline --watch)]}
+    node: ["build.js", "--watch", cd: Path.expand("../assets", __DIR__)]
   ]
 
 # ## SSL Support
