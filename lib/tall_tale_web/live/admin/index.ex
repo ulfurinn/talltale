@@ -11,7 +11,7 @@ defmodule TallTaleWeb.AdminLive.Index do
     case TallTale.Admin.create_game(%{name: name}) do
       {:ok, game} ->
         socket
-        |> push_navigate(to: ~p"/admin/#{game.name}")
+        |> push_navigate(to: ~p"/admin/#{game}")
         |> noreply()
 
       {:error, _reason} ->

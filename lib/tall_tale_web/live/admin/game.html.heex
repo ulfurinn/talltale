@@ -1,0 +1,10 @@
+<div class="game">
+  <ul class="tab-set">
+    <li :for={tab <- @tabs} class={tab.id == @tab && "active"}>
+      <.link patch={~p"/admin/#{@game}/#{tab.id}"}>
+        {tab.label}
+      </.link>
+    </li>
+  </ul>
+  {tab(assigns)}
+</div>

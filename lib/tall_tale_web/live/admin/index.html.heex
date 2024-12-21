@@ -1,11 +1,11 @@
 <div class="game-selector">
   <ul>
     <li :for={game <- @games} class="game">
-      <.link navigate={~p"/admin/#{game.name}"}>{game.name}</.link>
+      <.link navigate={~p"/admin/#{game}"}>{game.name}</.link>
     </li>
   </ul>
   <form phx-submit="create-game">
-    <input name="name" />
+    <input name="name" autocomplete="off" />
     <br />
     <button>create new game</button>
   </form>

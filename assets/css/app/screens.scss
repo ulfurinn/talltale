@@ -1,0 +1,25 @@
+.screen-tab {
+  display: flex;
+  gap: 1em;
+
+  .screen-selector {
+    border: 1px solid var(--zinc-900);
+    padding: 1em;
+
+    ul.screen-list {
+      /* unmarked */
+      list-style-type: none;
+      padding: 1em 0 0 0;
+
+      li {
+        padding: 0.1em;
+        font-size: 80%;
+      }
+
+      li.active {
+        background-color: var(--zinc-700);
+      }
+    }
+  }
+
+}

@@ -20,6 +20,8 @@ defmodule TallTaleWeb.Router do
     live_session :admin, layout: {TallTaleWeb.Layouts, :admin} do
       live "/admin", AdminLive.Index, :index
       live "/admin/:game", AdminLive.Game, :game
+      live "/admin/:game/:tab", AdminLive.Game, :game
+      live "/admin/:game/:tab/:tab_param", AdminLive.Game, :game
     end
   end
 

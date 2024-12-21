@@ -1,0 +1,16 @@
+<div class="screen-tab">
+  <div class="screen-selector">
+    <form phx-submit="create-screen">
+      <input name="name" autocomplete="off" />
+      <button>+</button>
+    </form>
+    <ul class="screen-list">
+      <li :for={screen <- @game.screens} class={@screen && screen.id == @screen.id && "active"}>
+        <.link patch={~p"/admin/#{@game}/screens/#{screen.id}"}>
+          {screen.name}
+        </.link>
+      </li>
+    </ul>
+  </div>
+  <.screen :if={@screen} screen={@screen} />
+</div>
