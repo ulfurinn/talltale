@@ -1,8 +1,7 @@
 <div class="screen-tab">
   <div class="screen-selector">
     <form phx-submit="create-screen">
-      <input name="name" autocomplete="off" />
-      <button>+</button>
+      <input name="name" placeholder="New screen…" autocomplete="off" />
     </form>
     <ul class="screen-list">
       <li :for={screen <- @game.screens} class={@screen && screen.id == @screen.id && "active"}>
