@@ -6,6 +6,8 @@ defmodule TallTale.Store.Screen do
     field :name, :string
     belongs_to :game, Game
 
+    field :blocks, JSONB, default: []
+
     timestamps()
   end
 
