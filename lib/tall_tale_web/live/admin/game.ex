@@ -1,10 +1,12 @@
 defmodule TallTaleWeb.AdminLive.Game do
+  alias TallTale.Store.Screen
   use TallTaleWeb, :live_view
   alias TallTale.Admin
   alias TallTale.Store.Game
 
   embed_templates "tabs/**.html"
   embed_templates "panels/**.html"
+  embed_templates "blocks/**.html"
 
   @tabs [
     %{id: "screens", label: "Screens"},
@@ -42,6 +44,26 @@ defmodule TallTaleWeb.AdminLive.Game do
     end
   end
 
+  def handle_event("update-screen", params, socket) do
+    %{screen: screen} = socket.assigns
+    %{"blocks" => blocks, "block_order" => block_order} = params
+
+    blocks = Enum.map(block_order, &blocks[&1])
+    {:ok, screen} = Admin.put_screen_blocks(screen, blocks)
+
+    socket
+    |> assign_screen(screen)
+    |> noreply()
+  end
+
+  def handle_event("add-block", _, socket) do
+    %{screen: screen} = socket.assigns
+
+    socket
+    |> assign_screen(%Screen{screen | blocks: screen.blocks ++ [%{}]})
+    |> noreply()
+  end
+
   defp tab(assigns) do
     %{tab: tab} = assigns
     apply(__MODULE__, String.to_existing_atom(tab), [assigns])
@@ -60,7 +82,7 @@ defmodule TallTaleWeb.AdminLive.Game do
   end
 
   defp assign_defaults(socket) do
-    assign(socket, screen: nil)
+    socket |> assign_screen(nil)
   end
 
   defp assign_tab(socket, %{"tab" => tab}) do
@@ -77,11 +99,39 @@ defmodule TallTaleWeb.AdminLive.Game do
 
   defp assign_tab_param(%{assigns: %{tab: "screens"}} = socket, %{"tab_param" => screen_id}) do
     %{game: game} = socket.assigns
-    screen = Enum.find(game.screens, &(&1.id == screen_id))
-    assign(socket, :screen, screen)
+    %Game{screens: screens} = game
+
+    socket
+    |> assign_screen(Enum.find(screens, &(&1.id == screen_id)))
   end
 
   defp assign_tab_param(socket, _params) do
     socket
+  end
+
+  defp assign_screen(socket, screen) do
+    assign(socket, :screen, screen)
+  end
+
+  defp block(assigns) do
+    ~H"""
+    <div class="block">
+      <input type="hidden" name="block_order[]" value={@index} />
+      <.input
+        type="select"
+        name={"blocks[#{@index}][type]"}
+        value={@block["type"]}
+        options={["heading"]}
+        prompt="Type"
+      />
+      {block_content(assigns)}
+    </div>
+    """
+  end
+
+  defp block_content(assigns)
+
+  defp block_content(assigns) do
+    unspecified(assigns)
   end
 end

@@ -32,4 +32,10 @@ defmodule TallTale.Admin do
     |> Screen.changeset(attrs)
     |> Repo.insert()
   end
+
+  def put_screen_blocks(screen, blocks) do
+    screen
+    |> Ecto.Changeset.change(blocks: blocks)
+    |> Repo.update()
+  end
 end

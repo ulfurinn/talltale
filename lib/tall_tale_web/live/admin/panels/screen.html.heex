@@ -1,1 +1,5 @@
 <h1>{@screen.name}</h1>
+<.form for={%{}} phx-change="update-screen">
+  <.button type="button" phx-click="add-block">Add Block</.button>
+  <.block :for={{block, index} <- Enum.with_index(@screen.blocks)} index={index} block={block} />
+</.form>
