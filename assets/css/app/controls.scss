@@ -1,0 +1,13 @@
+input,
+button,
+select {
+  background-color: var(--zinc-950);
+  color: var(--zinc-100);
+  border: 1px solid var(--zinc-900);
+  border-radius: 4px;
+  padding: 0.2em 0.8em;
+}
+
+button {
+  cursor: pointer;
+}

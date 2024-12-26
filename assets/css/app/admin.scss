@@ -18,7 +18,9 @@
     color: var(--zinc-50);
   }
 
+  @include meta.load-css("./controls");
   @include meta.load-css("./game-selector");
   @include meta.load-css("./tab-set");
   @include meta.load-css("./screens");
+  @include meta.load-css("./blocks");
 }
