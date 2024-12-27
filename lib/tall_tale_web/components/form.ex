@@ -30,7 +30,8 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Screen do
         data: block,
         index: index,
         id: id <> "_" <> index_string,
-        name: name <> "[" <> index_string <> "]"
+        name: name <> "[" <> index_string <> "]",
+        hidden: [{"id", block["id"]}]
       }
     end
   end
@@ -43,7 +44,16 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Screen do
 
     case Map.get(block, field) do
       nil ->
-        nil
+        [
+          %Phoenix.HTML.Form{
+            source: %{},
+            impl: __MODULE__,
+            options: opts,
+            data: %{},
+            id: id,
+            name: name
+          }
+        ]
 
       list when is_list(list) ->
         for {element, index} <- Enum.with_index(list) do

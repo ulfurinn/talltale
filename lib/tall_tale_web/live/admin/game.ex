@@ -59,8 +59,11 @@ defmodule TallTaleWeb.AdminLive.Game do
   def handle_event("add-block", _, socket) do
     %{screen: screen} = socket.assigns
 
+    id = Uniq.UUID.uuid7()
+    name = "block_#{Enum.count(screen.blocks) + 1}"
+
     socket
-    |> assign_screen(%Screen{screen | blocks: screen.blocks ++ [%{}]})
+    |> assign_screen(%Screen{screen | blocks: screen.blocks ++ [%{"id" => id, "name" => name}]})
     |> noreply()
   end
 
@@ -118,7 +121,8 @@ defmodule TallTaleWeb.AdminLive.Game do
     <div class="block">
       <input type="hidden" name="block_order[]" value={@index} />
       <div class="common">
-        <.input type="select" field={@block["type"]} options={["heading"]} prompt="Type" />
+        <.input field={@block["type"]} type="select" options={["heading"]} prompt="Type" />
+        <.input field={@block["name"]} placeholder="Name" phx-debounce="250" />
       </div>
       {block_content(assigns, @block["type"].value)}
     </div>
