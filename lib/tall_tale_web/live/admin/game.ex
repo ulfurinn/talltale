@@ -46,7 +46,7 @@ defmodule TallTaleWeb.AdminLive.Game do
 
   def handle_event("update-screen", params, socket) do
     %{screen: screen} = socket.assigns
-    %{"blocks" => blocks, "block_order" => block_order} = params
+    %{"screen" => %{"blocks" => blocks}, "block_order" => block_order} = params
 
     blocks = Enum.map(block_order, &blocks[&1])
     {:ok, screen} = Admin.put_screen_blocks(screen, blocks)
@@ -117,21 +117,21 @@ defmodule TallTaleWeb.AdminLive.Game do
     ~H"""
     <div class="block">
       <input type="hidden" name="block_order[]" value={@index} />
-      <.input
-        type="select"
-        name={"blocks[#{@index}][type]"}
-        value={@block["type"]}
-        options={["heading"]}
-        prompt="Type"
-      />
-      {block_content(assigns)}
+      <div class="common">
+        <.input type="select" field={@block["type"]} options={["heading"]} prompt="Type" />
+      </div>
+      {block_content(assigns, @block["type"].value)}
     </div>
     """
   end
 
-  defp block_content(assigns)
+  defp block_content(assigns, type)
 
-  defp block_content(assigns) do
+  defp block_content(assigns, "heading") do
+    heading(assigns)
+  end
+
+  defp block_content(assigns, _) do
     unspecified(assigns)
   end
 end
