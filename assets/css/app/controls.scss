@@ -5,9 +5,20 @@ select {
   color: var(--zinc-100);
   border: 1px solid var(--zinc-900);
   border-radius: 4px;
+}
+
+input {
   padding: 0.2em 0.8em;
+}
+
+select {
+  padding: 0.3em 0.8em;
 }
 
 button {
   cursor: pointer;
+}
+
+.input-unit {
+  display: inline-flex;
 }

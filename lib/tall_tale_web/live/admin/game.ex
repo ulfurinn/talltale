@@ -122,7 +122,7 @@ defmodule TallTaleWeb.AdminLive.Game do
       <input type="hidden" name="block_order[]" value={@index} />
       <div class="common">
         <.input field={@block["type"]} type="select" options={["heading"]} prompt="Type" />
-        <.input field={@block["name"]} placeholder="Name" phx-debounce="250" />
+        <.input field={@block["name"]} placeholder="Name" autocomplete="off" phx-debounce="250" />
       </div>
       {block_content(assigns, @block["type"].value)}
     </div>

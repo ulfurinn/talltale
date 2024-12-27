@@ -297,7 +297,7 @@ defmodule TallTaleWeb.CoreComponents do
       end)
 
     ~H"""
-    <div>
+    <div class="input-unit">
       <label>{@label}</label>
       <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
       <input type="checkbox" id={@id} name={@name} value="true" checked={@checked} {@rest} />
@@ -308,7 +308,7 @@ defmodule TallTaleWeb.CoreComponents do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div>
+    <div class="input-unit">
       <.label for={@id}>{@label}</.label>
       <select id={@id} name={@name} multiple={@multiple} {@rest}>
         <option :if={@prompt} value="">{@prompt}</option>
@@ -321,7 +321,7 @@ defmodule TallTaleWeb.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div>
+    <div class="input-unit">
       <.label for={@id}>{@label}</.label>
       <textarea id={@id} name={@name} {@rest}>{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
       <.error :for={msg <- @errors}>{msg}</.error>
@@ -332,7 +332,7 @@ defmodule TallTaleWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div>
+    <div class="input-unit">
       <.label for={@id}>{@label}</.label>
       <input
         type={@type}
