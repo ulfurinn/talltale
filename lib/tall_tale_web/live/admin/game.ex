@@ -1,12 +1,11 @@
 defmodule TallTaleWeb.AdminLive.Game do
-  alias TallTale.Store.Screen
   use TallTaleWeb, :live_view
   alias TallTale.Admin
   alias TallTale.Store.Game
+  alias TallTaleWeb.AdminLive.Block
 
   embed_templates "tabs/**.html"
   embed_templates "panels/**.html"
-  embed_templates "blocks/**.html"
 
   @tabs [
     %{id: "screens", label: "Screens"},
@@ -46,24 +45,27 @@ defmodule TallTaleWeb.AdminLive.Game do
 
   def handle_event("update-screen", params, socket) do
     %{screen: screen} = socket.assigns
-    %{"screen" => %{"blocks" => blocks}, "block_order" => block_order} = params
+    %{"block_order" => block_order} = params
 
-    blocks = Enum.map(block_order, &blocks[&1])
+    blocks =
+      case params do
+        %{"screen" => %{"blocks" => blocks}} -> blocks
+        _ -> %{}
+      end
+
+    blocks =
+      Enum.map(block_order, fn index ->
+        Map.get_lazy(blocks, index, fn ->
+          id = Uniq.UUID.uuid7()
+          name = "block_#{index}"
+          %{"id" => id, "name" => name}
+        end)
+      end)
+
     {:ok, screen} = Admin.put_screen_blocks(screen, blocks)
 
     socket
     |> assign_screen(screen)
-    |> noreply()
-  end
-
-  def handle_event("add-block", _, socket) do
-    %{screen: screen} = socket.assigns
-
-    id = Uniq.UUID.uuid7()
-    name = "block_#{Enum.count(screen.blocks) + 1}"
-
-    socket
-    |> assign_screen(%Screen{screen | blocks: screen.blocks ++ [%{"id" => id, "name" => name}]})
     |> noreply()
   end
 
@@ -114,28 +116,5 @@ defmodule TallTaleWeb.AdminLive.Game do
 
   defp assign_screen(socket, screen) do
     assign(socket, :screen, screen)
-  end
-
-  defp block(assigns) do
-    ~H"""
-    <div class="block">
-      <input type="hidden" name="block_order[]" value={@index} />
-      <div class="common">
-        <.input field={@block["type"]} type="select" options={["heading"]} prompt="Type" />
-        <.input field={@block["name"]} placeholder="Name" autocomplete="off" phx-debounce="250" />
-      </div>
-      {block_content(assigns, @block["type"].value)}
-    </div>
-    """
-  end
-
-  defp block_content(assigns, type)
-
-  defp block_content(assigns, "heading") do
-    heading(assigns)
-  end
-
-  defp block_content(assigns, _) do
-    unspecified(assigns)
   end
 end
