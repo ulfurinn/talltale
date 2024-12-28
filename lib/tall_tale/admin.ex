@@ -14,6 +14,12 @@ defmodule TallTale.Admin do
     |> Repo.insert()
   end
 
+  def update_game(game, attrs) do
+    game
+    |> Game.changeset(attrs)
+    |> Repo.update()
+  end
+
   def load_game(name) do
     q =
       from g in Game,

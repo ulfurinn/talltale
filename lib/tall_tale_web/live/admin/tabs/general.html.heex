@@ -1,0 +1,14 @@
+<.form
+  :let={f}
+  for={TallTale.Store.Game.changeset(@game)}
+  phx-change="update-game"
+  phx-submit="update-game"
+>
+  <.input field={f[:name]} />
+  <.input
+    field={f[:starting_screen_id]}
+    type="select"
+    options={Enum.map(@game.screens, &{&1.name, &1.id})}
+    prompt="Starting screen…"
+  />
+</.form>

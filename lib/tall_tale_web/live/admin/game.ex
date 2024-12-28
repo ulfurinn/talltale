@@ -71,6 +71,22 @@ defmodule TallTaleWeb.AdminLive.Game do
     |> noreply()
   end
 
+  def handle_event("update-game", params, socket) do
+    %{game: game} = socket.assigns
+    %{"game" => params} = params
+
+    case Admin.update_game(game, params) do
+      {:ok, game} ->
+        socket
+        |> assign_game(game)
+        |> noreply()
+
+      {:error, reason} ->
+        dbg(reason)
+        socket |> noreply()
+    end
+  end
+
   defp tab(assigns) do
     %{tab: tab} = assigns
     apply(__MODULE__, String.to_existing_atom(tab), [assigns])
