@@ -55,11 +55,13 @@ defmodule TallTaleWeb.AdminLive.Game do
 
     blocks =
       Enum.map(block_order, fn index ->
-        Map.get_lazy(blocks, index, fn ->
-          id = Uniq.UUID.uuid7()
-          name = "block_#{index}"
-          %{"id" => id, "name" => name}
-        end)
+        remove_internal_fields(
+          Map.get_lazy(blocks, index, fn ->
+            id = Uniq.UUID.uuid7()
+            name = "block_#{index}"
+            %{"id" => id, "name" => name}
+          end)
+        )
       end)
 
     {:ok, screen} = Admin.put_screen_blocks(screen, blocks)
@@ -117,4 +119,19 @@ defmodule TallTaleWeb.AdminLive.Game do
   defp assign_screen(socket, screen) do
     assign(socket, :screen, screen)
   end
+
+  defp remove_internal_fields(term)
+
+  defp remove_internal_fields(map) when is_map(map) do
+    map
+    |> Stream.reject(fn {key, _} -> String.starts_with?(key, "_") end)
+    |> Stream.map(fn {key, value} -> {key, remove_internal_fields(value)} end)
+    |> Enum.into(%{})
+  end
+
+  defp remove_internal_fields(list) when is_list(list) do
+    Enum.map(list, &remove_internal_fields/1)
+  end
+
+  defp remove_internal_fields(term), do: term
 end
