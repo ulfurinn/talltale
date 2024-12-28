@@ -11,17 +11,13 @@ defmodule TallTaleWeb.AdminLive.Block do
     """
   end
 
-  defp block_content(assigns, type)
+  defp block_content(assigns, type) do
+    fun = String.to_atom(type <> "_block")
 
-  defp block_content(assigns, "heading") do
-    heading_block(assigns)
-  end
-
-  defp block_content(assigns, "button") do
-    button_block(assigns)
-  end
-
-  defp block_content(assigns, _) do
-    unspecified_block(assigns)
+    if function_exported?(__MODULE__, fun, 1) do
+      apply(__MODULE__, fun, [assigns])
+    else
+      unspecified_block(assigns)
+    end
   end
 end
