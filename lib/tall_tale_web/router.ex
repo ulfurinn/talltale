@@ -17,6 +17,11 @@ defmodule TallTaleWeb.Router do
   scope "/", TallTaleWeb do
     pipe_through :browser
 
+    live_session :play, layout: {TallTaleWeb.Layouts, :game} do
+      live "/", PlayLive.Index, :index
+      live "/play/:game", PlayLive.Game, :play
+    end
+
     live_session :admin, layout: {TallTaleWeb.Layouts, :admin} do
       live "/admin", AdminLive.Index, :index
       live "/admin/:game", AdminLive.Game, :game

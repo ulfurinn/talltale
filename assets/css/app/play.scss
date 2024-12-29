@@ -1,0 +1,22 @@
+@use "sass:meta";
+
+.play {
+  background-color: var(--zinc-950);
+  color: var(--zinc-200);
+  height: 100vh;
+
+  header {
+    background-color: var(--zinc-900);
+    padding: 10px;
+    margin-bottom: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  a {
+    color: var(--zinc-50);
+  }
+
+  @include meta.load-css("./game-selector");
+}

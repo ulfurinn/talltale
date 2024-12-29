@@ -1,0 +1,7 @@
+<div class="game-selector">
+  <ul>
+    <li :for={game <- @games} class="game">
+      <.link navigate={~p"/play/#{game}"}>{game.name}</.link>
+    </li>
+  </ul>
+</div>
