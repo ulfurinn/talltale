@@ -1,4 +1,29 @@
 @use "sass:meta";
+@use "../utopia";
+
+:root {
+  @include utopia.generateTypeScale(("minWidth": 320,
+      "maxWidth": 1600,
+      "minFontSize": 18,
+      "maxFontSize": 20,
+      "minTypeScale": 1.2,
+      "maxTypeScale": 1.333,
+      "positiveSteps": 5,
+      "negativeSteps": 2,
+      "prefix": "step-",
+      "relativeTo": "viewport-width"
+    ));
+  @include utopia.generateSpaceScale(("minWidth": 320,
+      "maxWidth": 1600,
+      "minSize": 18,
+      "maxSize": 20,
+      "positiveSteps": (1.5, 2, 3, 4, 6),
+      "negativeSteps": (0.75, 0.5, 0.25),
+      "customSizes": ("s-l"),
+      "prefix": "space-",
+      "relativeTo": "viewport-width",
+    ));
+}
 
 .play {
   background-color: var(--zinc-950);
@@ -19,4 +44,21 @@
   }
 
   @include meta.load-css("./game-selector");
+
+  .screen {
+    padding-top: var(--space-l);
+  }
+
+  .block {
+
+    /* centered block */
+    margin: 0 auto;
+    max-width: 1600px;
+
+    &.heading {
+      font-family: "Cinzel", serif;
+      font-size: var(--step-4);
+      text-align: center;
+    }
+  }
 }

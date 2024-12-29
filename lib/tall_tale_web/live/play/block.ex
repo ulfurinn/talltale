@@ -4,7 +4,7 @@ defmodule TallTaleWeb.PlayLive.Block do
 
   def block(assigns) do
     ~H"""
-    <div id={"block-#{@block["id"]}"} class="block">
+    <div id={"block-#{@block["id"]}"} class={["block", @block["type"]]}>
       {block_content(assigns, @block["type"])}
     </div>
     """
