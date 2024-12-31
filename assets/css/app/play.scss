@@ -4,18 +4,18 @@
 :root {
   @include utopia.generateTypeScale(("minWidth": 320,
       "maxWidth": 1600,
-      "minFontSize": 18,
+      "minFontSize": 14,
       "maxFontSize": 20,
       "minTypeScale": 1.2,
       "maxTypeScale": 1.333,
-      "positiveSteps": 5,
+      "positiveSteps": 4,
       "negativeSteps": 2,
       "prefix": "step-",
       "relativeTo": "viewport-width"
     ));
   @include utopia.generateSpaceScale(("minWidth": 320,
       "maxWidth": 1600,
-      "minSize": 18,
+      "minSize": 14,
       "maxSize": 20,
       "positiveSteps": (1.5, 2, 3, 4, 6),
       "negativeSteps": (0.75, 0.5, 0.25),
@@ -57,7 +57,7 @@
 
     &.heading {
       font-family: "Cinzel", serif;
-      font-size: var(--step-4);
+      font-size: var(--step-3);
       text-align: center;
     }
   }
