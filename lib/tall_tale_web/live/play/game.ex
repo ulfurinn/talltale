@@ -1,43 +1,38 @@
 defmodule TallTaleWeb.PlayLive.Game do
   use TallTaleWeb, :live_view
-  alias TallTale.Store.Game
-  alias TallTale.Store.Screen
+  alias TallTale.GameState
   alias TallTaleWeb.PlayLive.Block
 
   def mount(%{"game" => game_name}, _session, socket) do
     socket
-    |> assign_game(game_name)
-    |> assign_screen()
-    |> assign_blocks()
+    |> assign_game_state(game_name)
+    |> assign_shortcuts()
     |> ok()
   end
 
-  defp assign_game(socket, game_name) when is_binary(game_name) do
-    assign_game(socket, TallTale.Admin.load_game(game_name))
+  def handle_event("execute-action", %{"block-id" => block_id}, socket) do
+    %{game_state: game_state} = socket.assigns
+
+    socket
+    |> assign(:game_state, GameState.execute_action(game_state, block_id))
+    |> assign_shortcuts()
+    |> noreply()
   end
 
-  defp assign_game(socket, %Game{} = game) do
-    assign(socket, :game, game)
+  defp assign_game_state(socket, game_name) when is_binary(game_name) do
+    assign_game_state(socket, GameState.new(TallTale.Admin.load_game(game_name)))
   end
 
-  defp assign_screen(socket) do
-    %{game: game} = socket.assigns
-    %Game{screens: screens, starting_screen_id: starting_screen_id} = game
-    screen = Enum.find(screens, &(&1.id == starting_screen_id))
-    assign_screen(socket, screen)
+  defp assign_game_state(socket, game_state) do
+    assign(socket, :game_state, game_state)
   end
 
-  defp assign_screen(socket, screen) do
-    assign(socket, :screen, screen)
-  end
+  defp assign_shortcuts(socket) do
+    %{game_state: game_state} = socket.assigns
 
-  defp assign_blocks(socket) do
-    %{screen: screen} = socket.assigns
-    %Screen{blocks: blocks} = screen
-    assign_blocks(socket, blocks)
-  end
-
-  defp assign_blocks(socket, blocks) do
-    assign(socket, :blocks, blocks)
+    socket
+    |> assign(:game, game_state.game)
+    |> assign(:screen, game_state.screen)
+    |> assign(:blocks, game_state.screen.blocks)
   end
 end

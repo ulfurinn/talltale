@@ -1,3 +1,5 @@
 <div class="button-container">
-  <.button phx-click="action" phx-block-id={@block["id"]}>{@block["button"]["text"]}</.button>
+  <.button type="button" phx-click="execute-action" phx-value-block-id={@block["id"]}>
+    {@block["button"]["text"]}
+  </.button>
 </div>

@@ -16,6 +16,14 @@ defmodule TallTale.Store.Game do
     |> validate_required([:name])
   end
 
+  def starting_screen(game) do
+    find_screen(game, game.starting_screen_id)
+  end
+
+  def find_screen(game, screen_id) do
+    Enum.find(game.screens, &(&1.id == screen_id))
+  end
+
   defimpl Phoenix.Param do
     def to_param(%@for{name: name}), do: name
   end

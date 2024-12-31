@@ -17,4 +17,8 @@ defmodule TallTale.Store.Screen do
     |> cast(attrs, [:name])
     |> validate_required([:name])
   end
+
+  def find_block(screen, block_id) do
+    Enum.find(screen.blocks, &(&1["id"] == block_id))
+  end
 end
