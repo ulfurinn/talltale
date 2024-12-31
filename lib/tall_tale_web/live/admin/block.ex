@@ -11,6 +11,10 @@ defmodule TallTaleWeb.AdminLive.Block do
     """
   end
 
+  defp block_content(assigns, nil) do
+    unspecified_block(assigns)
+  end
+
   defp block_content(assigns, type) do
     fun = String.to_atom(type <> "_block")
 
