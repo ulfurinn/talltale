@@ -1,11 +1,11 @@
 <div>
   <.inputs_for :let={button} field={@block["button"]}>
+    <.input field={button["text"]} placeholder="Button text…" autocomplete="off" />
     <.input
       field={button["next_screen"]}
       type="select"
       options={Enum.map(@game.screens, &{&1.name, &1.id})}
       prompt="Next screen…"
-      autocomplete="off"
     />
   </.inputs_for>
 </div>
