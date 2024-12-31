@@ -26,12 +26,41 @@ let hooks = {};
 
 hooks.Scene = {
   mounted() {
-    this.el.addEventListener("transitionend", e => {
-      if (!("transitionSync" in e.target.dataset)) {
-        return;
+    this.handleEvent("animate", (e) => {
+      let js = this.js();
+      let { type, duration, after } = e.transition;
+
+      let start = type + "-start";
+      let end = type + "-end";
+      let transition = type + "-transition";
+
+      let property;
+      if (duration) {
+        property = "--" + type + "-duration";
       }
-      this.pushEvent("animation-end", { target: e.target.id });
-    });
+
+      let el = document.getElementById(e.id);
+      if (el) {
+        js.addClass(el, [start]);
+        if (property) {
+          el.style.setProperty(property, duration + "ms");
+        }
+
+        el.addEventListener("transitionend", () => {
+          js.removeClass(el, [end, transition]);
+          js.addClass(el, [after]);
+          if (property) {
+            el.style.removeProperty(property);
+          }
+          this.pushEvent("transition-ended", { ref: e.ref });
+        }, { once: true });
+
+        window.requestAnimationFrame(() => {
+          js.addClass(el, [end, transition]);
+          js.removeClass(el, [start]);
+        });
+      }
+    })
 
     this.handleEvent("snapshot", e => {
       console.log(e);
@@ -43,18 +72,6 @@ hooks.Scene = {
       // this.pushEvent("restore", JSON.parse(snapshot));
     } else {
       // this.pushEvent("start", JSON.parse(snapshot));
-    }
-  }
-};
-
-hooks.Animated = {
-  mounted() { this.play(); },
-  updated() { this.play(); },
-  play() {
-    console.log({ el: this.el, dataset: this.el.dataset });
-    const transition = this.el.dataset.transition;
-    if (transition) {
-      this.liveSocket.execJS(this.el, transition);
     }
   }
 };

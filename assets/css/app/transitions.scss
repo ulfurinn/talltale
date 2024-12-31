@@ -8,7 +8,7 @@
   }
 
   &-transition {
-    transition: opacity var(--fade-duration);
+    transition: opacity var(--fade-out-duration);
   }
 }
 
@@ -22,6 +22,14 @@
   }
 
   &-transition {
-    transition: opacity var(--fade-duration);
+    transition: opacity var(--fade-in-duration);
   }
+}
+
+.show {
+  opacity: 1;
+}
+
+.hide {
+  opacity: 0;
 }

@@ -16,7 +16,16 @@ defmodule TallTaleWeb.PlayLive.Game do
     socket
     |> assign(:game_state, GameState.execute_action(game_state, block_id))
     |> assign_shortcuts()
+    # |> push_event("animate", %{
+    #   id: "block-" <> block_id,
+    #   ref: Uniq.UUID.uuid7(),
+    #   transition: %{type: "fade-out", after: "hide"}
+    # })
     |> noreply()
+  end
+
+  def handle_event("transition-ended", %{"ref" => ref}, socket) do
+    socket |> noreply()
   end
 
   defp assign_game_state(socket, game_name) when is_binary(game_name) do
