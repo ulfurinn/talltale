@@ -1,3 +1,5 @@
-<div id={"screen-#{@screen.id}"} class="screen">
-  <Block.block :for={block <- @blocks} block={block} />
+<div class="scene" id="scene" phx-hook="Scene">
+  <div id={"screen-#{@screen.id}"} class="screen">
+    <Block.block :for={block <- @blocks} block={block} />
+  </div>
 </div>

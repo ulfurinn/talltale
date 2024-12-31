@@ -1,0 +1,27 @@
+.fade-out {
+  &-start {
+    opacity: 1;
+  }
+
+  &-end {
+    opacity: 0;
+  }
+
+  &-transition {
+    transition: opacity var(--fade-duration);
+  }
+}
+
+.fade-in {
+  &-start {
+    opacity: 0;
+  }
+
+  &-end {
+    opacity: 1;
+  }
+
+  &-transition {
+    transition: opacity var(--fade-duration);
+  }
+}

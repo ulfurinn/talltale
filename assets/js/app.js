@@ -22,10 +22,48 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+let hooks = {};
+
+hooks.Scene = {
+  mounted() {
+    this.el.addEventListener("transitionend", e => {
+      if (!("transitionSync" in e.target.dataset)) {
+        return;
+      }
+      this.pushEvent("animation-end", { target: e.target.id });
+    });
+
+    this.handleEvent("snapshot", e => {
+      console.log(e);
+      localStorage.setItem("snapshot", JSON.stringify(e));
+    });
+
+    let snapshot = localStorage.getItem("snapshot");
+    if (snapshot) {
+      // this.pushEvent("restore", JSON.parse(snapshot));
+    } else {
+      // this.pushEvent("start", JSON.parse(snapshot));
+    }
+  }
+};
+
+hooks.Animated = {
+  mounted() { this.play(); },
+  updated() { this.play(); },
+  play() {
+    console.log({ el: this.el, dataset: this.el.dataset });
+    const transition = this.el.dataset.transition;
+    if (transition) {
+      this.liveSocket.execJS(this.el, transition);
+    }
+  }
+};
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: undefined,
-  params: { _csrf_token: csrfToken }
+  params: { _csrf_token: csrfToken },
+  hooks
 })
 
 // Show progress bar on live navigation and form submits

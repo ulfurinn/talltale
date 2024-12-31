@@ -23,6 +23,8 @@
       "prefix": "space-",
       "relativeTo": "viewport-width",
     ));
+
+  --fade-duration: 0.5s;
 }
 
 .play {
@@ -61,4 +63,6 @@
       text-align: center;
     }
   }
+
+  @include meta.load-css("./transitions");
 }
