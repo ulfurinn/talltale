@@ -1,4 +1,6 @@
 defmodule TallTaleWeb.PlayLive.Game do
+  alias TallTale.Commands.SetScreen
+  alias TallTale.Commands.Transition
   use TallTaleWeb, :live_view
   alias TallTale.GameState
   alias TallTaleWeb.PlayLive.Block
@@ -14,18 +16,20 @@ defmodule TallTaleWeb.PlayLive.Game do
     %{game_state: game_state} = socket.assigns
 
     socket
-    |> assign(:game_state, GameState.execute_action(game_state, block_id))
+    |> assign_game_state(GameState.execute_action(game_state, block_id))
+    |> execute_commands()
     |> assign_shortcuts()
-    # |> push_event("animate", %{
-    #   id: "block-" <> block_id,
-    #   ref: Uniq.UUID.uuid7(),
-    #   transition: %{type: "fade-out", after: "hide"}
-    # })
     |> noreply()
   end
 
-  def handle_event("transition-ended", %{"ref" => ref}, socket) do
-    socket |> noreply()
+  def handle_event("transition-ended", %{"id" => id}, socket) do
+    %{game_state: game_state} = socket.assigns
+
+    socket
+    |> assign_game_state(GameState.promote_delayed_commands(game_state, id))
+    |> execute_commands()
+    |> assign_shortcuts()
+    |> noreply()
   end
 
   defp assign_game_state(socket, game_name) when is_binary(game_name) do
@@ -44,4 +48,35 @@ defmodule TallTaleWeb.PlayLive.Game do
     |> assign(:screen, game_state.screen)
     |> assign(:blocks, game_state.screen.blocks)
   end
+
+  defp execute_commands(socket) do
+    %{game_state: game_state} = socket.assigns
+    {socket, game_state} = execute_commands(socket, game_state)
+    assign_game_state(socket, game_state)
+  end
+
+  defp execute_commands(socket, game_state = %GameState{commands: []}), do: {socket, game_state}
+
+  defp execute_commands(socket, game_state = %GameState{commands: [command | rest]}) do
+    {socket, game_state} = execute_command(socket, game_state, command)
+    execute_commands(socket, %GameState{game_state | commands: rest})
+  end
+
+  defp execute_command(socket, game_state, command = %Transition{}) do
+    socket
+    |> push_event("animate", %{
+      target: transition_target_id(game_state, command.target),
+      id: command.id,
+      transition: %{type: command.type, after: command.after, duration: command.duration}
+    })
+    |> with_game_state(game_state)
+  end
+
+  defp execute_command(socket, game_state, command = %SetScreen{}) do
+    socket |> with_game_state(GameState.set_screen(game_state, command.screen_id))
+  end
+
+  defp transition_target_id(game_state, :screen), do: "screen-#{game_state.screen.id}"
+
+  defp with_game_state(socket, game_state), do: {socket, game_state}
 end

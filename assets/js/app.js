@@ -26,9 +26,9 @@ let hooks = {};
 
 hooks.Scene = {
   mounted() {
-    this.handleEvent("animate", (e) => {
+    this.handleEvent("animate", (animate) => {
       let js = this.js();
-      let { type, duration, after } = e.transition;
+      let { type, duration, after } = animate.transition;
 
       let start = type + "-start";
       let end = type + "-end";
@@ -39,20 +39,21 @@ hooks.Scene = {
         property = "--" + type + "-duration";
       }
 
-      let el = document.getElementById(e.id);
+      let el = document.getElementById(animate.target);
       if (el) {
         js.addClass(el, [start]);
         if (property) {
           el.style.setProperty(property, duration + "ms");
         }
 
-        el.addEventListener("transitionend", () => {
+        el.addEventListener("transitionend", (e) => {
+          e.stopPropagation();
           js.removeClass(el, [end, transition]);
           js.addClass(el, [after]);
           if (property) {
             el.style.removeProperty(property);
           }
-          this.pushEvent("transition-ended", { ref: e.ref });
+          this.pushEvent("transition-ended", { id: animate.id });
         }, { once: true });
 
         window.requestAnimationFrame(() => {
