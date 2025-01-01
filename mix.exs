@@ -64,9 +64,9 @@ defmodule TallTale.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["cmd --cd assets npm install"],
-      "assets.build": ["cmd --cd assets node build.js"],
+      "assets.build": ["cmd --cd assets node build.mjs"],
       "assets.deploy": [
-        "cmd --cd assets node build.js --deploy",
+        "cmd --cd assets node build.mjs --deploy",
         "phx.digest"
       ]
     ]
