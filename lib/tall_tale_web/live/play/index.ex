@@ -3,7 +3,7 @@ defmodule TallTaleWeb.PlayLive.Index do
 
   def mount(_params, _session, socket) do
     socket
-    |> assign(:games, TallTale.Admin.games())
+    |> assign(:games, TallTale.Admin.published_games())
     |> ok()
   end
 end

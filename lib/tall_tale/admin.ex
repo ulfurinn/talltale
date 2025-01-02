@@ -8,6 +8,10 @@ defmodule TallTale.Admin do
     Repo.all(Game)
   end
 
+  def published_games do
+    Repo.all(from g in Game, where: g.published)
+  end
+
   def create_game(attrs) do
     %Game{}
     |> Game.changeset(attrs)

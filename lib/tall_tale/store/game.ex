@@ -5,6 +5,7 @@ defmodule TallTale.Store.Game do
   schema "games" do
     field :name, :string
     field :starting_screen_id, Uniq.UUID
+    field :published, :boolean, default: false
 
     has_many :screens, Screen
     timestamps()
@@ -12,7 +13,7 @@ defmodule TallTale.Store.Game do
 
   def changeset(game, attrs \\ %{}) do
     game
-    |> cast(attrs, [:name, :starting_screen_id])
+    |> cast(attrs, [:name, :starting_screen_id, :published])
     |> validate_required([:name])
   end
 
