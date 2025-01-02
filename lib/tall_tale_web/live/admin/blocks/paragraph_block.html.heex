@@ -1,0 +1,12 @@
+<div>
+  <.inputs_for :let={paragraph} field={@block["paragraph"]}>
+    <.input
+      field={paragraph["content"]}
+      type="textarea"
+      rows="10"
+      cols="80"
+      placeholder="Content"
+      phx-debounce="250"
+    />
+  </.inputs_for>
+</div>

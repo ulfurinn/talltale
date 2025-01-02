@@ -1,5 +1,10 @@
 <div>
   <.inputs_for :let={heading} field={@block["heading"]}>
-    <.input field={heading["content"]} placeholder="Content" autocomplete="off" />
+    <.input
+      field={heading["content"]}
+      placeholder="Content"
+      autocomplete="off"
+      phx-debounce="250"
+    />
   </.inputs_for>
 </div>

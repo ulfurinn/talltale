@@ -17,7 +17,7 @@ defmodule TallTaleWeb.PlayLive.Block do
       apply(__MODULE__, fun, [assigns])
     else
       ~H"""
-      no template found for block type {@block["type"]}
+      (no template for block type {@block["type"]})
       """
     end
   end

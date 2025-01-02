@@ -3,7 +3,7 @@
 
 :root {
   @include utopia.generateTypeScale(("minWidth": 320,
-      "maxWidth": 1600,
+      "maxWidth": 1200,
       "minFontSize": 14,
       "maxFontSize": 20,
       "minTypeScale": 1.2,
@@ -14,7 +14,7 @@
       "relativeTo": "viewport-width"
     ));
   @include utopia.generateSpaceScale(("minWidth": 320,
-      "maxWidth": 1600,
+      "maxWidth": 1200,
       "minSize": 14,
       "maxSize": 20,
       "positiveSteps": (1.5, 2, 3, 4, 6),
@@ -49,19 +49,28 @@
   @include meta.load-css("./game-selector");
 
   .screen {
-    padding-top: var(--space-l);
+    padding-top: var(--space-xl);
   }
 
   .block {
 
     /* centered block */
     margin: 0 auto;
-    max-width: 1600px;
+    max-width: 1200px;
 
     &.heading {
       font-family: "Cinzel", serif;
       font-size: var(--step-3);
       text-align: center;
+    }
+
+    &.paragraph {
+      max-width: 800px;
+
+      font-family: "Literata", serif;
+      font-size: var(--step-0);
+
+      line-height: 200%;
     }
   }
 

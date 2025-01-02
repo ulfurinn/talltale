@@ -2,7 +2,11 @@ defmodule TallTaleWeb.AdminLive.Block do
   use TallTaleWeb, :html
   embed_templates "blocks/**.html"
 
+  @block_types ["heading", "paragraph", "button"]
+
   def block(assigns) do
+    assigns = assign(assigns, :block_types, @block_types)
+
     ~H"""
     <div class="block">
       {common(assigns)}
