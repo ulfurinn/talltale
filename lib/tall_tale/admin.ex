@@ -33,6 +33,15 @@ defmodule TallTale.Admin do
     Repo.one(q)
   end
 
+  def load_published_game(name) do
+    q =
+      from g in Game,
+        where: g.published and g.name == ^name,
+        preload: [screens: ^from(s in Screen, order_by: [asc: :name])]
+
+    Repo.one(q)
+  end
+
   def reload_game(game) do
     load_game(game.name)
   end

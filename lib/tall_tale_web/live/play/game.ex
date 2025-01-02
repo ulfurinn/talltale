@@ -3,13 +3,22 @@ defmodule TallTaleWeb.PlayLive.Game do
   alias TallTale.Commands.Transition
   use TallTaleWeb, :live_view
   alias TallTale.GameState
+  alias TallTale.Store.Game
   alias TallTaleWeb.PlayLive.Block
 
   def mount(%{"game" => game_name}, _session, socket) do
-    socket
-    |> assign_game_state(game_name)
-    |> assign_shortcuts()
-    |> ok()
+    case TallTale.Admin.load_published_game(game_name) do
+      game = %Game{} ->
+        socket
+        |> assign_game_state(game)
+        |> assign_shortcuts()
+        |> ok()
+
+      nil ->
+        socket
+        |> push_navigate(to: ~p"/")
+        |> ok()
+    end
   end
 
   def handle_event("execute-action", %{"block-id" => block_id}, socket) do
@@ -32,8 +41,8 @@ defmodule TallTaleWeb.PlayLive.Game do
     |> noreply()
   end
 
-  defp assign_game_state(socket, game_name) when is_binary(game_name) do
-    assign_game_state(socket, GameState.new(TallTale.Admin.load_game(game_name)))
+  defp assign_game_state(socket, game = %Game{}) do
+    assign_game_state(socket, GameState.new(game))
   end
 
   defp assign_game_state(socket, game_state) do
