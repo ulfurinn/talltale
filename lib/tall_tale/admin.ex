@@ -8,8 +8,12 @@ defmodule TallTale.Admin do
     Repo.all(Game)
   end
 
-  def published_games do
-    Repo.all(from g in Game, where: g.published)
+  if Mix.env() == :prod do
+    def published_games do
+      Repo.all(from g in Game, where: g.published)
+    end
+  else
+    def published_games, do: games()
   end
 
   def create_game(attrs) do
@@ -33,13 +37,17 @@ defmodule TallTale.Admin do
     Repo.one(q)
   end
 
-  def load_published_game(name) do
-    q =
-      from g in Game,
-        where: g.published and g.name == ^name,
-        preload: [screens: ^from(s in Screen, order_by: [asc: :name])]
+  if Mix.env() == :prod do
+    def load_published_game(name) do
+      q =
+        from g in Game,
+          where: g.published and g.name == ^name,
+          preload: [screens: ^from(s in Screen, order_by: [asc: :name])]
 
-    Repo.one(q)
+      Repo.one(q)
+    end
+  else
+    def load_published_game(name), do: load_game(name)
   end
 
   def reload_game(game) do
