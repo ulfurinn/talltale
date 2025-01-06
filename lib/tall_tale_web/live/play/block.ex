@@ -21,4 +21,20 @@ defmodule TallTaleWeb.PlayLive.Block do
       """
     end
   end
+
+  defp markdown(assigns = %{node: %Tailmark.Document{}}) do
+    ~H[<div class="markdown"><.markdown :for={node <- @node.children} node={node} /></div>]
+  end
+
+  defp markdown(assigns = %{node: %Tailmark.Node.Paragraph{}}) do
+    ~H"<p><.markdown :for={node <- @node.children} node={node} /></p>"
+  end
+
+  defp markdown(assigns = %{node: %Tailmark.Node.Text{}}) do
+    ~H"{@node.content}"
+  end
+
+  defp markdown(assigns = %{node: %Tailmark.Node.Link{}}) do
+    ~H"<.markdown :for={node <- @node.children} node={node} />"
+  end
 end

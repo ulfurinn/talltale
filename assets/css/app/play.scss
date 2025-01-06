@@ -1,5 +1,6 @@
 @use "sass:meta";
 @use "../utopia";
+@use "../utils";
 
 :root {
   @include utopia.generateTypeScale(("minWidth": 320,
@@ -50,6 +51,7 @@
 
   .screen {
     padding-top: var(--space-xl);
+    margin-inline: var(--space-l);
   }
 
   .block {
@@ -71,6 +73,10 @@
       font-size: var(--step-0);
 
       line-height: 200%;
+
+      .markdown {
+        @include utils.gap-y(var(--space-m));
+      }
     }
   }
 
