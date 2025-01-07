@@ -28,7 +28,7 @@ hooks.Scene = {
   mounted() {
     this.handleEvent("animate", (animate) => {
       let js = this.js();
-      let { type, duration, after } = animate.transition;
+      let { type, duration, clear, after } = animate.transition;
 
       let start = type + "-start";
       let end = type + "-end";
@@ -41,6 +41,7 @@ hooks.Scene = {
 
       let el = document.getElementById(animate.target);
       if (el) {
+        js.removeClass(el, clear);
         js.addClass(el, [start]);
         if (property) {
           el.style.setProperty(property, duration + "ms");
