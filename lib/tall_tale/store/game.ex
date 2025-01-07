@@ -25,6 +25,10 @@ defmodule TallTale.Store.Game do
     Enum.find(game.screens, &(&1.id == screen_id))
   end
 
+  def find_screen_by_name(game, name) do
+    Enum.find(game.screens, &(&1.name == name))
+  end
+
   defimpl Phoenix.Param do
     def to_param(%@for{name: name}), do: name
   end

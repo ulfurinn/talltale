@@ -31,6 +31,16 @@ defmodule TallTaleWeb.PlayLive.Game do
     |> noreply()
   end
 
+  def handle_event("go-to-screen", %{"screen-id" => screen_id}, socket) do
+    %{game_state: game_state} = socket.assigns
+
+    socket
+    |> assign_game_state(GameState.go_to_screen(game_state, screen_id))
+    |> execute_commands()
+    |> assign_shortcuts()
+    |> noreply()
+  end
+
   def handle_event("transition-ended", %{"id" => id}, socket) do
     %{game_state: game_state} = socket.assigns
 
@@ -76,7 +86,12 @@ defmodule TallTaleWeb.PlayLive.Game do
     |> push_event("animate", %{
       target: transition_target_id(game_state, command.target),
       id: command.id,
-      transition: %{type: command.type, after: command.after, duration: command.duration}
+      transition: %{
+        type: command.type,
+        clear: command.clear,
+        after: command.after,
+        duration: command.duration
+      }
     })
     |> with_game_state(game_state)
   end
