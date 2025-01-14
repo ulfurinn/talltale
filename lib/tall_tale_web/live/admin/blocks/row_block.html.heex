@@ -1,0 +1,10 @@
+<div>
+  <.inputs_for :let={row} field={@block["row"]}>
+    <.inputs_for :let={block} field={row["blocks"]}>
+      <.block owner={row} block={block} screen={@screen} game={@game} />
+    </.inputs_for>
+    <.button name={row.name <> "[block_order][]"} value={Enum.count(row["blocks"].value || [])}>
+      Add Block
+    </.button>
+  </.inputs_for>
+</div>

@@ -45,24 +45,9 @@ defmodule TallTaleWeb.AdminLive.Game do
 
   def handle_event("update-screen", params, socket) do
     %{screen: screen} = socket.assigns
-    %{"block_order" => block_order} = params
 
-    blocks =
-      case params do
-        %{"screen" => %{"blocks" => blocks}} -> blocks
-        _ -> %{}
-      end
-
-    blocks =
-      Enum.map(block_order, fn index ->
-        remove_internal_fields(
-          Map.get_lazy(blocks, index, fn ->
-            id = Uniq.UUID.uuid7()
-            name = "block_#{index}"
-            %{"id" => id, "name" => name}
-          end)
-        )
-      end)
+    params = process_block_indexes(params)
+    %{"screen" => %{"blocks" => blocks}} = params
 
     {:ok, screen} = Admin.put_screen_blocks(screen, blocks)
 
@@ -86,6 +71,40 @@ defmodule TallTaleWeb.AdminLive.Game do
         socket |> noreply()
     end
   end
+
+  defp process_block_indexes(params) when is_map(params) do
+    params =
+      case params do
+        %{"block_order" => block_order} ->
+          blocks = Map.get(params, "blocks", %{})
+
+          blocks =
+            Enum.map(block_order, fn index ->
+              remove_internal_fields(
+                Map.get_lazy(blocks, index, fn ->
+                  id = Uniq.UUID.uuid7()
+                  name = "block_#{index}"
+                  %{"id" => id, "name" => name}
+                end)
+              )
+            end)
+
+          Map.put(params, "blocks", blocks)
+
+        _ ->
+          params
+      end
+
+    Enum.into(params, %{}, fn {k, v} ->
+      {k, process_block_indexes(v)}
+    end)
+  end
+
+  defp process_block_indexes(list) when is_list(list) do
+    Enum.map(list, &process_block_indexes/1)
+  end
+
+  defp process_block_indexes(value), do: value
 
   defp tab(assigns) do
     %{tab: tab} = assigns

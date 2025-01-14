@@ -1,9 +1,9 @@
 <h1>{@screen.name}</h1>
 <.form :let={f} for={@screen} phx-change="update-screen" phx-submit="update-screen">
   <.inputs_for :let={block} field={f[:blocks]}>
-    <Block.block block={block} screen={@screen} game={@game} />
+    <Block.block owner={f} block={block} screen={@screen} game={@game} />
   </.inputs_for>
-  <.button name="block_order[]" value={Enum.count(@screen.blocks)}>
+  <.button name={f.name <> "[block_order][]"} value={Enum.count(@screen.blocks)}>
     Add Block
   </.button>
 </.form>

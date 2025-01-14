@@ -42,7 +42,7 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Screen do
     id = to_string(id || form.id <> "_#{field}")
     name = to_string(name || form.name <> "[#{field}]")
 
-    case Map.get(block, field) do
+    case Map.get(block, field, default(field)) do
       nil ->
         [
           %Phoenix.HTML.Form{
@@ -66,7 +66,13 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Screen do
             data: element,
             index: index,
             id: id <> "_" <> index_string,
-            name: name <> "[" <> index_string <> "]"
+            name: name <> "[" <> index_string <> "]",
+            hidden:
+              if is_map(element) && Map.has_key?(element, "id") do
+                [{"id", element["id"]}]
+              else
+                []
+              end
           }
         end
 
@@ -89,8 +95,12 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Screen do
   end
 
   def input_value(block, _form, field) when not is_struct(block, @for) and is_map(block) do
-    Map.get(block, field)
+    Map.get(block, field, default(field))
   end
 
   def input_validations(_, _, _), do: []
+
+  defp default(field)
+  defp default("blocks"), do: []
+  defp default(_), do: nil
 end

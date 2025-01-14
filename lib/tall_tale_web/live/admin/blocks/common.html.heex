@@ -1,5 +1,5 @@
 <div class="common">
-  <input type="hidden" name="block_order[]" value={@block.index} />
+  <input type="hidden" name={@owner.name <> "[block_order][]"} value={@block.index} />
   <.input field={@block["type"]} type="select" options={@block_types} prompt="Type" />
   <.input field={@block["name"]} placeholder="Name" autocomplete="off" phx-debounce="250" />
 </div>

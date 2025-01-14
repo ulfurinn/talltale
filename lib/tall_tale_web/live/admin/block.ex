@@ -2,7 +2,7 @@ defmodule TallTaleWeb.AdminLive.Block do
   use TallTaleWeb, :html
   embed_templates "blocks/**.html"
 
-  @block_types ["heading", "paragraph", "button"]
+  @block_types ["heading", "paragraph", "row", "button"]
 
   def block(assigns) do
     assigns = assign(assigns, :block_types, @block_types)
@@ -16,7 +16,7 @@ defmodule TallTaleWeb.AdminLive.Block do
   end
 
   defp block_content(assigns, nil) do
-    unspecified_block(assigns)
+    blank_block(assigns)
   end
 
   defp block_content(assigns, type) do

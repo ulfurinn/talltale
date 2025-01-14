@@ -20,7 +20,7 @@
       "maxSize": 20,
       "positiveSteps": (1.5, 2, 3, 4, 6),
       "negativeSteps": (0.75, 0.5, 0.25),
-      "customSizes": ("s-l"),
+      "customSizes": ("2xs-l"),
       "prefix": "space-",
       "relativeTo": "viewport-width",
     ));
@@ -45,6 +45,11 @@
 
   a {
     color: var(--zinc-50);
+  }
+
+  button {
+    font-family: "Cinzel", serif;
+    padding: var(--space-2xs) var(--space-l);
   }
 
   @include meta.load-css("./game-selector");
@@ -77,6 +82,10 @@
       .markdown {
         @include utils.gap-y(var(--space-m));
       }
+    }
+
+    &.row {
+      display: flex;
     }
   }
 
