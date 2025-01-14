@@ -28,6 +28,6 @@ sh:
 	kubectl exec -it deployments/talltale -- sh
 
 iex:
-	kubectl exec -it deployments/talltale -- sh -c "/app/bin/talltale remote"
+	kubectl exec -it deployments/talltale -- sh -c "/app/bin/tall_tale remote"
 
 default: build
