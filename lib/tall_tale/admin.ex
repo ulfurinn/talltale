@@ -38,16 +38,28 @@ defmodule TallTale.Admin do
   end
 
   if Mix.env() == :prod do
-    def load_published_game(name) do
+    def load_published_game(name, code)
+
+    def load_published_game(name, nil) do
       q =
         from g in Game,
-          where: g.published and g.name == ^name,
+          where: g.name == ^name and g.published,
+          preload: [screens: ^from(s in Screen, order_by: [asc: :name])]
+
+      Repo.one(q)
+    end
+
+    def load_published_game(name, code) do
+      q =
+        from g in Game,
+          left_join: a in assoc(g, :access_codes),
+          where: g.name == ^name and (g.published or a.code == ^code),
           preload: [screens: ^from(s in Screen, order_by: [asc: :name])]
 
       Repo.one(q)
     end
   else
-    def load_published_game(name), do: load_game(name)
+    def load_published_game(name, _code), do: load_game(name)
   end
 
   def reload_game(game) do

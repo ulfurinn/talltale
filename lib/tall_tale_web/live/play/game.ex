@@ -6,8 +6,8 @@ defmodule TallTaleWeb.PlayLive.Game do
   alias TallTale.Store.Game
   alias TallTaleWeb.PlayLive.Block
 
-  def mount(%{"game" => game_name}, _session, socket) do
-    case TallTale.Admin.load_published_game(game_name) do
+  def mount(params = %{"game" => game_name}, _session, socket) do
+    case TallTale.Admin.load_published_game(game_name, params["code"]) do
       game = %Game{} ->
         socket
         |> assign_game_state(game)
