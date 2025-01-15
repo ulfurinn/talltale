@@ -62,7 +62,7 @@ RUN mix release
 
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
-FROM ${RUNNER_IMAGE}
+FROM ${RUNNER_IMAGE} AS app
 
 RUN apt-get update -y && \
   apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates \
@@ -84,8 +84,6 @@ ENV MIX_ENV="prod"
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/tall_tale ./
 
-COPY --chown=nobody:nobody database.db ./database.db
-
 USER nobody
 
 # If using an environment that doesn't automatically reap zombie processes, it is
@@ -94,3 +92,7 @@ USER nobody
 # ENTRYPOINT ["/tini", "--"]
 
 CMD ["/app/bin/server"]
+
+FROM app
+
+COPY --chown=nobody:nobody database.db ./database.db
