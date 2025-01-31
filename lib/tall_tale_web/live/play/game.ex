@@ -1,7 +1,7 @@
 defmodule TallTaleWeb.PlayLive.Game do
+  use TallTaleWeb, :live_view
   alias TallTale.Commands.SetScreen
   alias TallTale.Commands.Transition
-  use TallTaleWeb, :live_view
   alias TallTale.GameState
   alias TallTale.Store.Game
   alias TallTaleWeb.PlayLive.Block
