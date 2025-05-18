@@ -74,7 +74,3 @@ USER nobody
 # ENTRYPOINT ["/tini", "--"]
 
 CMD ["/app/bin/server"]
-
-FROM app
-
-COPY --chown=nobody:nobody database.db ./database.db
