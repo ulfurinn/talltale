@@ -55,7 +55,7 @@ RUN mix release
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE} AS app
 
-RUN apk upgrade && apk add libstdc++ ncurses
+RUN apk upgrade && apk add libstdc++ ncurses sqlite
 
 WORKDIR "/app"
 RUN chown nobody /app

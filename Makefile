@@ -1,10 +1,10 @@
 .PHONY: image build push kube restart deploy logs sh iex psql default
 
 snapshot:
-	rm -f database.db
-	sqlite3 tall_tale_dev.db "VACUUM INTO 'database.db'"
+	rm -f snapshot.db
+	sqlite3 tall_tale_dev.db "VACUUM INTO 'snapshot.db'"
 
-image: snapshot
+image:
 	docker build -t talltale -f Dockerfile .
 
 build: image
