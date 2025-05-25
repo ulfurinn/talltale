@@ -60,10 +60,10 @@ jobs:
       #     subject-digest: ${{ steps.push.outputs.digest }}
       #     push-to-registry: true
       
-      # - uses: clowdhaus/argo-cd-action/@main
-      #   env:
-      #     ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
-      #     ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
-      #   with:
-      #     version: 2.6.7
-      #     command: app set argocd/blogpub -p image.digest=${{ steps.push.outputs.digest }}
+      - uses: clowdhaus/argo-cd-action/@main
+        env:
+          ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+          ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+        with:
+          version: 2.6.7
+          command: app set argocd/talltale -p image.digest=${{ steps.push.outputs.digest }}
