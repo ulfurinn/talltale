@@ -4,22 +4,11 @@ snapshot:
 	rm -f snapshot.db
 	sqlite3 tall_tale_dev.db "VACUUM INTO 'snapshot.db'"
 
-image:
-	docker build -t talltale -f Dockerfile .
-
-build: image
-
-push: image
-	docker tag talltale:latest sage:32000/talltale:latest
-	docker push sage:32000/talltale:latest
-
-kube:
-	kubectl apply -f talltale.yml
+publish: snapshot
+	(pod=$(shell kubectl get pod -l app=talltale -o jsonpath='{.items[0].metadata.name}'); kubectl cp snapshot.db $$pod:/var/lib/talltale/)
 
 restart:
 	kubectl rollout restart deployment talltale
-
-deploy: push kube restart
 
 logs:
 	kubectl logs -f deployment/talltale
@@ -29,5 +18,3 @@ sh:
 
 iex:
 	kubectl exec -it deployments/talltale -- sh -c "/app/bin/tall_tale remote"
-
-default: build
