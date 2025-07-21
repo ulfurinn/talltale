@@ -1,0 +1,18 @@
+<div class="quality-tab">
+  <div class="quality-selector">
+    <form phx-submit="create-quality" autocomplete="off">
+      <input name="quality[identifier]" placeholder="New quality ID…" />
+      <button class="hidden" />
+    </form>
+    <ul class="quality-list">
+      <li :for={quality <- @game.qualities} class={@quality && quality.id == @quality.id && "active"}>
+        <.link patch={~p"/admin/#{@game}/qualities/#{quality.id}"}>
+          {quality.name || quality.identifier}
+        </.link>
+      </li>
+    </ul>
+  </div>
+  <div class="quality-panel">
+    <.quality :if={@quality} quality={@quality} game={@game} />
+  </div>
+</div>

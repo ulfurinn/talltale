@@ -1,0 +1,5 @@
+<h1>{@quality.name || @quality.identifier}</h1>
+<.form :let={f} for={@quality} phx-change="update-quality" phx-submit="update-quality">
+  <div><.input field={f[:identifier]} placeholder="ID" /></div>
+  <div><.input field={f[:name]} placeholder="Name" /></div>
+</.form>

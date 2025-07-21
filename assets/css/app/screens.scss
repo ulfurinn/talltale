@@ -22,3 +22,28 @@
     }
   }
 }
+
+.quality-tab {
+  display: flex;
+  gap: 1em;
+
+  .quality-selector {
+    border: 1px solid var(--zinc-900);
+    padding: 1em;
+
+    ul.quality-list {
+      /* unmarked */
+      list-style-type: none;
+      padding: 1em 0 0 0;
+
+      li {
+        padding: 0.1em 0.4em;
+        font-size: 80%;
+      }
+
+      li.active {
+        background-color: var(--zinc-700);
+      }
+    }
+  }
+}

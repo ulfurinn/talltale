@@ -1,6 +1,7 @@
 defmodule TallTale.Store.Game do
   use TallTale.Store.Schema
   alias TallTale.Store.AccessCode
+  alias TallTale.Store.Quality
   alias TallTale.Store.Screen
 
   schema "games" do
@@ -9,6 +10,7 @@ defmodule TallTale.Store.Game do
     field :published, :boolean, default: false
 
     has_many :screens, Screen
+    has_many :qualities, Quality
 
     has_many :access_codes, AccessCode
     timestamps()

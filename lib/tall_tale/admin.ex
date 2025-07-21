@@ -2,6 +2,7 @@ defmodule TallTale.Admin do
   import Ecto.Query, only: [from: 2]
   alias TallTale.Repo
   alias TallTale.Store.Game
+  alias TallTale.Store.Quality
   alias TallTale.Store.Screen
 
   def games do
@@ -32,7 +33,10 @@ defmodule TallTale.Admin do
     q =
       from g in Game,
         where: g.name == ^name,
-        preload: [screens: ^from(s in Screen, order_by: [asc: :name])]
+        preload: [
+          screens: ^from(s in Screen, order_by: [asc: :name]),
+          qualities: ^from(q in Quality, order_by: [asc: :name])
+        ]
 
     Repo.one(q)
   end
@@ -69,6 +73,12 @@ defmodule TallTale.Admin do
   def create_screen(game, attrs) do
     Ecto.build_assoc(game, :screens)
     |> Screen.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_quality(game, attrs) do
+    Ecto.build_assoc(game, :qualities)
+    |> Quality.changeset(attrs)
     |> Repo.insert()
   end
 

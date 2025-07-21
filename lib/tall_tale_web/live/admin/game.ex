@@ -43,6 +43,21 @@ defmodule TallTaleWeb.AdminLive.Game do
     end
   end
 
+  def handle_event("create-quality", %{"quality" => params}, socket) do
+    %{game: game} = socket.assigns
+
+    case Admin.create_quality(game, params) do
+      {:ok, quality} ->
+        socket
+        |> assign_game(Admin.reload_game(game))
+        |> push_patch(to: ~p"/admin/#{game}/qualities/#{quality}")
+        |> noreply()
+
+      {:error, _reason} ->
+        socket |> noreply()
+    end
+  end
+
   def handle_event("update-screen", params, socket) do
     %{screen: screen} = socket.assigns
 
@@ -124,7 +139,9 @@ defmodule TallTaleWeb.AdminLive.Game do
   end
 
   defp assign_defaults(socket) do
-    socket |> assign_screen(nil)
+    socket
+    |> assign_screen(nil)
+    |> assign_quality(nil)
   end
 
   defp assign_tab(socket, %{"tab" => tab}) do
@@ -147,12 +164,24 @@ defmodule TallTaleWeb.AdminLive.Game do
     |> assign_screen(Enum.find(screens, &(&1.id == screen_id)))
   end
 
+  defp assign_tab_param(%{assigns: %{tab: "qualities"}} = socket, %{"tab_param" => quality_id}) do
+    %{game: game} = socket.assigns
+    %Game{qualities: qualities} = game
+
+    socket
+    |> assign_quality(Enum.find(qualities, &(&1.id == quality_id)))
+  end
+
   defp assign_tab_param(socket, _params) do
     socket
   end
 
   defp assign_screen(socket, screen) do
     assign(socket, :screen, screen)
+  end
+
+  defp assign_quality(socket, quality) do
+    assign(socket, :quality, quality)
   end
 
   defp remove_internal_fields(term)
