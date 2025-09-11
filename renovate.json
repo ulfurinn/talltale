@@ -4,43 +4,5 @@
     "config:recommended",
     ":automergeAll",
     "docker:enableMajor"
-  ],
-  "packageRules": [
-    {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "hexpm/elixir"
-      ],
-      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-"
-    },
-    {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "hexpm/elixir"
-      ],
-      "versioning": "regex:-erlang-(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?-"
-    },
-    {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "hexpm/elixir"
-      ],
-      "versioning": "regex:-alpine-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
-    },
-    {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "alpine"
-      ],
-      "versioning": "semver"
-    }
   ]
 }
