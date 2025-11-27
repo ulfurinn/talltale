@@ -22,7 +22,7 @@ defmodule TallTale.GameState do
 
   def set_screen(state, id) do
     %GameState{game: game} = state
-    %GameState{state | screen: Game.find_screen(game, id)}
+    %{state | screen: Game.find_screen(game, id)}
   end
 
   def go_to_screen(state, screen_id) do
@@ -55,15 +55,15 @@ defmodule TallTale.GameState do
     |> with_delayed_commands(id, nil)
   end
 
-  defp with_commands(state, commands) do
-    %GameState{state | commands: commands}
+  defp with_commands(%GameState{} = state, commands) do
+    %{state | commands: commands}
   end
 
-  defp with_delayed_commands(state, id, nil) do
-    %GameState{state | delayed_commands: Map.delete(state.delayed_commands, id)}
+  defp with_delayed_commands(%GameState{} = state, id, nil) do
+    %{state | delayed_commands: Map.delete(state.delayed_commands, id)}
   end
 
-  defp with_delayed_commands(state, id, commands) do
-    %GameState{state | delayed_commands: Map.put(state.delayed_commands, id, commands)}
+  defp with_delayed_commands(%GameState{} = state, id, commands) do
+    %{state | delayed_commands: Map.put(state.delayed_commands, id, commands)}
   end
 end

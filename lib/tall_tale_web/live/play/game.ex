@@ -78,7 +78,7 @@ defmodule TallTaleWeb.PlayLive.Game do
 
   defp execute_commands(socket, game_state = %GameState{commands: [command | rest]}) do
     {socket, game_state} = execute_command(socket, game_state, command)
-    execute_commands(socket, %GameState{game_state | commands: rest})
+    execute_commands(socket, %{game_state | commands: rest})
   end
 
   defp execute_command(socket, game_state, command = %Transition{}) do
