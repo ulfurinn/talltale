@@ -22,3 +22,7 @@ button {
 .input-unit {
   display: inline-flex;
 }
+
+[data-critical] {
+  background-color: var(--critical-color);
+}

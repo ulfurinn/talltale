@@ -26,9 +26,15 @@
 
   --background-color: var(--zinc-50);
   --background-hover-color: var(--zinc-100);
+
   --text-color: var(--zinc-800);
+
   --highlight-color: var(--zinc-200);
   --highlight-hover-color: var(--zinc-300);
+
+  --critical-color: var(--rose-200);
+
+  --space-control-separator: var(--space-2xs);
 }
 
 .admin {

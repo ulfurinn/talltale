@@ -9,9 +9,6 @@ defmodule TallTaleWeb.AdminLive.Block do
 
     ~H"""
     <div class="block">
-      <div class="controls">
-        <.button field={@block["delete"]} value="true">delete</.button>
-      </div>
       {common(assigns)}
       {block_content(assigns, @block["type"].value)}
     </div>
