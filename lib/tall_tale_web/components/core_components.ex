@@ -218,9 +218,18 @@ defmodule TallTaleWeb.CoreComponents do
   """
   attr :type, :string, default: nil
   attr :class, :string, default: nil
+  attr :field, Phoenix.HTML.FormField
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
+
+  def button(%{field: %Phoenix.HTML.FormField{}} = assigns) do
+    ~H"""
+    <button type={@type} class={@class} name={@field.name} value={@field.value} {@rest}>
+      {render_slot(@inner_block)}
+    </button>
+    """
+  end
 
   def button(assigns) do
     ~H"""

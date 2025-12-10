@@ -64,7 +64,7 @@ defmodule TallTaleWeb.AdminLive.Game do
     params = process_block_indexes(params)
     %{"screen" => %{"blocks" => blocks}} = params
 
-    {:ok, screen} = Admin.put_screen_blocks(screen, blocks)
+    {:ok, screen} = Admin.put_screen_blocks(screen, Admin.remove_deleted_blocks(blocks))
 
     socket
     |> assign_screen(screen)
