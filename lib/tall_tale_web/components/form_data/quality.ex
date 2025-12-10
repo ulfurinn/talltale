@@ -14,6 +14,8 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Quality do
     }
   end
 
+  def to_form(_data, _form, _field, _options), do: []
+
   def input_value(%@for{} = quality, _form, :name) do
     quality.name
   end
@@ -21,4 +23,6 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Quality do
   def input_value(%@for{} = quality, _form, :identifier) do
     quality.identifier
   end
+
+  def input_validations(_, _, _), do: []
 end
