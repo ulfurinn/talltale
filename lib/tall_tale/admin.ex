@@ -91,7 +91,7 @@ defmodule TallTale.Admin do
   def remove_deleted_blocks(blocks) do
     blocks
     |> Enum.map(fn
-      %{"blocks" => blocks} = block -> %{block | "blocks" => remove_deleted_blocks(blocks)}
+      %{"row" => _} = block -> update_in(block, ["row", "blocks"], &remove_deleted_blocks/1)
       block -> block
     end)
     |> Enum.reject(fn
