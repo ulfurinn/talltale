@@ -1,6 +1,6 @@
 @use "sass:meta";
-@use "../utopia";
-@use "../utils";
+@use "../../utopia";
+@use "../../utils";
 
 :root {
   @include utopia.generateTypeScale(("minWidth": 320,

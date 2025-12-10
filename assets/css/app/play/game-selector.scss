@@ -1,0 +1,21 @@
+.game-selector {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+
+  ul {
+    /* unmarked list */
+    list-style-type: none;
+    padding: 0 0 1em 0;
+  }
+}

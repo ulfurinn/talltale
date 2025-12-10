@@ -9,21 +9,21 @@ ul.tab-set {
   li {
     margin: 0;
     padding: 0.5em 1em;
-    background-color: var(--zinc-950);
+    background-color: var(--background-color);
     border: 1px solid var(--zinc-900);
     border-radius: 15px 15px 0 0;
     transition: background-color 0.3s;
 
     &:hover {
-      background-color: var(--zinc-800);
+      background-color: var(--background-hover-color);
     }
 
     &.active {
-      background-color: var(--zinc-700);
+      background-color: var(--highlight-color);
     }
 
     &.active:hover {
-      background-color: var(--zinc-600);
+      background-color: var(--highlight-hover-color);
     }
   }
 }

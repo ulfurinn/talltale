@@ -1,0 +1,13 @@
+.block {
+  border: 2px solid var(--orange-700);
+  padding: 1rem;
+  margin-top: 0.5em;
+
+  &>*+* {
+    margin-top: 1rem;
+  }
+
+  .controls {
+    padding: 0.3rem;
+  }
+}

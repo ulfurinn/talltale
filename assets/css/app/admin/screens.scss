@@ -3,7 +3,7 @@
   gap: 1em;
 
   .screen-selector {
-    border: 1px solid var(--zinc-900);
+    border: 1px solid var(--text-color);
     padding: 1em;
 
     ul.screen-list {
@@ -17,7 +17,7 @@
       }
 
       li.active {
-        background-color: var(--zinc-700);
+        background-color: var(--highlight-color);
       }
     }
   }
@@ -28,7 +28,7 @@
   gap: 1em;
 
   .quality-selector {
-    border: 1px solid var(--zinc-900);
+    border: 1px solid var(--text-color);
     padding: 1em;
 
     ul.quality-list {
@@ -42,7 +42,7 @@
       }
 
       li.active {
-        background-color: var(--zinc-700);
+        background-color: var(--highlight-color);
       }
     }
   }

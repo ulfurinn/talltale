@@ -1,5 +1,5 @@
 @use "sass:meta";
-@use "../utopia";
+@use "../../utopia";
 
 :root {
   @include utopia.generateTypeScale(("minWidth": 320,
@@ -23,15 +23,21 @@
       "prefix": "space-",
       "relativeTo": "viewport-width",
     ));
+
+  --background-color: var(--zinc-50);
+  --background-hover-color: var(--zinc-100);
+  --text-color: var(--zinc-800);
+  --highlight-color: var(--zinc-200);
+  --highlight-hover-color: var(--zinc-300);
 }
 
 .admin {
-  background-color: var(--zinc-950);
-  color: var(--zinc-200);
+  background-color: var(--background-color);
+  color: var(--text-color);
   height: 100vh;
 
   header {
-    background-color: var(--zinc-900);
+    background-color: var(--highlight-color);
     padding: 10px;
     margin-bottom: 1em;
     display: flex;
@@ -41,7 +47,7 @@
   }
 
   a {
-    color: var(--zinc-50);
+    color: var(--text-color);
   }
 
   @include meta.load-css("./controls");
