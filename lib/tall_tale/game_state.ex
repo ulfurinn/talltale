@@ -5,6 +5,8 @@ defmodule TallTale.GameState do
   alias TallTale.Commands.SetScreen
   alias TallTale.Commands.Transition
 
+  @derive {Inspect, only: []}
+
   defstruct [
     :game,
     :screen,
@@ -40,12 +42,22 @@ defmodule TallTale.GameState do
     |> with_delayed_commands(fade_out.id, swap)
   end
 
-  def execute_action(state, block_id) when is_binary(block_id) do
+  def execute_block_action(state, block_id) when is_binary(block_id) do
     %GameState{screen: screen} = state
-    execute_action(state, Screen.find_block(screen, block_id))
+    execute_block_action(state, Screen.find_block(screen, block_id))
   end
 
-  def execute_action(state, %{"button" => %{"next_screen" => screen_id}}) when screen_id != "" do
+  def execute_block_action(state, %{"button" => %{"action_id" => action_id}})
+      when action_id != "" do
+    execute_action(state, action_id)
+  end
+
+  def execute_action(state, action_id) when is_binary(action_id) do
+    %GameState{screen: screen} = state
+    execute_action(state, Screen.find_action(screen, action_id))
+  end
+
+  def execute_action(state, %{"screen" => %{"screen_id" => screen_id}}) do
     go_to_screen(state, screen_id)
   end
 

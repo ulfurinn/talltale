@@ -25,7 +25,7 @@ defmodule TallTaleWeb.PlayLive.Game do
     %{game_state: game_state} = socket.assigns
 
     socket
-    |> assign_game_state(GameState.execute_action(game_state, block_id))
+    |> assign_game_state(GameState.execute_block_action(game_state, block_id))
     |> execute_commands()
     |> assign_shortcuts()
     |> noreply()

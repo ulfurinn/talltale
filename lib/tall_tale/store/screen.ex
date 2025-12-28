@@ -42,4 +42,12 @@ defmodule TallTale.Store.Screen do
       end
     end)
   end
+
+  def find_action(%__MODULE__{} = screen, action_id) do
+    find_action(screen.actions, action_id)
+  end
+
+  def find_action(actions, action_id) do
+    Enum.find(actions, &(&1["id"] == action_id))
+  end
 end
