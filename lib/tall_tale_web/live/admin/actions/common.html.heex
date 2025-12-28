@@ -1,0 +1,6 @@
+<div class="controls">
+  <input type="hidden" name={@owner.name <> "[action_order][]"} value={@action.index} />
+  <.input field={@action["type"]} type="select" options={@action_types} prompt="Type" />
+  <.input field={@action["name"]} placeholder="Name" autocomplete="off" phx-debounce="250" />
+  <.button field={@action["delete"]} value="true" data-critical>delete</.button>
+</div>

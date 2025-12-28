@@ -2,6 +2,7 @@ defmodule TallTaleWeb.AdminLive.Game do
   use TallTaleWeb, :live_view
   alias TallTale.Admin
   alias TallTale.Store.Game
+  alias TallTaleWeb.AdminLive.Action
   alias TallTaleWeb.AdminLive.Block
 
   embed_templates "tabs/**.html"
@@ -61,10 +62,12 @@ defmodule TallTaleWeb.AdminLive.Game do
   def handle_event("update-screen", params, socket) do
     %{screen: screen} = socket.assigns
 
-    params = process_block_indexes(params)
-    %{"screen" => %{"blocks" => blocks}} = params
+    params = params |> parse_blocks() |> dbg()
+    params = params |> parse_actions() |> dbg()
+    %{"screen" => %{"blocks" => blocks, "actions" => actions}} = params
 
     {:ok, screen} = Admin.put_screen_blocks(screen, Admin.remove_deleted_blocks(blocks))
+    {:ok, screen} = Admin.put_screen_actions(screen, Admin.remove_deleted_actions(actions))
 
     socket
     |> assign_screen(screen)
@@ -87,39 +90,70 @@ defmodule TallTaleWeb.AdminLive.Game do
     end
   end
 
-  defp process_block_indexes(params) when is_map(params) do
-    params =
-      case params do
-        %{"block_order" => block_order} ->
-          blocks = Map.get(params, "blocks", %{})
+  defp parse_blocks(params) when is_map(params) do
+    case params do
+      %{"block_order" => block_order} ->
+        blocks = Map.get(params, "blocks", %{})
 
-          blocks =
-            Enum.map(block_order, fn index ->
-              remove_internal_fields(
-                Map.get_lazy(blocks, index, fn ->
-                  id = Uniq.UUID.uuid7()
-                  name = "block_#{index}"
-                  %{"id" => id, "name" => name}
-                end)
-              )
-            end)
+        blocks =
+          Enum.map(block_order, fn index ->
+            remove_internal_fields(
+              Map.get_lazy(blocks, index, fn ->
+                id = Uniq.UUID.uuid7()
+                name = "block_#{index}"
+                %{"id" => id, "name" => name}
+              end)
+            )
+          end)
 
-          Map.put(params, "blocks", blocks)
+        params
+        |> Map.put("blocks", blocks)
 
-        _ ->
-          params
-      end
-
-    Enum.into(params, %{}, fn {k, v} ->
-      {k, process_block_indexes(v)}
+      _ ->
+        params
+    end
+    |> Enum.into(%{}, fn {k, v} ->
+      {k, parse_blocks(v)}
     end)
   end
 
-  defp process_block_indexes(list) when is_list(list) do
-    Enum.map(list, &process_block_indexes/1)
+  defp parse_blocks(list) when is_list(list) do
+    Enum.map(list, &parse_blocks/1)
   end
 
-  defp process_block_indexes(value), do: value
+  defp parse_blocks(value), do: value
+
+  defp parse_actions(params) when is_map(params) do
+    case params do
+      %{"action_order" => action_order} ->
+        actions = Map.get(params, "actions", %{})
+
+        actions =
+          Enum.map(action_order, fn index ->
+            remove_internal_fields(
+              Map.get_lazy(actions, index, fn ->
+                id = Uniq.UUID.uuid7()
+                name = "action_#{index}"
+                %{"id" => id, "name" => name}
+              end)
+            )
+          end)
+
+        Map.put(params, "actions", actions)
+
+      _ ->
+        params
+    end
+    |> Enum.into(%{}, fn {k, v} ->
+      {k, parse_actions(v)}
+    end)
+  end
+
+  defp parse_actions(list) when is_list(list) do
+    Enum.map(list, &parse_actions/1)
+  end
+
+  defp parse_actions(value), do: value
 
   defp tab(assigns) do
     %{tab: tab} = assigns

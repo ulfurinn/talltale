@@ -60,5 +60,6 @@
   @include meta.load-css("./game-selector");
   @include meta.load-css("./tab-set");
   @include meta.load-css("./screens");
+  @include meta.load-css("./actions");
   @include meta.load-css("./blocks");
 }

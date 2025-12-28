@@ -36,13 +36,35 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Screen do
     end
   end
 
-  def to_form(block, form, field, opts) when not is_struct(block, @for) and is_map(block) do
+  def to_form(%@for{} = screen, form, :actions, opts) do
+    {name, opts} = Keyword.pop(opts, :as)
+    {id, opts} = Keyword.pop(opts, :id)
+    id = to_string(id || form.id <> "_actions")
+    name = to_string(name || form.name <> "[actions]")
+
+    for {action, index} <- Enum.with_index(screen.actions) do
+      index_string = Integer.to_string(index)
+
+      %Phoenix.HTML.Form{
+        source: action,
+        impl: __MODULE__,
+        options: opts,
+        data: action,
+        index: index,
+        id: id <> "_" <> index_string,
+        name: name <> "[" <> index_string <> "]",
+        hidden: [{"id", action["id"]}]
+      }
+    end
+  end
+
+  def to_form(nested, form, field, opts) when not is_struct(nested, @for) and is_map(nested) do
     {name, opts} = Keyword.pop(opts, :as)
     {id, opts} = Keyword.pop(opts, :id)
     id = to_string(id || form.id <> "_#{field}")
     name = to_string(name || form.name <> "[#{field}]")
 
-    case Map.get(block, field, default(field)) do
+    case Map.get(nested, field, default(field)) do
       nil ->
         [
           %Phoenix.HTML.Form{
@@ -94,13 +116,18 @@ defimpl Phoenix.HTML.FormData, for: TallTale.Store.Screen do
     screen.blocks
   end
 
-  def input_value(block, _form, field) when not is_struct(block, @for) and is_map(block) do
-    Map.get(block, field, default(field))
+  def input_value(%@for{} = screen, _form, :actions) do
+    screen.actions
+  end
+
+  def input_value(nested, _form, field) when not is_struct(nested, @for) and is_map(nested) do
+    Map.get(nested, field, default(field))
   end
 
   def input_validations(_, _, _), do: []
 
   defp default(field)
   defp default("blocks"), do: []
+  defp default("actions"), do: []
   defp default(_), do: nil
 end

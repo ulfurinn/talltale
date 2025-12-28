@@ -1,0 +1,10 @@
+<div>
+  <.inputs_for :let={screen} field={@action["screen"]}>
+    <.input
+      field={screen["screen_id"]}
+      type="select"
+      options={Enum.map(@game.screens, &{&1.name, &1.id})}
+      prompt="Next screen…"
+    />
+  </.inputs_for>
+</div>

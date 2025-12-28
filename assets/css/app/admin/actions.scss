@@ -1,0 +1,15 @@
+.action {
+    border: 2px solid var(--yellow-400);
+    padding: var(--space-control-separator);
+    margin-top: var(--space-control-separator);
+
+    &>*+* {
+        margin-top: var(--space-control-separator);
+    }
+
+    .controls {
+        padding: 0.3rem;
+        display: flex;
+        gap: var(--space-control-separator);
+    }
+}

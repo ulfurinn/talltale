@@ -88,12 +88,26 @@ defmodule TallTale.Admin do
     |> Repo.update()
   end
 
+  def put_screen_actions(screen, actions) do
+    screen
+    |> Ecto.Changeset.change(actions: actions)
+    |> Repo.update()
+  end
+
   def remove_deleted_blocks(blocks) do
     blocks
     |> Enum.map(fn
       %{"row" => _} = block -> update_in(block, ["row", "blocks"], &remove_deleted_blocks/1)
       block -> block
     end)
+    |> Enum.reject(fn
+      %{"delete" => "true"} -> true
+      _ -> false
+    end)
+  end
+
+  def remove_deleted_actions(actions) do
+    actions
     |> Enum.reject(fn
       %{"delete" => "true"} -> true
       _ -> false
